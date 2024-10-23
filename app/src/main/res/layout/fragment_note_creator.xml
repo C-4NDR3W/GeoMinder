@@ -34,41 +34,55 @@
             android:background="@android:color/transparent"/>
     </androidx.appcompat.widget.Toolbar>
 
-    <EditText
-        android:id="@+id/titleEditText"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Note Title"
-        android:inputType="text"
-        android:layout_marginTop="16dp"/>
+        android:orientation="vertical"
+        android:layout_margin="16dp">
 
-    <TextView
-        android:id="@+id/timePickerButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Add Date and Time"
-        android:textColor="#A9A9A9"
-        android:layout_marginTop="8dp"
-        android:padding="16dp"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"/>
+        <EditText
+            android:id="@+id/titleEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Title"
+            android:inputType="text"
+            android:layout_marginTop="16dp"
+            android:textSize="30sp"
+            android:textColorHint="#A9A9A9"
+            android:textColor="#000000"
+            android:textStyle="bold"/>
 
-    <EditText
-        android:id="@+id/placeEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Place"
-        android:inputType="text"
-        android:layout_marginTop="8dp"/>
+        <TextView
+            android:id="@+id/timePickerButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Date and Time"
+            android:textColor="#A9A9A9"
+            android:layout_marginTop="8dp"
+            android:padding="16dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"/>
 
-    <EditText
-        android:id="@+id/contentEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Note Details"
-        android:inputType="textMultiLine"
-        android:minLines="5"
-        android:gravity="top|start"
-        android:layout_marginTop="8dp"/>
+        <EditText
+            android:id="@+id/placeEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Add a Place"
+            android:inputType="text"
+            android:layout_marginTop="8dp"
+            android:textColorHint="#A9A9A9" />
+
+        <EditText
+            android:id="@+id/contentEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Details"
+            android:inputType="textMultiLine"
+            android:minLines="5"
+            android:gravity="top|start"
+            android:layout_marginTop="8dp"
+            android:textColorHint="#A9A9A9"
+            android:textColor="#000000" />
+    </LinearLayout>
 </LinearLayout>

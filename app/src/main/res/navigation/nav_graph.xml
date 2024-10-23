@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/noteViewFragment">
 
@@ -19,7 +20,14 @@
     </fragment>
 
     <fragment
+        android:id="@+id/navigation_notifications"
+        android:name="com.example.geominder.NotificationViewFragment"
+        android:label="Notifications"
+        tools:layout="@layout/fragment_notification_view" />
+
+    <fragment
         android:id="@+id/noteCreatorFragment"
         android:name="com.example.geominder.NoteCreatorFragment"
-        android:label="Create Note" />
+        android:label="Note Creator"
+        tools:layout="@layout/fragment_note_creator" />
 </navigation>

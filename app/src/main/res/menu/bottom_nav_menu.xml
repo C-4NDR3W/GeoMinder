@@ -11,7 +11,7 @@
         android:title="Add"/>
 
     <item
-        android:id="@+id/navigation_person"
+        android:id="@+id/navigation_profile"
         android:icon="@drawable/baseline_person_24"
         android:title="Profile" />
 </menu>
