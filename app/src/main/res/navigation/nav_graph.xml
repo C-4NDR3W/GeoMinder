@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/noteViewFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.geominder.LoginFragment"
+        android:label="Notes" />
+
+    <fragment
+        android:id="@+id/noteViewFragment"
+        android:name="com.example.geominder.NoteViewFragment"
+        android:label="Create Note" />
+
+    <fragment
+        android:id="@+id/noteCreatorFragment"
+        android:name="com.example.geominder.NoteCreatorFragment"
+        android:label="Create Note" />
+</navigation>
