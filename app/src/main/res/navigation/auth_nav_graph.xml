@@ -17,7 +17,7 @@
     <fragment
         android:id="@+id/signUpFragment2"
         android:name="com.example.geominder.SignUpFragment"
-        android:label="SignUpFragment" >
+        android:label="SignUpFragment " >
         <action
             android:id="@+id/action_signUpFragment2_to_loginFragment"
             app:destination="@id/loginFragment" />
