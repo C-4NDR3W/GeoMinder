@@ -1,6 +1,7 @@
 package com.example.geominder
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +44,7 @@ class SignUpFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        Log.d("test", "test")
         auth = FirebaseAuth.getInstance()
         emailEditText = view.findViewById(R.id.signup_emailEditText)
         passwordEditText = view.findViewById(R.id.signup_passwordEditText)
