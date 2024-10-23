@@ -19,7 +19,7 @@
     <string name="edit_status_note">Edited</string>
 
 
-<!--    -->
+    <!--    -->
     <string name="profile_name">-</string>
     <string name="placeholder_email">-</string>
     <string name="placeholder_password">*</string>
@@ -28,4 +28,10 @@
     <string name="note_active">Notes Active</string>
     <string name="button_content_description">Continue</string>
     <string name="group_hint">Groups</string>
+    <string name="current_pass_hint">Current Password</string>
+    <string name="new_password_hint">New Password</string>
+    <string name="confirm_pass_hint">Confirm New Password</string>
+    <string name="update_pass_button">Update Password</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
