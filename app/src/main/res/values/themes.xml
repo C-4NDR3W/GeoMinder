@@ -2,5 +2,6 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.GeoMinder" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="android:windowBackground">@android:color/white</item>
     </style>
 </resources>
