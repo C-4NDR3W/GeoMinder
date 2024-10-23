@@ -7,8 +7,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -20,7 +23,10 @@ class SignUpFragment : Fragment() {
     private lateinit var passwordEditText: EditText
     private lateinit var signUpButton: Button
     private lateinit var confirmPassword : EditText
-    private lateinit var loadingProgressBar: ProgressBar
+
+    private lateinit var redirectToLogin: TextView
+
+
 
     data object errors  {
         var emailError = false
@@ -42,15 +48,17 @@ class SignUpFragment : Fragment() {
         passwordEditText = view.findViewById(R.id.signup_passwordEditText)
         confirmPassword = view.findViewById(R.id.confirmPass)
         signUpButton = view.findViewById(R.id.signUpButton)
+        redirectToLogin = view.findViewById(R.id.signup_redirect)
 
-
+        redirectToLogin.setOnClickListener( {
+            redirectToLogin()
+        })
         signUpButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
             val confirm = confirmPassword.text.toString().trim()
 
-            if (email.isNotEmpty() && password.isNotEmpty() && validatePass(password) &&
-                comparePass(password,confirm) ) {
+            if (email.isNotEmpty() && password.isNotEmpty()) {
                 signUpUser(email, password)
             }
 
@@ -99,7 +107,6 @@ class SignUpFragment : Fragment() {
     private fun signUpUser(email: String, password: String) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
-
                 if (task.isSuccessful) {
                     Toast.makeText(context, "Sign-up successful", Toast.LENGTH_SHORT).show()
 
@@ -111,5 +118,9 @@ class SignUpFragment : Fragment() {
             .addOnFailureListener({
                 Toast.makeText(context, "Sign-up failed: ${it.message}", Toast.LENGTH_SHORT).show()
             })
+    }
+
+    private fun redirectToLogin() {
+        findNavController().navigate(R.id.action_signUpFragment2_to_loginFragment)
     }
 }

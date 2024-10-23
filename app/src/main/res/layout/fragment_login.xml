@@ -78,12 +78,14 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/redirect_signup"
         android:text="@string/account_reminder"
         app:layout_constraintTop_toBottomOf="@id/loginSubmit"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:gravity="center"
         android:layout_marginTop="10dp"
+        android:clickable="true"
         />
 
 <!--    use spannable string or something to make Sign Up Now become a button-->
