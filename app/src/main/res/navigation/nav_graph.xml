@@ -20,6 +20,12 @@
     </fragment>
 
     <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.example.geominder.HomeFragment"
+        android:label="Groups"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.example.geominder.NotificationViewFragment"
         android:label="Notifications"
@@ -30,6 +36,12 @@
         android:name="com.example.geominder.NoteCreatorFragment"
         android:label="Note Creator"
         tools:layout="@layout/fragment_note_creator" />
+
+    <fragment
+        android:id="@+id/navigation_group"
+        android:name="com.example.geominder.GroupFragment"
+        android:label="Groups"
+        tools:layout="@layout/fragment_group" />
 
     <fragment
         android:id="@+id/profileFragment"

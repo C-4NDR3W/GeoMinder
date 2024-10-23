@@ -10,6 +10,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController // Declare navController
@@ -26,21 +27,19 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
 
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
+
+        findViewById<FloatingActionButton>(R.id.fab_center).setOnClickListener { item ->
+            // Perform navigation or any other action when the FAB is clicked
+            when (item.id){
                 R.id.navigation_add -> {
                     navController.navigate(R.id.noteCreatorFragment)
-                    true
                 }
                 R.id.navigation_notifications -> {
                     navController.navigate(R.id.navigation_notifications)
-                    true
                 }
                 R.id.navigation_profile -> {
                     navController.navigate(R.id.profileFragment)
-                    true
                 }
-                else -> false
             }
         }
     }
