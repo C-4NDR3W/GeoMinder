@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@id/navigation_notifications">
+    app:startDestination="@id/noteViewFragment">
 
     <fragment
         android:id="@+id/navigation_notifications"
@@ -11,14 +11,19 @@
         tools:layout="@layout/fragment_notification_view" />
 
     <fragment
-        android:id="@+id/nav_note_creator"
-        android:name="com.example.app.NoteCreatorFragment"
-        android:label="Note Creator"
-        tools:layout="@layout/fragment_note_creator" />
-
-    <fragment
         android:id="@+id/navigation_person"
         android:name="com.example.geominder.ProfileFragment"
         android:label="Person"
         tools:layout="@layout/fragment_profile" />
-</navigation>
+
+    <fragment
+        android:id="@+id/noteViewFragment"
+        android:name="com.example.geominder.NoteViewFragment"
+        android:label="Create Note" />
+
+    <fragment
+        android:id="@+id/noteCreatorFragment"
+        android:name="com.example.geominder.NoteCreatorFragment"
+        android:label="Create Note" />
+
+    </navigation>
