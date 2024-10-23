@@ -26,4 +26,6 @@
     <string name="placeholder_count">0</string>
     <string name="note_count">Notes Count</string>
     <string name="note_active">Notes Active</string>
+    <string name="button_content_description">Continue</string>
+    <string name="group_hint">Groups</string>
 </resources>
