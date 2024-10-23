@@ -12,7 +12,11 @@
     <fragment
         android:id="@+id/noteViewFragment"
         android:name="com.example.geominder.NoteViewFragment"
-        android:label="Create Note" />
+        android:label="Create Note">
+        <action
+            android:id="@+id/action_noteCreatorFragment_to_noteViewFragment"
+            app:destination="@id/noteViewFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/noteCreatorFragment"
