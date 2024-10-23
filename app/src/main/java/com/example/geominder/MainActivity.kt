@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<FloatingActionButton>(R.id.fab_center).setOnClickListener { item ->
             // Perform navigation or any other action when the FAB is clicked
             when (item.id){
-                R.id.navigation_add -> {
+                R.id.navigation_note_creator -> {
                     navController.navigate(R.id.noteCreatorFragment)
                 }
                 R.id.navigation_notifications -> {
