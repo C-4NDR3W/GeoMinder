@@ -28,7 +28,7 @@ class SignUpFragment : Fragment() {
 
 
 
-    data object errors  {
+    data object errors {
         var emailError = false
         var passwordError = false
         var confirmError = false

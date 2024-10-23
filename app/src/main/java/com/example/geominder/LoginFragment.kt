@@ -61,6 +61,7 @@ class LoginFragment : Fragment() {
                         } else {
                             Toast.makeText(requireContext(), "Authentication failed.", Toast.LENGTH_SHORT).show()
                         }
+
                     }
             } else {
                 Toast.makeText(requireContext(), "Please enter both email and password", Toast.LENGTH_SHORT).show()
