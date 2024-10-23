@@ -8,6 +8,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,5 +22,11 @@ class MainActivity : AppCompatActivity() {
         // Set up BottomNavigationView with NavController
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
+
+
+        findViewById<FloatingActionButton>(R.id.fab_center).setOnClickListener {
+            // Perform navigation or any other action when the FAB is clicked
+            navController.navigate(R.id.navigation_note_creator)
+        }
     }
 }
