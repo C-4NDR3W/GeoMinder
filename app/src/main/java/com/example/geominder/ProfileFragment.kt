@@ -152,7 +152,8 @@ class ProfileFragment : Fragment() {
     }
 
     private fun handleEditEmail(){
-        val dialog =
+        val dialog = EmailEditDialogueFragment()
+        dialog.show(parentFragmentManager, "EmailEditDialogueFragment")
 
     }
 
@@ -161,7 +162,9 @@ class ProfileFragment : Fragment() {
         dialog.show(parentFragmentManager, "PasswordEditDialogueFragment")
     }
 
+    private fun handleEditProfilePicture(){
 
+    }
 
 
 }
