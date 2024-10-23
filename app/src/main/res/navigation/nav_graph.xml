@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/navigation_notifications">
+
+    <fragment
+        android:id="@+id/navigation_notifications"
+        android:name="com.example.geominder.NotificationViewFragment"
+        android:label="Notifications"
+        tools:layout="@layout/fragment_notification_view" />
+
+    <fragment
+        android:id="@+id/nav_note_creator"
+        android:name="com.example.app.NoteCreatorFragment"
+        android:label="Note Creator"
+        tools:layout="@layout/fragment_note_creator" />
+
+    <fragment
+        android:id="@+id/navigation_person"
+        android:name="com.example.geominder.ProfileFragment"
+        android:label="Person"
+        tools:layout="@layout/fragment_profile" />
+</navigation>
