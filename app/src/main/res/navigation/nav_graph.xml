@@ -30,4 +30,10 @@
         android:name="com.example.geominder.NoteCreatorFragment"
         android:label="Note Creator"
         tools:layout="@layout/fragment_note_creator" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.geominder.ProfileFragment"
+        android:label="Profile Page"
+        tools:layout="@layout/fragment_profile"/>
 </navigation>

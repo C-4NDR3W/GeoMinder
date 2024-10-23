@@ -17,7 +17,29 @@
     <string name="group_note_hint">Add a Group</string>
     <string name="description_hint">Description</string>
     <!--    -->
+    <string name="edit_status_note">Edited</string>
+
+
+    <!--  profile stuff, basically  -->
+    <string name="profile_name">-</string>
+    <string name="placeholder_email">-</string>
+    <string name="placeholder_password">*</string>
+    <string name="placeholder_count">0</string>
+    <string name="note_count">Notes Count</string>
+    <string name="note_active">Notes Active</string>
+    <string name="button_content_description">Continue</string>
+    <string name="group_hint">Groups</string>
+    <string name="current_pass_hint">Current Password</string>
+    <string name="new_password_hint">New Password</string>
+    <string name="confirm_pass_hint">Confirm New Password</string>
+    <string name="update_pass_button">Update Password</string>
+    <string name="update_email_button">Update Email</string>
+    <!--    -->
     <string name="edit_status">Edited</string>
+    
+<!--    -->
+    <string name="title_home">Home</string>
+    <string name="title_profile">Profile</string>
 
     <!--  Toolbar  -->
     <string name="save">Save</string>

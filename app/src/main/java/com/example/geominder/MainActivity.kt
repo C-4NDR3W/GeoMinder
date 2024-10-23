@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
 
         // Set up NavController
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        var navController = navHostFragment.navController
+        val navController = navHostFragment.navController
 
         // Set up BottomNavigationView with NavController
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
@@ -34,6 +34,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.navigation_notifications -> {
                     navController.navigate(R.id.navigation_notifications)
+                    true
+                }
+                R.id.navigation_profile -> {
+                    navController.navigate(R.id.profileFragment)
                     true
                 }
                 else -> false
