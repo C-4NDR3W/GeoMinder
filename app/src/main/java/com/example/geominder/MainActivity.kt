@@ -27,6 +27,10 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
 
+        findViewById<FloatingActionButton>(R.id.fab_add).setOnClickListener {
+            navController.navigate(R.id.navigation_create)
+        }
+
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_home -> {
@@ -35,10 +39,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.navigation_notifications -> {
                     navController.navigate(R.id.navigation_notifications)
-                    true
-                }
-                R.id.navigation_note_creator -> {
-                    navController.navigate(R.id.navigation_create)
                     true
                 }
                 R.id.navigation_group -> {
