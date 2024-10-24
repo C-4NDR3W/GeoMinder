@@ -1,9 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:theme="@style/Base.Theme.GeoMinder">
+
+
+    <?xml version="1.0" encoding="utf-8"?>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:background="@android:color/transparent"
+        android:gravity="center_vertical">
+
+        <!-- Search Icon -->
+<!--        <ImageView-->
+<!--            android:layout_width="24dp"-->
+<!--            android:layout_height="24dp"-->
+<!--            android:src="@android:drawable/ic_menu_search"-->
+<!--            android:layout_marginEnd="8dp"-->
+<!--            app:tint="@android:color/darker_gray" />-->
+
+        <!-- Search Bar (EditText) -->
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:hint="Search"
+            android:drawableStart="@android:drawable/ic_menu_search"
+            android:drawableColor="@android:color/darker_gray"
+            android:background="@drawable/rounded_edittext"
+            android:padding="10dp"
+            android:textColor="@android:color/black"
+            android:singleLine="true"/>
+
+        <!-- Document Icon -->
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/baseline_map_24"
+            android:layout_marginStart="8dp"
+            android:tint="@android:color/black"/>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,6 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Selected Date"
+            android:id="@+id/selectedDateTextView"
             android:layout_marginStart="8dp"
             android:textSize="24sp"
             android:textStyle="bold"

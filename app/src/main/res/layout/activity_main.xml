@@ -17,6 +17,7 @@
 <!--        app:defaultNavHost="true"-->
 <!--        tools:layout="@layout/fragment_login" />-->
 
+
     <fragment
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
@@ -53,11 +54,12 @@
         android:layout_height="wrap_content"
         android:contentDescription="add"
         android:layout_marginBottom="10dp"
-        android:src="@drawable/add_button"
         app:fabCustomSize="85dp"
+        app:maxImageSize="40dp"
+        app:srcCompat="@drawable/add_button"
         app:rippleColor="@android:color/holo_green_light"
         app:backgroundTint="@color/colorPrimary"
-        app:iconTint="@color/colorPrimary"
+        app:tint="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="@id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="@id/bottom_navigation"
         app:layout_constraintStart_toStartOf="@id/bottom_navigation"

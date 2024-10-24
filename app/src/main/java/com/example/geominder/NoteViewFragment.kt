@@ -25,6 +25,7 @@ class NoteViewFragment : Fragment() {
     private lateinit var selectedDateTextView: TextView
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val notesList = mutableListOf<Note>()
+    private val searchBarVisible = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
