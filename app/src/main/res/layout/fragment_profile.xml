@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/Base.Theme.GeoMinder"
     tools:context=".ProfileFragment">
+
     
     <ImageView
         android:id="@+id/backgroundProfile"
@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/profile_name"
         android:src="@drawable/default_account_profile_foreground"
-        app:layout_constraintTop_toBottomOf="@+id/semiCircleBottomGuideline"
+       app:layout_constraintTop_toBottomOf="@+id/semiCircleBottomGuideline"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="50dp"
