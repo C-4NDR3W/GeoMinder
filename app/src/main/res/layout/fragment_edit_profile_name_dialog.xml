@@ -14,11 +14,9 @@
 
     <Button
         android:layout_marginTop="8dp"
-        android:backgroundTint="@color/lightgreen"
+        android:backgroundTint="@color/colorPrimary"
         android:id="@+id/changeNameButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/update_name_button"/>
-
-
 </LinearLayout>

@@ -4,9 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="20dp"
-    android:background="@android:color/white"
     android:gravity="center">
-
     <EditText
         android:id="@+id/currentEmail"
         android:layout_width="match_parent"

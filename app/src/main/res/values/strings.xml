@@ -34,6 +34,10 @@
     <string name="confirm_pass_hint">Confirm New Password</string>
     <string name="update_pass_button">Update Password</string>
     <string name="update_email_button">Update Email</string>
+    <string name="search_bar_hint">Search Notes</string>
+    <string name="profile_name_hint">Name</string>
+    <string name="update_name_button">Update Name</string>
+
     <!--    -->
     <string name="edit_status">Edited</string>
 

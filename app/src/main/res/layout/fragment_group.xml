@@ -8,23 +8,14 @@
     android:theme="@style/Base.Theme.GeoMinder"
     tools:context=".GroupFragment">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingVertical="16dp"
-        android:paddingHorizontal="16dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Groups"
-            android:layout_marginStart="8dp"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"/>
-    </LinearLayout>
+        android:text="Groups"
+        android:layout_marginStart="8dp"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
