@@ -34,6 +34,7 @@
     <string name="confirm_pass_hint">Confirm New Password</string>
     <string name="update_pass_button">Update Password</string>
     <string name="update_email_button">Update Email</string>
+    <string name="search_bar_hint">Search Notes</string>
     <!--    -->
     <string name="edit_status">Edited</string>
 
@@ -44,6 +45,5 @@
     <!--  Toolbar  -->
     <string name="save">Save</string>
     <string name="back">Back</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

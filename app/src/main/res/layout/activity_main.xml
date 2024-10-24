@@ -9,6 +9,39 @@
     android:background="@android:color/white"
     tools:context=".MainActivity">
 
+    <SearchView
+        android:queryBackground="@null"
+        android:elevation="4dp"
+        android:background="@drawable/search_bar_bg"
+        android:padding="5dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:id="@+id/searchBar"
+        android:layout_height="wrap_content"
+        android:queryHint="@string/search_bar_hint"
+        android:layout_width="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/switchView"
+        app:layout_constraintTop_toTopOf="parent"
+        android:iconifiedByDefault="false"/>
+
+    <ImageButton
+        android:elevation="4dp"
+        android:id="@+id/switchView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:src="@drawable/baseline_note_24"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/searchBar"
+        app:layout_constraintBottom_toBottomOf="@+id/searchBar"
+        />
+
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"

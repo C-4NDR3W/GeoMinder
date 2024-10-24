@@ -1,6 +1,12 @@
 package com.example.geominder
 
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.widget.ImageButton
+import android.widget.SearchView
+import android.widget.ToggleButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -26,6 +32,20 @@ class MainActivity : AppCompatActivity() {
         // Set up BottomNavigationView with NavController
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
+
+        val switchButton = findViewById<ImageButton>(R.id.switchView)
+
+        var isNoteView = true //default state
+//mekanisme ganti state belom
+        switchButton.setOnClickListener{
+            if (isNoteView){
+                switchButton.setImageResource(R.drawable.baseline_map_24)
+                navController.navigate(R.id.noteViewFragment)
+            } else {
+                switchButton.setImageResource(R.drawable.baseline_note_24)
+                //navigate to map
+            }
+        }
 
 
         findViewById<FloatingActionButton>(R.id.fab_center).setOnClickListener { item ->
