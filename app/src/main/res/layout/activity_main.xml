@@ -44,7 +44,6 @@
         android:contentDescription="add"
 
         app:rippleColor="@android:color/holo_green_light"
-        android:background="@drawable/outline"
         app:fabCustomSize="80dp"
         app:srcCompat="@drawable/custom_add_icon"
         app:layout_constraintBottom_toBottomOf="@+id/bottom_navigation"

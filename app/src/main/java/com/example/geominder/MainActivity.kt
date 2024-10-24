@@ -13,7 +13,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var navController: NavController // Declare navController
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,19 +27,25 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
 
-
-        findViewById<FloatingActionButton>(R.id.fab_center).setOnClickListener { item ->
-            // Perform navigation or any other action when the FAB is clicked
-            when (item.id){
-                R.id.navigation_note_creator -> {
-                    navController.navigate(R.id.noteCreatorFragment)
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_home -> {
+                    navController.navigate(R.id.navigation_home)
+                    true
                 }
                 R.id.navigation_notifications -> {
                     navController.navigate(R.id.navigation_notifications)
+                    true
+                }
+                R.id.navigation_note_creator -> {
+                    navController.navigate(R.id.navigation_create)
+                    true
                 }
                 R.id.navigation_profile -> {
-                    navController.navigate(R.id.profileFragment)
+                    navController.navigate(R.id.navigation_profile)
+                    true
                 }
+                else -> false
             }
         }
     }
