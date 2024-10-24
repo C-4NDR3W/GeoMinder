@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:theme="@style/Base.Theme.GeoMinder"
     tools:context=".MainActivity">
 
 <!--    <androidx.fragment.app.FragmentContainerView-->
@@ -37,7 +38,6 @@
         android:padding="10dp"
         app:itemIconTint="@color/white"
         app:itemTextColor="@color/white"
-        app:labelVisibilityMode="unlabeled"
         app:itemIconSize="32dp"
         app:menu="@menu/bottom_nav_menu"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -51,10 +51,10 @@
         android:layout_height="wrap_content"
         android:contentDescription="add"
         android:layout_marginBottom="10dp"
-        android:strokeColor ="@color/colorPrimary"
+        android:src="@drawable/add_button"
+        app:fabCustomSize="85dp"
         app:rippleColor="@android:color/holo_green_light"
-        app:fabCustomSize="80dp"
-        app:srcCompat="@drawable/add_button"
+        app:backgroundTint="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="@id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="@id/bottom_navigation"
         app:layout_constraintStart_toStartOf="@id/bottom_navigation"

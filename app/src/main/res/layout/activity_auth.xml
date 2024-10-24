@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:theme="@style/Base.Theme.GeoMinder"
     tools:context=".AuthActivity">
 
 <!--    <androidx.fragment.app.FragmentContainerView-->

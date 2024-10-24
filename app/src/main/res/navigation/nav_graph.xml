@@ -77,5 +77,17 @@
         android:name="com.example.geominder.ProfileFragment"
         android:label="Profile Page"
         tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_ProfileFragment_to_noteViewFragment"
+            app:destination="@id/navigation_home" />
+        <action
+            android:id="@+id/action_ProfileFragment_to_notificationFragment"
+            app:destination="@id/navigation_notifications" />
+        <action
+            android:id="@+id/action_ProfileFragment_to_noteCreatorFragment"
+            app:destination="@id/navigation_create" />
+        <action
+            android:id="@+id/action_ProfileFragment_to_groupFragment"
+            app:destination="@id/navigation_profile" />
     </fragment>
 </navigation>

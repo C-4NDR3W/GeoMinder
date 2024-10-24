@@ -40,13 +40,18 @@
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
+
+    <string name="signup_reminder1">Dont have an account? </string>
+    <string name="signup_reminder2"> Sign up</string>
+    <string name="login_reminder1">Have an account? </string>
+    <string name="login_reminder2"> Sign in</string>
+
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome!"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="signup_reminder">Dont have an account? Sign up.</string>
     <string name="default_web_client_id">353671617878-i2nao1n5011nl5pddf5mafq1k34i2ig1.apps.googleusercontent.com</string>
 
     <!--    -->
@@ -56,6 +61,4 @@
     <!--  Toolbar  -->
     <string name="save">Save</string>
     <string name="back">Back</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

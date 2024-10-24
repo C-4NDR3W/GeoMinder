@@ -111,15 +111,15 @@ class SignUpFragment : Fragment() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(context, "Sign-up successful", Toast.LENGTH_SHORT).show()
-
+                    redirectToLogin()
                 } else {
                     Toast.makeText(context, "Sign-up failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            .addOnFailureListener({
+            .addOnFailureListener{
                 Toast.makeText(context, "Sign-up failed: ${it.message}", Toast.LENGTH_SHORT).show()
-            })
+            }
     }
 
     private fun redirectToLogin() {

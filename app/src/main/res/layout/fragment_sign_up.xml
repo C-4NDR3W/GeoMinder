@@ -6,6 +6,7 @@
     android:orientation="vertical"
     tools:context=".LoginFragment"
     android:id="@+id/signupFragment"
+    android:theme="@style/Base.Theme.GeoMinder"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
@@ -86,17 +87,6 @@
             app:boxStrokeColor="@color/error"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Password tidak"
-        android:textAlignment="center"
-        android:textColor="@color/error"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/confirmPassTextLayout" />
-
     <Button
         android:id="@+id/signUpButton"
         android:layout_width="150dp"
@@ -108,18 +98,32 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/confirmPassTextLayout" />
 
-    <TextView
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:orientation="horizontal"
         android:gravity="center"
-        android:text="Have an account? Log in now!"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:clickable="true"
-        android:id="@+id/signup_redirect"
-        app:layout_constraintTop_toBottomOf="@id/signUpButton" />
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/signUpButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/signup_reminder1"
+            android:textColor="@android:color/black"
+            android:layout_marginEnd="4dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/signup_redirect"
+            android:text="@string/login_reminder2"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
+            android:clickable="true" />
+    </LinearLayout>
 
     <!--    use spannable string or something to make Sign Up Now become a button-->
 </androidx.constraintlayout.widget.ConstraintLayout>
