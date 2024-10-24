@@ -41,6 +41,10 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.navigation_create)
                     true
                 }
+                R.id.navigation_group -> {
+                    navController.navigate(R.id.navigation_group)
+                    true
+                }
                 R.id.navigation_profile -> {
                     navController.navigate(R.id.navigation_profile)
                     true
