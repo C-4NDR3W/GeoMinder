@@ -58,7 +58,9 @@ class LoginFragment : Fragment() {
                     .addOnCompleteListener(requireActivity()) { task ->
                         if (task.isSuccessful) {
                             Toast.makeText(requireContext(), "Login successful", Toast.LENGTH_SHORT).show()
-                            // Navigate to the next screen
+                            val intent = Intent(requireContext(), MainActivity::class.java)
+                            startActivity(intent)
+                            requireActivity().finish()
                         } else {
                             Toast.makeText(requireContext(), "Authentication failed.", Toast.LENGTH_SHORT).show()
                         }
