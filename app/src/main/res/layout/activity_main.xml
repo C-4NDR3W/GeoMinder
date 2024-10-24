@@ -7,6 +7,15 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/auth_nav_host_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:navGraph="@navigation/auth_nav_graph"
+        app:defaultNavHost="true"
+        tools:layout="@layout/fragment_login" />
+
     <fragment
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
@@ -37,17 +46,19 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add"
+        style="@style/CustomFabStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="add"
-        app:srcCompat="@drawable/add_button"
         android:layout_marginBottom="10dp"
-        app:layout_constraintBottom_toBottomOf="@+id/bottom_navigation"
-        app:layout_constraintEnd_toEndOf="@+id/bottom_navigation"
-        app:layout_constraintStart_toStartOf="@+id/bottom_navigation"
-        app:backgroundTint="@android:color/white"
-        app:borderWidth="2dp"
-        app:strokeColor="@color/colorPrimary"
-        app:tint="@color/colorPrimary" />
+        android:strokeColor ="@color/colorPrimary"
+        app:rippleColor="@android:color/holo_green_light"
+        app:fabCustomSize="80dp"
+        app:srcCompat="@drawable/add_button"
+        app:layout_constraintBottom_toBottomOf="@id/bottom_navigation"
+        app:layout_constraintEnd_toEndOf="@id/bottom_navigation"
+        app:layout_constraintStart_toStartOf="@id/bottom_navigation"
+        app:elevation="6dp"
+        app:borderWidth="2dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

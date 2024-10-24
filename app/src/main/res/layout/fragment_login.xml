@@ -90,6 +90,4 @@
         />
 
 <!--    use spannable string or something to make Sign Up Now become a button-->
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
