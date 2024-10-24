@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
 
         val switchButton = findViewById<ImageButton>(R.id.switchView)
+        val searchBar = findViewById<SearchView>(R.id.searchBar)
 
         var isNoteView = true //default state
 //mekanisme ganti state belom
@@ -58,6 +59,8 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.navigation_notifications)
                 }
                 R.id.navigation_profile -> {
+                    searchBar.visibility = View.GONE
+                    switchButton.visibility = View.GONE
                     navController.navigate(R.id.profileFragment)
                 }
             }

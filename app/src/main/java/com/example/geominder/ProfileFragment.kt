@@ -1,7 +1,10 @@
 package com.example.geominder
 
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -21,6 +24,8 @@ import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import java.io.ByteArrayOutputStream
 
 class ProfileFragment : Fragment() {
 
@@ -48,22 +53,22 @@ class ProfileFragment : Fragment() {
         val editPasswordButton = view.findViewById<ImageView>(R.id.passwordEditButton)
         val editProfilePictureButton = view.findViewById<ImageView>(R.id.profileEditButton)
 
-        editNameButton.setOnClickListener{
+        editNameButton.setOnClickListener {
             handleEditName()
         }
 
-        editEmailButton.setOnClickListener{
+        editEmailButton.setOnClickListener {
             handleEditEmail()
         }
 
-        editPasswordButton.setOnClickListener{
+        editPasswordButton.setOnClickListener {
             handleEditPassword()
         }
 
-        editProfilePictureButton.setOnClickListener{
-            if(checkCameraPermission() && checkGalleryPermission()){
+        editProfilePictureButton.setOnClickListener {
+            if (checkCameraPermission() && checkGalleryPermission()) {
                 handleEditProfilePicture()
-            } else{
+            } else {
                 requestCameraPermission()
                 requestGalleryPermission()
             }
@@ -133,58 +138,35 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    private fun handleEditName(){
-        val profileNameTextView = view?.findViewById<TextView>(R.id.profileName)
-        val profileNameEditText = EditText(requireContext())
-        profileNameEditText.setText(profileNameTextView?.text.toString())
+    private fun handleEditName() {
+        val dialog = EditProfileNameDialogFragment()
+        dialog.show(parentFragmentManager, "EditProfileNameDialogFragment")
 
-        val parent = profileNameTextView?.parent as ViewGroup
-        val index = parent.indexOfChild(profileNameTextView)
-        parent.removeView(profileNameTextView)
-        parent.addView(profileNameEditText, index)
-
-        profileNameEditText.setOnFocusChangeListener{ v, hasFocus ->
-            if(!hasFocus){
-                val newProfileName = profileNameEditText.text.toString()
-
-                val userId = FirebaseAuth.getInstance().currentUser?.uid
-                if (userId != null){
-                    FirebaseFirestore.getInstance().collection("users").document(userId).update("name", newProfileName)
-                        .addOnSuccessListener {
-                            profileNameTextView.text = newProfileName
-                            parent.removeView(profileNameEditText)
-                            parent.addView(profileNameTextView, index)
-                        }
-                        .addOnFailureListener{
-                            Toast.makeText(requireContext(), "An error has occured while updating", Toast.LENGTH_SHORT).show()
-                        }
-                }
-            }
-        }
     }
 
-    private fun handleEditEmail(){
+    private fun handleEditEmail() {
         val dialog = EmailEditDialogueFragment()
         dialog.show(parentFragmentManager, "EmailEditDialogueFragment")
 
     }
 
-    private fun handleEditPassword(){
+    private fun handleEditPassword() {
         val dialog = PasswordEditDialogFragment()
         dialog.show(parentFragmentManager, "PasswordEditDialogueFragment")
     }
 
-    private fun handleEditProfilePicture(){
+    private fun handleEditProfilePicture() {
         val options = arrayOf("Take Photo", "Choose from Gallery")
-        AlertDialog.Builder(requireContext()).setTitle("Edit Profile Picture").setItems(options){ dialog, which ->
-            when(which){
-                0 -> openCamera()
-                1 -> openGallery()
-            }
-        }.show()
+        AlertDialog.Builder(requireContext()).setTitle("Edit Profile Picture")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> openCamera()
+                    1 -> openGallery()
+                }
+            }.show()
     }
 
-    private fun openCamera(){
+    private fun openCamera() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (takePictureIntent.resolveActivity(requireActivity().packageManager) != null) {
             startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE)
@@ -196,15 +178,15 @@ class ProfileFragment : Fragment() {
         startActivityForResult(intent, MEDIA_IMAGE_REQUEST_CODE)
     }
 
-    private fun checkCameraPermission(): Boolean{
+    private fun checkCameraPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
             requireContext(),
             android.Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    private fun checkGalleryPermission(): Boolean{
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+    private fun checkGalleryPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ContextCompat.checkSelfPermission(
                 requireContext(),
                 android.Manifest.permission.READ_MEDIA_IMAGES
@@ -217,15 +199,15 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    private fun requestCameraPermission(){ //reminder to check out the non deprecated version
+    private fun requestCameraPermission() { //reminder to check out the non deprecated version
         requestPermissions(
             arrayOf(android.Manifest.permission.CAMERA),
             CAMERA_PERMISSION_REQUEST_CODE
         )
     }
 
-    private fun requestGalleryPermission(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+    private fun requestGalleryPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestPermissions(
                 arrayOf(android.Manifest.permission.READ_MEDIA_IMAGES),
                 MEDIA_IMAGE_PERMISSION_REQUEST_CODE
@@ -238,9 +220,72 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                CAMERA_REQUEST_CODE -> {
+                    val imageBitmap = data?.extras?.get("data") as Bitmap
+                    uploadImageToFirebase(imageBitmap)
+                }
+
+                MEDIA_IMAGE_REQUEST_CODE -> {
+                    val imageUri = data?.data
+                    if (imageUri != null) {
+                        uploadImageToFirebase(imageUri)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun uploadImageToFirebase(imageData: Any) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        val storageRef =
+            FirebaseStorage.getInstance().reference.child("profile_pictures/$userId.jpg")
+
+        if (imageData is Bitmap) {
+            val baos = ByteArrayOutputStream()
+            imageData.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            val data = baos.toByteArray()
+
+            val uploadTask = storageRef.putBytes(data)
+            uploadTask.addOnSuccessListener {
+                storageRef.downloadUrl.addOnSuccessListener { uri ->
+                    updateProfilePictureUrl(uri.toString())
+                }
+            }
+        } else if (imageData is Uri) {
+            storageRef.putFile(imageData).addOnSuccessListener {
+                storageRef.downloadUrl.addOnSuccessListener { uri ->
+                    updateProfilePictureUrl(uri.toString())
+                }
+            }
+        }
+
+    }
+
+    private fun updateProfilePictureUrl(profilePictureUrl: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            FirebaseFirestore.getInstance().collection("users").document(userId)
+                .update("profilePicture", profilePictureUrl)
+                .addOnSuccessListener {
+                    // Update the profile picture in the UI
+                    val profileImageView = view?.findViewById<ImageView>(R.id.profilePicture)
+                    if (profileImageView != null) {
+                        Glide.with(this).load(profilePictureUrl).into(profileImageView)
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Log.d("Error updating profile picture", e.toString())
+                }
+        }
+    }
+
 //    make on activityResult or find non-deprecated version
 
-    companion object{
+    companion object {
         const val CAMERA_PERMISSION_REQUEST_CODE = 1001
         const val CAMERA_REQUEST_CODE = 1002
         const val MEDIA_IMAGE_REQUEST_CODE = 1003
