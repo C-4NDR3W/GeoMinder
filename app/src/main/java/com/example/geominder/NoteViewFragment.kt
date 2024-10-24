@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
@@ -24,6 +25,7 @@ class NoteViewFragment : Fragment() {
     private lateinit var noteAdapter: NoteAdapter
     private lateinit var selectedDateTextView: TextView
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val notesList = mutableListOf<Note>()
     private val searchBarVisible = false
 
@@ -37,23 +39,27 @@ class NoteViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        selectedDateTextView = view.findViewById(R.id.selectedDateTextView)
+//        selectedDateTextView = view.findViewById(R.id.selectedDateTextView)
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         noteAdapter = NoteAdapter(notesList)
         recyclerView.adapter = noteAdapter
 
-        // Get the selected date passed from the previous fragment
-        val selectedDate = arguments?.getString("selectedDate")
-        selectedDateTextView.text = selectedDate
+
+//        val selectedDate = arguments?.getString("selectedDate")
+//        selectedDateTextView.text = selectedDate
 
         // Fetch notes for the selected date
         fetchNotes()
     }
 
     private fun fetchNotes() {
+        val userID = auth.currentUser?.uid
+        if (userID == null)  {
+            return
+        }
         firestore.collection("users")
-            .document("user123")
+            .document(userID)
             .collection("notes")
             .orderBy("dateTime", Query.Direction.DESCENDING)
             .get()

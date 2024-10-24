@@ -15,8 +15,8 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-
 
 class NoteCreatorFragment : Fragment() {
     private lateinit var titleEditText: EditText
@@ -26,7 +26,10 @@ class NoteCreatorFragment : Fragment() {
     private lateinit var backButton: ImageButton
     private lateinit var saveButton: ImageButton
     private lateinit var firestore: FirebaseFirestore
+    private lateinit var auth: FirebaseAuth
+
     private var selectedDateTime: String? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,6 +42,7 @@ class NoteCreatorFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         firestore = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
 
         titleEditText = view.findViewById(R.id.titleEditText)
         contentEditText = view.findViewById(R.id.contentEditText)
@@ -87,7 +91,11 @@ class NoteCreatorFragment : Fragment() {
             "status" to true
         )
 
-        firestore.collection("users").document("user123").collection("notes")
+        val userID = auth.currentUser?.uid
+        if (userID == null)  {
+            return
+        }
+        firestore.collection("users").document(userID).collection("notes")
             .add(noteData)
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "Note saved successfully!", Toast.LENGTH_SHORT).show()
