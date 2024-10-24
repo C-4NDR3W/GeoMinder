@@ -101,7 +101,7 @@ class NoteCreatorFragment : Fragment() {
     }
 
     private fun navigateToNoteView() {
-        findNavController().navigate(R.id.noteViewFragment)
+        findNavController().navigate(R.id.navigation_home)
     }
 
     private fun navigateBack() {
