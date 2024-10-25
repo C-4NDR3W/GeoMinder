@@ -52,7 +52,6 @@ class LoginFragment : Fragment() {
         loginButton.setOnClickListener {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
-
             if (email.isNotEmpty() && password.isNotEmpty()) {
                 auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(requireActivity()) { task ->
@@ -64,7 +63,6 @@ class LoginFragment : Fragment() {
                         } else {
                             Toast.makeText(requireContext(), "Authentication failed.", Toast.LENGTH_SHORT).show()
                         }
-
                     }
             } else {
                 Toast.makeText(requireContext(), "Please enter both email and password", Toast.LENGTH_SHORT).show()
@@ -74,7 +72,7 @@ class LoginFragment : Fragment() {
         val signUpRedirect = view.findViewById<TextView>(R.id.redirect_signup)
         signUpRedirect.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_signUpFragment2)
-//
+
         }
 
         return view
