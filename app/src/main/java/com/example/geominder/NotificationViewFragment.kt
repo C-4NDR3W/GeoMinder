@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
 class NotificationViewFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
@@ -32,7 +33,7 @@ class NotificationViewFragment : Fragment() {
 
     private fun fetchNotifications() {
         firestore.collection("users").document("user123").collection("notes")
-            .orderBy("dateTime")
+            .orderBy("dateTime", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { documents ->
                 notificationsList.clear()

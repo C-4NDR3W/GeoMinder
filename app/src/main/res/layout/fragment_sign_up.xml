@@ -31,7 +31,7 @@
         android:id="@+id/signup_emailTextLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:paddingHorizontal="64dp"
         app:layout_constraintTop_toBottomOf="@+id/signup_app_title"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -50,7 +50,7 @@
         android:id="@+id/passwordTextLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="12dp"
         android:paddingHorizontal="64dp"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -69,7 +69,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="12dp"
         android:paddingHorizontal="64dp"
 
         app:layout_constraintTop_toBottomOf="@+id/passwordTextLayout"
@@ -89,9 +89,11 @@
 
     <Button
         android:id="@+id/signUpButton"
-        android:layout_width="150dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginEnd="64dp"
         android:backgroundTint="@color/colorPrimary"
         android:text="@string/signup_button"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -103,7 +105,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="12dp"
         app:layout_constraintTop_toBottomOf="@id/signUpButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">

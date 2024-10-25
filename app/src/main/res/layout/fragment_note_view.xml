@@ -39,10 +39,15 @@
 
         <!-- Document Icon -->
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:id="@+id/mapButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="8dp"
             android:src="@drawable/baseline_map_24"
-            app:tint="@android:color/black"/>
+            app:tint="@android:color/black"
+            android:layout_gravity="center"
+            android:clickable="true"
+            android:focusable="true" />
     </LinearLayout>
 
     <LinearLayout
