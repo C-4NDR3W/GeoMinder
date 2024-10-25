@@ -12,6 +12,7 @@ class NoteAdapter(private val notes: List<Note>) : RecyclerView.Adapter<NoteAdap
         val noteTitle: TextView = itemView.findViewById(R.id.noteTitle)
         val noteContent: TextView = itemView.findViewById(R.id.noteContent)
         val noteTime: TextView = itemView.findViewById(R.id.noteTime)
+        val notePlace: TextView = itemView.findViewById(R.id.notePlace)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
@@ -22,8 +23,9 @@ class NoteAdapter(private val notes: List<Note>) : RecyclerView.Adapter<NoteAdap
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         val note = notes[position]
         holder.noteTitle.text = note.title
-        holder.noteContent.text = note.content
         holder.noteTime.text = note.dateTime
+        holder.notePlace.text = note.place
+        holder.noteContent.text = note.content
     }
 
     override fun getItemCount() = notes.size

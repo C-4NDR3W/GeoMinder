@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 
@@ -32,43 +33,26 @@ class NotificationViewFragment : Fragment() {
     }
 
     private fun fetchNotifications() {
-        firestore.collection("users").document("user123").collection("notes")
-            .orderBy("dateTime", Query.Direction.DESCENDING)
-            .get()
-            .addOnSuccessListener { documents ->
-                notificationsList.clear()
-                for (document in documents) {
-                    val notification = document.toObject(Notification::class.java)
-                    notificationsList.add(notification)
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            firestore.collection("users").document(userId).collection("notes")
+                .orderBy("dateTime", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener { documents ->
+                    notificationsList.clear()
+                    for (document in documents) {
+                        val notification = document.toObject(Notification::class.java)
+                        notificationsList.add(notification)
+                    }
+                    notificationAdapter.notifyDataSetChanged()
                 }
-                notificationAdapter.notifyDataSetChanged()
-            }
-            .addOnFailureListener { exception ->
-                Log.e("NotificationViewFragment", "Error fetching notifications", exception)
-            }
+                .addOnFailureListener { exception ->
+                    Log.e("NotificationViewFragment", "Error fetching notifications", exception)
+                }
+        } else {
+            Log.e("NotificationViewFragment", "No user logged in")
+        }
     }
-
-//    private fun fetchNotifications() {
-//        val userId = FirebaseAuth.getInstance().currentUser?.uid
-//        if (userId != null) {
-//            firestore.collection("users").document(userId).collection("notes")
-//                .orderBy("dateTime")
-//                .get()
-//                .addOnSuccessListener { documents ->
-//                    notificationsList.clear()
-//                    for (document in documents) {
-//                        val notification = document.toObject(Notification::class.java)
-//                        notificationsList.add(notification)
-//                    }
-//                    notificationAdapter.notifyDataSetChanged()
-//                }
-//                .addOnFailureListener { exception ->
-//                    Log.e("NotificationViewFragment", "Error fetching notifications", exception)
-//                }
-//        } else {
-//            Log.e("NotificationViewFragment", "No user logged in")
-//        }
-//    }
 
 
 
