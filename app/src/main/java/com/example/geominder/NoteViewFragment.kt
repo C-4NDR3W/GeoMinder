@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Firebase
@@ -64,16 +65,22 @@ class NoteViewFragment : Fragment() {
             .orderBy("dateTime", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { documents ->
-                notesList.clear() // Clear the current list
+                notesList.clear()
                 for (document in documents) {
                     val note = document.toObject(Note::class.java)
                     notesList.add(note)
                 }
-                noteAdapter.notifyDataSetChanged() // Notify the adapter of the data change
+                noteAdapter.notifyDataSetChanged()
             }
             .addOnFailureListener { exception ->
                 Log.e("NoteViewFragment", "Error fetching notes: ${exception.message}")
                 Toast.makeText(requireContext(), "Error fetching notes: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun redirectToMap() {
+        val navController = findNavController()
+        navController.navigate(R.id.action_mapFragment_to_navigation_home)
+
     }
 }
