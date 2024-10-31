@@ -2,5 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="lightgreen">#CBE55F</color>
+    <color name="colorPrimary">#CBE55F</color>
+    <color name="hintColor">#9E9E9E</color>
+    <color name="error">#FF0000</color>
+    <color name="colorSelectedBackground">#10FFFFFF</color>
 </resources>
