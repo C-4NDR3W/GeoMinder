@@ -113,22 +113,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:id = "@+id/login_seperator_layout">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/login_seperator"
-            android:text="OR"
-            android:textSize = "20dp"
-            android:textColor="@color/colorPrimary"
-            android:textStyle="bold"
-            android:clickable="true" />
-
 
 
     </LinearLayout>
 
-
-
+    <TextView
+        android:id="@+id/login_seperator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:text="OR"
+        android:textColor="@color/colorPrimary"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:mar />
 
 
     <!--    use spannable string or something to make Sign Up Now become a button-->
