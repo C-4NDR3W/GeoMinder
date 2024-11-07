@@ -27,7 +27,7 @@
             android:id="@+id/action_noteViewFragment_to_profileFragment"
             app:destination="@id/navigation_profile" />
         <action
-            android:id="@+id/action_navigation_home_to_mapFragment"
+            android:id="@+id/action_noteViewFragment_to_mapFragment"
             app:destination="@id/mapFragment" />
     </fragment>
 
@@ -93,6 +93,7 @@
             android:id="@+id/action_ProfileFragment_to_groupFragment"
             app:destination="@id/navigation_profile" />
     </fragment>
+
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.example.geominder.MapFragment"

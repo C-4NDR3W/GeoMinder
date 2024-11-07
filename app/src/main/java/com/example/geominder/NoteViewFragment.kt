@@ -40,7 +40,7 @@ class NoteViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        selectedDateTextView = view.findViewById(R.id.selectedDateTextView)
+//      selectedDateTextView = view.findViewById(R.id.selectedDateTextView)
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         noteAdapter = NoteAdapter(notesList)
@@ -49,8 +49,12 @@ class NoteViewFragment : Fragment() {
 
 //        val selectedDate = arguments?.getString("selectedDate")
 //        selectedDateTextView.text = selectedDate
+//        Fetch notes for the selected date
+        val mapButton: View = view.findViewById(R.id.mapButton)
+        mapButton.setOnClickListener {
+            redirectToMap()
+        }
 
-        // Fetch notes for the selected date
         fetchNotes()
     }
 
@@ -80,7 +84,6 @@ class NoteViewFragment : Fragment() {
 
     private fun redirectToMap() {
         val navController = findNavController()
-        navController.navigate(R.id.action_mapFragment_to_navigation_home)
-
+        navController.navigate(R.id.action_noteViewFragment_to_mapFragment)
     }
 }

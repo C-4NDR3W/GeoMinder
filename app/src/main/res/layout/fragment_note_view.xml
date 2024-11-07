@@ -6,13 +6,14 @@
     android:orientation="vertical"
     android:theme="@style/Base.Theme.GeoMinder">
 
-
-
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="8dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:background="@android:color/transparent"
         android:gravity="center_vertical">
 
@@ -33,21 +34,25 @@
             android:background="@drawable/rounded_edittext"
             android:padding="10dp"
             android:textColor="@android:color/black"
+            android:layout_marginEnd="8dp"
             android:singleLine="true"/>
 
         <!-- Document Icon -->
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:id="@+id/mapButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="8dp"
             android:src="@drawable/baseline_map_24"
-            android:layout_marginStart="8dp"
-            app:tint="@android:color/black"/>
+            app:tint="@android:color/black"
+            android:layout_gravity="center"
+            android:clickable="true"
+            android:focusable="true" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="16dp"
         android:paddingHorizontal="16dp"
         android:orientation="horizontal"
         android:gravity="center_vertical">
