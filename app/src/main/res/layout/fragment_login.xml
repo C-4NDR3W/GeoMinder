@@ -57,8 +57,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:id="@+id/passwordTextLayout">
-
-
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/passwordEditText"
             android:layout_width="match_parent"
@@ -83,6 +81,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
+        android:id="@+id/login_redirect_layout"
         app:layout_constraintTop_toBottomOf="@id/loginSubmit"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -102,8 +101,35 @@
             android:text="@string/signup_reminder2"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
-            android:clickable="true" />
+            android:clickable="true"/>
+
     </LinearLayout>
 
-<!--    use spannable string or something to make Sign Up Now become a button-->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        app:layout_constraintTop_toBottomOf="@+id/login_redirect_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id = "@+id/login_seperator_layout">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/login_seperator"
+            android:text="OR"
+            android:textSize = "20dp"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
+            android:clickable="true" />
+
+
+
+    </LinearLayout>
+
+
+
+
+
+    <!--    use spannable string or something to make Sign Up Now become a button-->
 </androidx.constraintlayout.widget.ConstraintLayout>

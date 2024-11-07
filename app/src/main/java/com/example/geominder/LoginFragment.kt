@@ -72,7 +72,6 @@ class LoginFragment : Fragment() {
         val signUpRedirect = view.findViewById<TextView>(R.id.redirect_signup)
         signUpRedirect.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_signUpFragment2)
-
         }
 
         return view
