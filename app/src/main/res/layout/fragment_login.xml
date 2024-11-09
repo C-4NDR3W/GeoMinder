@@ -107,28 +107,51 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/login_seperator_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30px"
         android:textAlignment="center"
-        app:layout_constraintTop_toBottomOf="@+id/login_redirect_layout"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        android:id = "@+id/login_seperator_layout">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login_redirect_layout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OR"
+            android:textFontWeight="700"
+            android:textSize="20dp"
+            android:id="@+id/login_seperator_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+        </TextView>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/login_seperator_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="center">
+
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/googleSignInButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    </LinearLayout>
 
-    <TextView
-        android:id="@+id/login_seperator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:text="OR"
-        android:textColor="@color/colorPrimary"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        android:mar />
+
 
 
     <!--    use spannable string or something to make Sign Up Now become a button-->

@@ -1,5 +1,6 @@
 package com.example.geominder
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,8 +14,15 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import com.example.geominder.LoginFragment.Companion.RC_SIGN_IN
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.SignInButton
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
-
+import com.google.firebase.auth.GoogleAuthProvider
 
 
 class SignUpFragment : Fragment() {
@@ -25,7 +33,13 @@ class SignUpFragment : Fragment() {
     private lateinit var signUpButton: Button
     private lateinit var confirmPassword : EditText
 
+    private lateinit var emailErrorText : TextView;
+    private lateinit var pwdErrorText : TextView;
+    private lateinit var confirmErrorText : TextView;
+
     private lateinit var redirectToLogin: TextView
+    private lateinit var googleSignUpBtn : SignInButton
+    private lateinit var googleSignInClient: GoogleSignInClient
 
 
 
@@ -41,10 +55,77 @@ class SignUpFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_sign_up, container, false)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        auth = FirebaseAuth.getInstance()
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+
+        googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
+    }
+
+    fun setGoogleSignUpButton(view: View)
+    {
+        googleSignUpBtn = view.findViewById(R.id.googleSignUpButton)
+        googleSignUpBtn.setOnClickListener {
+            signUpWithGoogle()
+
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == RC_SIGN_IN) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                firebaseAuthWithGoogle(account)
+                val intent = Intent(requireContext(), MainActivity::class.java)
+                startActivity(intent)
+                requireActivity().finish()
+
+            } catch (e: ApiException) {
+                Toast.makeText(requireContext(), "Google sign-in failed: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount?) {
+        val credential = GoogleAuthProvider.getCredential(acct?.idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(requireActivity()) { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(requireContext(), "Google sign-in successful", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "Google Authentication Failed", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
+    private fun signUpWithGoogle() {
+        val signInIntent = googleSignInClient.signInIntent
+        startActivityForResult(signInIntent, RC_SIGN_IN)
+    }
+    fun updateErrorIndicators() {
+        emailErrorText.visibility = if (errors.emailError) View.VISIBLE else View.GONE
+        pwdErrorText.visibility = if (errors.passwordError) View.VISIBLE else View.GONE
+        confirmErrorText.visibility = if (errors.confirmError) View.VISIBLE else View.GONE
+    }
+
+    fun resetErrors()
+    {
+        errors.emailError = false
+        errors.passwordError = false
+        errors.confirmError = false
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Log.d("test", "test")
         auth = FirebaseAuth.getInstance()
         emailEditText = view.findViewById(R.id.signup_emailEditText)
         passwordEditText = view.findViewById(R.id.signup_passwordEditText)
@@ -52,25 +133,34 @@ class SignUpFragment : Fragment() {
         signUpButton = view.findViewById(R.id.signUpButton)
         redirectToLogin = view.findViewById(R.id.signup_redirect)
 
+        emailErrorText = view.findViewById(R.id.emailValidationWarning)
+        pwdErrorText = view.findViewById(R.id.pwdValidationWarning)
+        confirmErrorText = view.findViewById(R.id.confirmValidationWarning)
+
+        setGoogleSignUpButton(view)
         redirectToLogin.setOnClickListener( {
             redirectToLogin()
         })
+
+
         signUpButton.setOnClickListener {
+            resetErrors()
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
             val confirm = confirmPassword.text.toString().trim()
-
-            if (email.isNotEmpty() && password.isNotEmpty()) {
+            if (email.isNotEmpty() && password.isNotEmpty() && confirm.isNotEmpty()
+                && validateEmail(email) && validatePass(password) && comparePass(password, confirm)) {
                 signUpUser(email, password)
             }
-
+//
             else {
-                Toast.makeText(context, "Please enter valid details", Toast.LENGTH_SHORT).show()
+                updateErrorIndicators()
             }
         }
     }
 
     private fun validatePass(password: String): Boolean {
+        errors.passwordError = true
         if (password.length <= 8) {
             return false
         }
@@ -82,11 +172,16 @@ class SignUpFragment : Fragment() {
                 break
             }
         }
+
+
+
+        errors.passwordError = hasSpecialCharacter
         return hasSpecialCharacter
     }
 
     private fun comparePass(password: String, confirm: String): Boolean {
         if (password != confirm) {
+            errors.confirmError = true
             return false
         }
 
@@ -95,12 +190,14 @@ class SignUpFragment : Fragment() {
 
     private fun validateEmail(email: String) : Boolean {
         if (!email.contains("@") || !email.contains(".")) {
+            errors.emailError = true;
             return false
         }
         val parts = email.split("@")
         val address = parts[0]
         val domain = parts[1]
         if (address.isEmpty() ||domain.split(".").size < 2) {
+            errors.emailError = true;
             return false
         }
         return true

@@ -12,7 +12,28 @@
           "package_name": "com.example.geominder"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "353671617878-a69knnfevg548n8gk553oh5kfi3bkml0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.geominder",
+            "certificate_hash": "cbf7198096fca894ecc48f46d470b96879441076"
+          }
+        },
+        {
+          "client_id": "353671617878-qgh897rvhnihcapsrfpc07l1dr9retro.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.geominder",
+            "certificate_hash": "75df0129b2213675d4328b5bf5f38487ea0bf6ce"
+          }
+        },
+        {
+          "client_id": "353671617878-i2nao1n5011nl5pddf5mafq1k34i2ig1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBFXvpxCuHeq_1A8_iJxZazxyjvwCrjOaw"
@@ -20,7 +41,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "353671617878-i2nao1n5011nl5pddf5mafq1k34i2ig1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
