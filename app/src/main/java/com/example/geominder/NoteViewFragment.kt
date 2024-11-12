@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Firebase
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -58,22 +59,51 @@ class NoteViewFragment : Fragment() {
         fetchNotes()
     }
 
+
+
     private fun fetchNotes() {
-        val userID = auth.currentUser?.uid
-        if (userID == null)  {
-            return
-        }
+        val userID = auth.currentUser?.uid ?: return
+
         firestore.collection("users")
             .document(userID)
             .collection("notes")
-            .orderBy("dateTime", Query.Direction.DESCENDING)
+            .orderBy("date", Query.Direction.DESCENDING) // Order by date
             .get()
             .addOnSuccessListener { documents ->
                 notesList.clear()
+                val now = System.currentTimeMillis() // Get current time in milliseconds
+
                 for (document in documents) {
                     val note = document.toObject(Note::class.java)
                     notesList.add(note)
+
+                    val dateString = document.getString("date")
+                    val timeString = document.getString("time")
+
+                    if (dateString != null && timeString != null) {
+                        // Combine date and time to get a comparable time in milliseconds
+                        val formattedDate = "$dateString $timeString"
+                        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                        try {
+                            val noteTime = sdf.parse(formattedDate)?.time ?: 0L
+
+                            if (noteTime < now) {
+                                // Delete expired note from Firestore
+                                document.reference.delete()
+                                    .addOnSuccessListener {
+                                        Log.d("NoteViewFragment", "Expired note successfully deleted")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e("NoteViewFragment", "Failed to delete expired note: ${e.message}")
+                                    }
+                            }
+                        } catch (e: Exception) {
+                            Log.e("NoteViewFragment", "Error parsing date: ${e.message}")
+                        }
+                    }
                 }
+
+                // Update RecyclerView with notes from Firestore
                 noteAdapter.notifyDataSetChanged()
             }
             .addOnFailureListener { exception ->

@@ -9,12 +9,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -28,7 +29,8 @@ class NoteCreatorFragment : Fragment() {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
 
-    private var selectedDateTime: String? = null
+    private var selectedDate: String? = null
+    private var selectedTime: String? = null
 
 
     override fun onCreateView(
@@ -40,6 +42,12 @@ class NoteCreatorFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val fab: FloatingActionButton = requireActivity().findViewById(R.id.fab_add)
+        val bottomNavigationView: BottomNavigationView = requireActivity().findViewById(R.id.bottom_navigation)
+
+        fab.visibility = View.GONE
+        bottomNavigationView.visibility = View.GONE
 
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
@@ -60,11 +68,11 @@ class NoteCreatorFragment : Fragment() {
     private fun showDateTimePicker() {
         val calendar = Calendar.getInstance()
         val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+            selectedDate = "$dayOfMonth/${month + 1}/$year" // Simpan tanggal yang dipilih
+
             val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-                // Format the selected date and time
-                val selectedDateTime = "$dayOfMonth/${month + 1}/$year $hourOfDay:$minute"
-                this.selectedDateTime = selectedDateTime
-                timePickerButton.text = "Selected: $selectedDateTime"
+                selectedTime = "$hourOfDay:$minute" // Simpan waktu yang dipilih
+                timePickerButton.text = "Selected: $selectedDate $selectedTime"
             }
 
             TimePickerDialog(requireContext(), timeSetListener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
@@ -78,7 +86,7 @@ class NoteCreatorFragment : Fragment() {
         val content = contentEditText.text.toString().trim()
         val place = placeEditText.text.toString().trim()
 
-        if (title.isEmpty() || content.isEmpty() || place.isEmpty() || selectedDateTime == null) {
+        if (title.isEmpty() || content.isEmpty() || place.isEmpty() || selectedDate == null || selectedTime == null) {
             Toast.makeText(requireContext(), "Please fill in all fields.", Toast.LENGTH_SHORT).show()
             return
         }
@@ -87,14 +95,12 @@ class NoteCreatorFragment : Fragment() {
             "title" to title,
             "content" to content,
             "place" to place,
-            "dateTime" to selectedDateTime,
+            "date" to selectedDate,
+            "time" to selectedTime,
             "status" to true
         )
 
-        val userID = auth.currentUser?.uid
-        if (userID == null)  {
-            return
-        }
+        val userID = auth.currentUser?.uid ?: return
         firestore.collection("users").document(userID).collection("notes")
             .add(noteData)
             .addOnSuccessListener {
@@ -102,7 +108,6 @@ class NoteCreatorFragment : Fragment() {
                 navigateToNoteView() // Navigate to NoteViewFragment after saving
             }
             .addOnFailureListener { exception ->
-                // Log the exception message for debugging
                 Log.e("NoteCreatorFragment", "Error saving note: ${exception.message}")
                 Toast.makeText(requireContext(), "Error saving note: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
