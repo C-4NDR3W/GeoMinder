@@ -120,4 +120,14 @@ class NoteCreatorFragment : Fragment() {
     private fun navigateBack() {
         findNavController().navigateUp()
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        val fab: FloatingActionButton = requireActivity().findViewById(R.id.fab_add)
+        val bottomNavigationView: BottomNavigationView = requireActivity().findViewById(R.id.bottom_navigation)
+
+        fab.visibility = View.VISIBLE
+        bottomNavigationView.visibility = View.VISIBLE
+    }
 }
