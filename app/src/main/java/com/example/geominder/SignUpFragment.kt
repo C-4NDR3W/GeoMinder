@@ -23,6 +23,7 @@ import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 class SignUpFragment : Fragment() {
@@ -41,7 +42,7 @@ class SignUpFragment : Fragment() {
     private lateinit var googleSignUpBtn : SignInButton
     private lateinit var googleSignInClient: GoogleSignInClient
 
-
+    private lateinit var db : FirebaseFirestore
 
     data object errors {
         var emailError = false
@@ -59,6 +60,7 @@ class SignUpFragment : Fragment() {
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()
 
+        db = FirebaseFirestore.getInstance()
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -75,6 +77,7 @@ class SignUpFragment : Fragment() {
 
         }
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -145,37 +148,60 @@ class SignUpFragment : Fragment() {
 
         signUpButton.setOnClickListener {
             resetErrors()
+
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
             val confirm = confirmPassword.text.toString().trim()
-            if (email.isNotEmpty() && password.isNotEmpty() && confirm.isNotEmpty()
-                && validateEmail(email) && validatePass(password) && comparePass(password, confirm)) {
-                signUpUser(email, password)
-            }
-//
-            else {
-                updateErrorIndicators()
+
+
+            val isEmailValid = validateEmail(email)
+            val isPasswordValid = validatePass(password)
+            val isPasswordConfirmed = comparePass(password, confirm)
+
+            updateErrorIndicators()
+
+            if (isEmailValid && isPasswordValid && isPasswordConfirmed) {
+
+                checkMatchingEmail(email) { isUnique ->
+                    if (isUnique) {
+                        signUpUser(email, password)
+                    } else {
+                        errors.emailError = true
+                        updateErrorIndicators()
+                    }
+                }
             }
         }
+
     }
 
+    private fun checkMatchingEmail(email: String, callback: (Boolean) -> Unit) {
+        db.collection("users").whereEqualTo("email", email).get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val documents = task.result
+                    if (documents != null && !documents.isEmpty) {
+                        Toast.makeText(requireContext(), "Email already in use", Toast.LENGTH_SHORT).show()
+                        callback(false)
+                    } else {
+                        callback(true)
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Error checking email", Toast.LENGTH_SHORT).show()
+                    callback(false)
+                }
+            }
+    }
     private fun validatePass(password: String): Boolean {
-        errors.passwordError = true
         if (password.length <= 8) {
+            errors.passwordError = true
             return false
         }
+
         val specialCharacters = "!@#$%^&*()-_=+[]{}|;:'\",.<>?/`~"
-        var hasSpecialCharacter = false
-        for (char in password) {
-            if (char in specialCharacters) {
-                hasSpecialCharacter = true
-                break
-            }
-        }
+        val hasSpecialCharacter = password.any { it in specialCharacters }
 
-
-
-        errors.passwordError = hasSpecialCharacter
+        errors.passwordError = !hasSpecialCharacter
         return hasSpecialCharacter
     }
 
