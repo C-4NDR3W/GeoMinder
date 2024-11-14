@@ -24,7 +24,7 @@
             android:id="@+id/action_noteViewFragment_to_groupFragment"
             app:destination="@id/navigation_group" />
         <action
-            android:id="@+id/action_noteViewFragment_to_settingsFragment"
+            android:id="@+id/action_noteViewFragment_to_profileFragment"
             app:destination="@id/navigation_profile" />
         <action
             android:id="@+id/action_noteViewFragment_to_mapFragment"
@@ -46,7 +46,7 @@
             android:id="@+id/action_notificationViewFragment_to_groupFragment"
             app:destination="@id/navigation_group" />
         <action
-            android:id="@+id/action_notificationViewFragment_to_settingsFragment"
+            android:id="@+id/action_notificationViewFragment_to_profileFragment"
             app:destination="@id/navigation_profile" />
     </fragment>
 
@@ -71,7 +71,7 @@
             android:id="@+id/action_GroupFragment_to_noteCreatorFragment"
             app:destination="@id/navigation_create" />
         <action
-            android:id="@+id/action_GroupFragment_to_settingsFragment"
+            android:id="@+id/action_GroupFragment_to_profileFragment"
             app:destination="@id/navigation_profile" />
     </fragment>
 

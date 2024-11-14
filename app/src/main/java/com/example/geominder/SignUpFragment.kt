@@ -138,9 +138,9 @@ class SignUpFragment : Fragment() {
         confirmErrorText = view.findViewById(R.id.confirmValidationWarning)
 
         setGoogleSignUpButton(view)
-        redirectToLogin.setOnClickListener( {
+        redirectToLogin.setOnClickListener {
             redirectToLogin()
-        })
+        }
 
 
         signUpButton.setOnClickListener {

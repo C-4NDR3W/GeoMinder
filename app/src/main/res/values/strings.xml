@@ -39,6 +39,14 @@
     <!--    -->
     <string name="edit_status">Edited</string>
 
+<!--    settings-->
+    <string name="profile_settings">Profile</string>
+    <string name="location_settings">Location</string>
+    <string name="map_settings">Map</string>
+    <string name="data_settings">Data Sync and Storage</string>
+    <string name="about_settings">Help</string>
+
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
