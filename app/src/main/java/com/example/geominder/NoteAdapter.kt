@@ -23,7 +23,7 @@ class NoteAdapter(private val notes: List<Note>) : RecyclerView.Adapter<NoteAdap
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         val note = notes[position]
         holder.noteTitle.text = note.title
-        holder.noteTime.text = note.dateTime
+        holder.noteTime.text = note.time
         holder.notePlace.text = note.place
         holder.noteContent.text = note.content
     }
