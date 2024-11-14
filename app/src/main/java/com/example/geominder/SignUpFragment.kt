@@ -233,6 +233,7 @@ class SignUpFragment : Fragment() {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    Log.d("success", "success")
                     Toast.makeText(context, "Sign-up successful", Toast.LENGTH_SHORT).show()
                     redirectToLogin()
                 } else {
