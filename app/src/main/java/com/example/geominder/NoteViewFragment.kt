@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.ToggleButton
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +24,7 @@ import com.google.type.Date
 import java.util.Locale
 
 class NoteViewFragment : Fragment() {
+    private lateinit var toggleButton: ToggleButton
     private lateinit var recyclerView: RecyclerView
     private lateinit var noteAdapter: NoteAdapter
     private lateinit var selectedDateTextView: TextView
@@ -30,6 +32,8 @@ class NoteViewFragment : Fragment() {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val notesList = mutableListOf<Note>()
     private val searchBarVisible = false
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,25 +45,24 @@ class NoteViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//      selectedDateTextView = view.findViewById(R.id.selectedDateTextView)
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         noteAdapter = NoteAdapter(notesList)
         recyclerView.adapter = noteAdapter
 
+        toggleButton = view.findViewById(R.id.toggleButton)
 
-//        val selectedDate = arguments?.getString("selectedDate")
-//        selectedDateTextView.text = selectedDate
-//        Fetch notes for the selected date
-        val mapButton: View = view.findViewById(R.id.mapButton)
-        mapButton.setOnClickListener {
-            redirectToMap()
+        val toggleState = arguments?.getBoolean("toggleState", false) ?: false
+        toggleButton.isChecked = toggleState
+
+        toggleButton.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                redirectToMap()
+            }
         }
 
         fetchNotes()
     }
-
-
 
     private fun fetchNotes() {
         val userID = auth.currentUser?.uid ?: return
@@ -114,6 +117,10 @@ class NoteViewFragment : Fragment() {
 
     private fun redirectToMap() {
         val navController = findNavController()
-        navController.navigate(R.id.action_noteViewFragment_to_mapFragment)
+
+        val bundle = Bundle()
+        bundle.putBoolean("toggleState", toggleButton.isChecked)
+
+        navController.navigate(R.id.action_noteViewFragment_to_mapFragment, bundle)
     }
 }

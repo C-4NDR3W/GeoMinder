@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.ToggleButton
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -24,7 +25,7 @@ private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
 class MapFragment : Fragment(), OnMapReadyCallback {
 
-    private lateinit var noteButton: ImageView
+    private lateinit var toggleButton: ToggleButton
     private lateinit var mapView: MapView
     private var googleMap: GoogleMap? = null
 
@@ -36,7 +37,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_map, container, false)
 
-        noteButton = view.findViewById(R.id.noteButton)
+        toggleButton = view.findViewById(R.id.toggleButton)
         mapView = view.findViewById(R.id.google_map)
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
@@ -47,9 +48,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Set click listener for the note button
-        noteButton.setOnClickListener {
-            redirectToNote()
+        val toggleState = arguments?.getBoolean("toggleState", false) ?: false
+        toggleButton.isChecked = toggleState
+
+        toggleButton.setOnCheckedChangeListener { _, isChecked ->
+            if (!isChecked) {
+                redirectToNote()
+            }
         }
         requestPermissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -85,7 +90,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun redirectToNote() {
         val navController = findNavController()
-        navController.navigate(R.id.action_mapFragment_to_navigation_home)
+
+        val bundle = Bundle()
+        bundle.putBoolean("toggleState", toggleButton.isChecked)
+
+        navController.navigate(R.id.action_mapFragment_to_navigation_home, bundle)
     }
 
     override fun onMapReady(map: GoogleMap) {
