@@ -39,12 +39,14 @@
     <!--    -->
     <string name="edit_status">Edited</string>
 
-<!--    settings-->
+    <!--    settings-->
     <string name="profile_settings">Profile</string>
-    <string name="location_settings">Location</string>
+    <string name="permission_settings">Device Permission</string>
     <string name="map_settings">Map</string>
     <string name="data_settings">Data Sync and Storage</string>
-    <string name="about_settings">Help</string>
+    <string name="help_settings">Help</string>
+    <string name="appearance_settings">Appearance</string>
+    <string name="notification_settings">Notification</string>
 
 
     <!-- Strings related to login -->
@@ -72,6 +74,24 @@
     <!--  Toolbar  -->
     <string name="save">Save</string>
     <string name="back">Back</string>
+    <!-- Preference Titles -->
+    <string name="permission_header">Device Permission</string>
+    <string name="map_header">Maps</string>
+    <string name="data_header">Data Sync and Storage</string>
+    <string name="appearance_header">Appearance</string>
+    <string name="help_header">Help</string>
+    <string name="notification_header">Notification</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
