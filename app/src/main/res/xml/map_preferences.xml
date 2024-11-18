@@ -1,0 +1,39 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:defaultValue="normal"
+        android:entries="@array/map_type_entries"
+        android:entryValues="@array/map_type_values"
+        android:key="map_type"
+        android:summary="Choose the type of map"
+        android:title="Map Type" />
+
+    <SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:key="traffic_layer"
+        android:summary="Display traffic data on the map"
+        android:title="Show Traffic Layer" />
+
+    <SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:key="terrain_layer"
+        android:summary="Display terrain details on the map"
+        android:title="Show Terrain Layer" />
+
+    <SeekBarPreference
+        android:key="default_zoom"
+        android:title="Default Zoom Level"
+        android:summary="Set the initial zoom level for the map"
+        android:defaultValue="15"
+        android:min="1"
+        android:max="20" />
+    <SwitchPreferenceCompat
+        android:key="show_scale_bar"
+        android:title="Show Scale Bar"
+        android:summary="Display a scale bar on the map"
+        android:defaultValue="true" />
+
+
+
+</PreferenceScreen>

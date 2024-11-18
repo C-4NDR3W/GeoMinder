@@ -55,7 +55,7 @@ class SettingsFragment : Fragment() {
         }
 
         mapButton.setOnClickListener{
-
+            findNavController().navigate(R.id.action_noteViewFragment_to_mapFragment)
         }
 
         dataButton.setOnClickListener{

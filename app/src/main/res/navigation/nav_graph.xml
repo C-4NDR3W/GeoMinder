@@ -98,6 +98,9 @@
         <action
             android:id="@+id/action_navigation_settings_to_settings_navigation_permission"
             app:destination="@+id/settings_navigation_permission"/>
+        <action
+            android:id="@+id/action_navigation_settings_to_settings_navigation_map"
+            app:destination="@+id/settings_navigation_permission"/>
     </fragment>
 
     <fragment
@@ -110,6 +113,12 @@
         android:id="@+id/settings_navigation_permission"
         android:name="com.example.geominder.settings.PermissionSettingsFragment"
         android:label="Device Permissions Settings Page">
+    </fragment>
+
+    <fragment
+        android:id="@+id/settings_navigation_map"
+        android:name="com.example.geominder.settings.MapSettingsFragment"
+        android:label="Map Settings Page">
     </fragment>
 
     <fragment
