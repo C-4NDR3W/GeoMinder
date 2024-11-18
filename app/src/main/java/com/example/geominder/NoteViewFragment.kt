@@ -47,7 +47,8 @@ class NoteViewFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        noteAdapter = NoteAdapter(notesList)
+
+        noteAdapter = NoteAdapter(emptyList())
         recyclerView.adapter = noteAdapter
 
         toggleButton = view.findViewById(R.id.toggleButton)
@@ -79,40 +80,36 @@ class NoteViewFragment : Fragment() {
                 for (document in documents) {
                     val note = document.toObject(Note::class.java)
                     notesList.add(note)
+                }
 
-                    val dateString = document.getString("date")
-                    val timeString = document.getString("time")
+                notesList.sortBy { note ->
+                    val dateString = note.date
+                    val timeString = note.time
 
-                    if (dateString != null && timeString != null) {
-                        // Combine date and time to get a comparable time in milliseconds
-                        val formattedDate = "$dateString $timeString"
-                        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-                        try {
-                            val noteTime = sdf.parse(formattedDate)?.time ?: 0L
-
-                            if (noteTime < now) {
-                                // Delete expired note from Firestore
-                                document.reference.delete()
-                                    .addOnSuccessListener {
-                                        Log.d("NoteViewFragment", "Expired note successfully deleted")
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.e("NoteViewFragment", "Failed to delete expired note: ${e.message}")
-                                    }
-                            }
-                        } catch (e: Exception) {
-                            Log.e("NoteViewFragment", "Error parsing date: ${e.message}")
-                        }
+                    // Combine date and time to form a datetime string for comparison
+                    val formattedDate = "$dateString $timeString"
+                    val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                    try {
+                        sdf.parse(formattedDate)?.time
+                    } catch (e: Exception) {
+                        Log.e("NoteViewFragment", "Error parsing date: ${e.message}")
+                        0L // If the date parsing fails, return 0L
                     }
                 }
 
-                // Update RecyclerView with notes from Firestore
-                noteAdapter.notifyDataSetChanged()
+                val groupedNotes = groupNotesByDate(notesList)
+                noteAdapter = NoteAdapter(groupedNotes)
+                recyclerView.adapter = noteAdapter
             }
             .addOnFailureListener { exception ->
                 Log.e("NoteViewFragment", "Error fetching notes: ${exception.message}")
                 Toast.makeText(requireContext(), "Error fetching notes: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun groupNotesByDate(notes: List<Note>): List<Pair<String, List<Note>>> {
+        val notesByDate = notes.groupBy { it.date }
+        return notesByDate.map { Pair(it.key, it.value) }
     }
 
     private fun redirectToMap() {
