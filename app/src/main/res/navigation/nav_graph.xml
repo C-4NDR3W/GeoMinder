@@ -73,6 +73,9 @@
         <action
             android:id="@+id/action_navigation_group_to_navigation_settings"
             app:destination="@id/navigation_settings" />
+        <action
+            android:id="@+id/action_navigation_group_to_groupEditorFragment"
+            app:destination="@id/groupEditorFragment" />
     </fragment>
 
     <fragment
@@ -121,4 +124,9 @@
             android:id="@+id/action_mapFragment_to_navigation_home"
             app:destination="@id/navigation_home" />
     </fragment>
+    <fragment
+        android:id="@+id/groupEditorFragment"
+        android:name="com.example.geominder.GroupEditorFragment"
+        android:label="fragment_group_editor"
+        tools:layout="@layout/fragment_group_editor" />
 </navigation>
