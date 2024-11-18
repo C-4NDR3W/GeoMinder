@@ -79,22 +79,48 @@ class NoteViewFragment : Fragment() {
 
                 for (document in documents) {
                     val note = document.toObject(Note::class.java)
-                    notesList.add(note)
-                }
 
-                notesList.sortBy { note ->
                     val dateString = note.date
                     val timeString = note.time
 
-                    // Combine date and time to form a datetime string for comparison
-                    val formattedDate = "$dateString $timeString"
-                    val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-                    try {
-                        sdf.parse(formattedDate)?.time
-                    } catch (e: Exception) {
-                        Log.e("NoteViewFragment", "Error parsing date: ${e.message}")
-                        0L // If the date parsing fails, return 0L
+                    if (dateString != null && timeString != null) {
+                        // Combine date and time to get a comparable time in milliseconds
+                        val formattedDate = "$dateString $timeString"
+                        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                        try {
+                            val noteTime = sdf.parse(formattedDate)?.time ?: 0L
+
+                            if (noteTime < now) {
+                                // Delete expired note from Firestore
+                                document.reference.delete()
+                                    .addOnSuccessListener {
+                                        Log.d("NoteViewFragment", "Expired note successfully deleted")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e("NoteViewFragment", "Failed to delete expired note: ${e.message}")
+                                    }
+                            } else {
+                                // Reformat time to ensure two-digit minutes
+                                val timeSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+                                val parsedTime = sdf.parse(formattedDate)
+                                note.time = parsedTime?.let { timeSdf.format(it) } ?: timeString
+
+                                // Add non-expired note to the list
+                                notesList.add(note)
+                            }
+                        } catch (e: Exception) {
+                            Log.e("NoteViewFragment", "Error parsing date: ${e.message}")
+                        }
+                    } else {
+                        Log.w("NoteViewFragment", "Note date or time is null, skipping.")
                     }
+                }
+
+                // Sort notes by combined date and time
+                notesList.sortBy { note ->
+                    val formattedDate = "${note.date} ${note.time}"
+                    val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                    sdf.parse(formattedDate)?.time ?: 0L
                 }
 
                 val groupedNotes = groupNotesByDate(notesList)

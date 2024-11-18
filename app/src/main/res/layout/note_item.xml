@@ -8,12 +8,51 @@
     android:elevation="4dp"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/noteTitle"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="16sp"/>
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/noteTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black" />
+
+        <LinearLayout
+            android:id="@+id/buttonContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentEnd="true"
+            android:gravity="end">
+
+            <ImageButton
+                android:id="@+id/editButton"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/edit_button"
+                android:layout_marginHorizontal="4dp"
+                android:background="@android:color/transparent"/>
+
+            <ImageButton
+                android:id="@+id/pinButton"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/pin_button"
+                android:layout_marginHorizontal="4dp"
+                android:background="@android:color/transparent"/>
+
+            <ImageButton
+                android:id="@+id/deleteButton"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/delete_button"
+                android:layout_marginHorizontal="4dp"
+                android:background="@android:color/transparent"/>
+        </LinearLayout>
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/noteTime"

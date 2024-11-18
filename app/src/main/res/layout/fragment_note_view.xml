@@ -60,16 +60,6 @@
         android:paddingHorizontal="16dp"
         android:orientation="horizontal"
         android:gravity="center_vertical">
-
-<!--        <TextView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="Selected Date"-->
-<!--            android:id="@+id/selectedDateTextView"-->
-<!--            android:layout_marginStart="8dp"-->
-<!--            android:textSize="24sp"-->
-<!--            android:textStyle="bold"-->
-<!--            android:textColor="@android:color/black"/>-->
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
