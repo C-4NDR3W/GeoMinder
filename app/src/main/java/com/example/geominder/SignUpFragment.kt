@@ -23,9 +23,11 @@ import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 class SignUpFragment : Fragment() {
+    private lateinit var firestore: FirebaseFirestore
 
     private lateinit var auth: FirebaseAuth
     private lateinit var emailEditText: EditText
@@ -207,6 +209,22 @@ class SignUpFragment : Fragment() {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    val currentUser = FirebaseAuth.getInstance().currentUser
+                    val userId = currentUser?.uid
+                    if (userId != null) {
+                        val userData = hashMapOf(
+                            "name" to ""
+                        )
+
+                        firestore.collection("users").document(userId)
+                            .set(userData)
+                            .addOnSuccessListener {
+                                Toast.makeText(context, "User info saved", Toast.LENGTH_SHORT).show()
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(context, "Failed to save user info: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                    }
                     Toast.makeText(context, "Sign-up successful", Toast.LENGTH_SHORT).show()
                     redirectToLogin()
                 } else {
