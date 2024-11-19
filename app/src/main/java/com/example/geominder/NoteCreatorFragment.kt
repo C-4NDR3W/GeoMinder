@@ -91,7 +91,11 @@ class NoteCreatorFragment : Fragment() {
             return
         }
 
+        val userID = auth.currentUser?.uid ?: return
+        val noteRef = firestore.collection("users").document(userID).collection("notes").document()
+
         val noteData = hashMapOf(
+            "id" to noteRef.id,
             "title" to title,
             "content" to content,
             "place" to place,
@@ -100,9 +104,7 @@ class NoteCreatorFragment : Fragment() {
             "status" to true
         )
 
-        val userID = auth.currentUser?.uid ?: return
-        firestore.collection("users").document(userID).collection("notes")
-            .add(noteData)
+        noteRef.set(noteData)
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "Note saved successfully!", Toast.LENGTH_SHORT).show()
                 navigateToNoteView() // Navigate to NoteViewFragment after saving
@@ -111,6 +113,17 @@ class NoteCreatorFragment : Fragment() {
                 Log.e("NoteCreatorFragment", "Error saving note: ${exception.message}")
                 Toast.makeText(requireContext(), "Error saving note: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
+
+//        firestore.collection("users").document(userID).collection("notes")
+//            .add(noteData)
+//            .addOnSuccessListener {
+//                Toast.makeText(requireContext(), "Note saved successfully!", Toast.LENGTH_SHORT).show()
+//                navigateToNoteView() // Navigate to NoteViewFragment after saving
+//            }
+//            .addOnFailureListener { exception ->
+//                Log.e("NoteCreatorFragment", "Error saving note: ${exception.message}")
+//                Toast.makeText(requireContext(), "Error saving note: ${exception.message}", Toast.LENGTH_SHORT).show()
+//            }
     }
 
     private fun navigateToNoteView() {

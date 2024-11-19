@@ -48,7 +48,22 @@ class NoteViewFragment : Fragment() {
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        noteAdapter = NoteAdapter(emptyList())
+        noteAdapter = NoteAdapter(emptyList(),
+            onEditClicked = { note ->
+            val bundle = Bundle().apply {
+                putString("title", note.title)
+                putString("content", note.content)
+                putString("time", note.time)
+                putString("place", note.place)
+            }
+            findNavController().navigate(R.id.action_noteViewFragment_to_noteCreatorFragment, bundle)
+        },
+            onDeleteClicked = { note ->
+                deleteNote(note)
+            },
+            onPinClicked = { note ->
+                pinNote(note)
+            })
         recyclerView.adapter = noteAdapter
 
         toggleButton = view.findViewById(R.id.toggleButton)
@@ -124,7 +139,25 @@ class NoteViewFragment : Fragment() {
                 }
 
                 val groupedNotes = groupNotesByDate(notesList)
-                noteAdapter = NoteAdapter(groupedNotes)
+                noteAdapter = NoteAdapter(groupedNotes = groupedNotes,
+                    onEditClicked = { note ->
+                        // Handle edit action
+                        val bundle = Bundle().apply {
+                            putString("title", note.title)
+                            putString("content", note.content)
+                            putString("time", note.time)
+                            putString("place", note.place)
+                        }
+                        findNavController().navigate(R.id.action_noteViewFragment_to_noteCreatorFragment, bundle)
+                    },
+                    onDeleteClicked = { note ->
+                        // Handle delete action
+                        deleteNote(note)
+                    },
+                    onPinClicked = { note ->
+                        // Handle pin action
+                        pinNote(note)
+                    })
                 recyclerView.adapter = noteAdapter
             }
             .addOnFailureListener { exception ->
@@ -136,6 +169,38 @@ class NoteViewFragment : Fragment() {
     private fun groupNotesByDate(notes: List<Note>): List<Pair<String, List<Note>>> {
         val notesByDate = notes.groupBy { it.date }
         return notesByDate.map { Pair(it.key, it.value) }
+    }
+
+    private fun deleteNote(note: Note) {
+        val userID = auth.currentUser?.uid ?: return
+
+        firestore.collection("users")
+            .document(userID)
+            .collection("notes")
+            .document(note.id)
+            .delete()
+            .addOnSuccessListener {
+                Toast.makeText(requireContext(), "Note deleted successfully", Toast.LENGTH_SHORT).show()
+                notesList.remove(note)
+                fetchNotes()
+            }
+            .addOnFailureListener { e ->
+                Log.e("NoteViewFragment", "Failed to delete note: ${e.message}")
+                Toast.makeText(requireContext(), "Failed to delete note", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun pinNote(note: Note) {
+        notesList.remove(note)
+        notesList.add(0, note) // Add the note to the top of the list
+        val groupedNotes = groupNotesByDate(notesList)
+        noteAdapter = NoteAdapter(
+            groupedNotes = groupedNotes,
+            onEditClicked = { note -> /* Handle edit */ },
+            onDeleteClicked = { note -> /* Handle delete */ },
+            onPinClicked = { note -> /* Handle pin */ }
+        )
+        recyclerView.adapter = noteAdapter
     }
 
     private fun redirectToMap() {
