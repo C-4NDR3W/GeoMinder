@@ -29,6 +29,30 @@
         <action
             android:id="@+id/action_navigation_home_to_navigation_settings"
             app:destination="@id/navigation_settings" />
+        <argument
+            android:name="noteId"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="noteTitle"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="noteContent"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="notePlace"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="noteDate"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="noteTime"
+            app:argType="string"
+            android:defaultValue="" />
     </fragment>
 
     <fragment
@@ -55,6 +79,30 @@
         android:name="com.example.geominder.NoteCreatorFragment"
         android:label="Note Creator"
         tools:layout="@layout/fragment_note_creator">
+        <argument
+            android:name="noteId"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="noteTitle"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="noteContent"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="notePlace"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="noteDate"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="noteTime"
+            app:argType="string"
+            android:defaultValue="" />
     </fragment>
 
     <fragment

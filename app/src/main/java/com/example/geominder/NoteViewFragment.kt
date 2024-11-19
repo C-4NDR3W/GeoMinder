@@ -143,8 +143,10 @@ class NoteViewFragment : Fragment() {
                     onEditClicked = { note ->
                         // Handle edit action
                         val bundle = Bundle().apply {
+                            putString("noteId", note.id)
                             putString("title", note.title)
                             putString("content", note.content)
+                            putString("date", note.date)
                             putString("time", note.time)
                             putString("place", note.place)
                         }
@@ -194,12 +196,27 @@ class NoteViewFragment : Fragment() {
         notesList.remove(note)
         notesList.add(0, note) // Add the note to the top of the list
         val groupedNotes = groupNotesByDate(notesList)
-        noteAdapter = NoteAdapter(
-            groupedNotes = groupedNotes,
-            onEditClicked = { note -> /* Handle edit */ },
-            onDeleteClicked = { note -> /* Handle delete */ },
-            onPinClicked = { note -> /* Handle pin */ }
-        )
+        noteAdapter = NoteAdapter(groupedNotes = groupedNotes,
+            onEditClicked = { note ->
+                // Handle edit action
+                val bundle = Bundle().apply {
+                    putString("noteId", note.id)
+                    putString("title", note.title)
+                    putString("content", note.content)
+                    putString("date", note.date)
+                    putString("time", note.time)
+                    putString("place", note.place)
+                }
+                findNavController().navigate(R.id.action_noteViewFragment_to_noteCreatorFragment, bundle)
+            },
+            onDeleteClicked = { note ->
+                // Handle delete action
+                deleteNote(note)
+            },
+            onPinClicked = { note ->
+                // Handle pin action
+                pinNote(note)
+            })
         recyclerView.adapter = noteAdapter
     }
 
