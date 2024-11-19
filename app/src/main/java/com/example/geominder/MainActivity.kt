@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun onLocationPermissionGranted() {
-        Toast.makeText(this, "Location permissions granted", Toast.LENGTH_SHORT).show()
+        Log.d("D", "Location Permission Granted")
     }
 
     private fun requestBackgroundLocationPermission() {
