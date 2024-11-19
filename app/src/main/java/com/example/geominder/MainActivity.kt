@@ -78,8 +78,8 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
 
-                R.id.navigation_profile -> {
-                    navController.navigate(R.id.navigation_profile)
+                R.id.navigation_settings -> {
+                    navController.navigate(R.id.navigation_settings)
                     true
                 }
 

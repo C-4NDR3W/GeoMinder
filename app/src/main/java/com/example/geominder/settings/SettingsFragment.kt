@@ -13,7 +13,6 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import com.example.geominder.R
-import com.google.android.gms.maps.MapView
 
 class SettingsFragment : Fragment() {
 
@@ -31,8 +30,9 @@ class SettingsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return super.onCreateView(inflater, container, savedInstanceState)
-
+        Log.d("Settings Fragment Called", "Settings Fragment is called")
+        val view = inflater.inflate(R.layout.fragment_settings, container, false)
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
