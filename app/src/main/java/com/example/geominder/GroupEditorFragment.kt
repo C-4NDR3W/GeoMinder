@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.ListView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
@@ -20,9 +21,10 @@ import com.google.firebase.firestore.getField
 class GroupEditorFragment : Fragment() {
     private lateinit var db: FirebaseFirestore
     private lateinit var suggestionField: AutoCompleteTextView
-    private lateinit var userListsField: ListView
+    private lateinit var userListField: ListView
+    private lateinit var fragmentTitleText : TextView
 
-    private var addedUsers = mutableListOf<String>()
+    private var addedUsers = mutableListOf<String>("kevinhadinata11@gmail.com", "kennylukman@gmail.com")
     private var suggestions = mutableListOf<String>("kevinhadinata11@gmail.com", "kennylukman@gmail.com")
 
     private lateinit var adapter: ArrayAdapter<String>
@@ -32,19 +34,33 @@ class GroupEditorFragment : Fragment() {
         super.onCreate(savedInstanceState)
         db = FirebaseFirestore.getInstance()
     }
+
+
     
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         val view = inflater.inflate(R.layout.fragment_group_editor, container, false)
         context?.let {
             adapter = ArrayAdapter(it, android.R.layout.simple_dropdown_item_1line, suggestions)
-            userListsAdapter = ArrayAdapter(it, android.R.layout.simple_dropdown_item_1line, addedUsers)
+//            userListsAdapter = ArrayAdapter(it, android.R.layout.simple_dropdown_item_1line, addedUsers)
         }
 
+        fragmentTitleText = view.findViewById(R.id.newGroupText)
+
+        //jika fragment dipakai untuk mengedit group
+        if (arguments?.getStringArrayList("users") != null)
+        {
+            addedUsers = arguments?.getStringArrayList("users") as MutableList<String>
+            fragmentTitleText.text = "Edit Group"
+
+        }
+
+        userListField = view.findViewById(R.id.userPreviewList)
         userListsAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, addedUsers)
-        userListsField.adapter = userListsAdapter
+        userListField.adapter = userListsAdapter
 
         suggestionField = view.findViewById(R.id.userSuggestions)
         suggestionField.setAdapter(adapter)
@@ -54,12 +70,8 @@ class GroupEditorFragment : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-                Toast.makeText(context, s, Toast.LENGTH_SHORT).show()
                 generateUserSuggestions(s.toString())
                 adapter.notifyDataSetChanged()
-
-
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -68,23 +80,23 @@ class GroupEditorFragment : Fragment() {
         })
 
 
-        suggestionField.setOnItemClickListener { parent, view, position, id -> run {
-            if (suggestions[position] in addedUsers) {
+        suggestionField.setOnItemClickListener { parent, view, position, id ->
+            val selectedUser = parent.getItemAtPosition(position) as String
+
+            if (selectedUser in addedUsers) {
+                Toast.makeText(context, "$selectedUser is already added!", Toast.LENGTH_SHORT).show()
                 return@setOnItemClickListener
             }
 
-            addedUsers.add(suggestions[position])
+            Log.d("User", "Selected user: $selectedUser")
+            addedUsers.add(selectedUser)
             userListsAdapter.notifyDataSetChanged()
-        }}
-
-
+            suggestionField.text.clear()
+            suggestions.remove(selectedUser)
+            adapter.notifyDataSetChanged()
+        }
 
         return view
-    }
-
-    fun addUserToList()
-    {
-
     }
 
     fun generateUserSuggestions(query: String) {
@@ -116,6 +128,7 @@ class GroupEditorFragment : Fragment() {
                 Log.w("Error", "Error fetching documents", e)
             }
     }
+//
 
 
 }

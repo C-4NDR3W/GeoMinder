@@ -233,6 +233,22 @@ class SignUpFragment : Fragment() {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+
+                    val currentUser = FirebaseAuth.getInstance().currentUser
+                    val userId = currentUser?.uid
+                    if (userId != null) {
+                        val userData = hashMapOf(
+                            "email" to ""
+                        )
+                        db.collection("users").document(userId)
+                            .set(userData)
+                            .addOnSuccessListener {
+                                Toast.makeText(context, "User info saved", Toast.LENGTH_SHORT).show()
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(context, "Failed to save user info: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                    }
                     Log.d("success", "success")
                     Toast.makeText(context, "Sign-up successful", Toast.LENGTH_SHORT).show()
                     redirectToLogin()

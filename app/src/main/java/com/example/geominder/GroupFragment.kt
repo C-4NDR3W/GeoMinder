@@ -1,6 +1,5 @@
 package com.example.geominder
 
-import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,12 +12,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 
+import android.os.Bundle
+
 class GroupFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var groupAdapter: GroupAdapter
     private lateinit var addGroupButton: ImageView
     private lateinit var navController: NavController
+    private var isNewGroup = true
     private val groups = mutableListOf<Group>()
 
     private lateinit var db : FirebaseFirestore
@@ -51,11 +53,9 @@ class GroupFragment : Fragment() {
 
     fun navigateToGroupEditor()
     {
+        val bundle = Bundle()
+        bundle.putString("type", "newGroup")
        navController.navigate(R.id.action_navigation_group_to_groupEditorFragment)
     }
-//    fun createNewGroup(name : String,  admin : String)
-//    {
-//        val newGroup = Group(name, admin)
-//        db.collection("groups").add()
-//    }
+
 }
