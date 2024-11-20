@@ -1,4 +1,4 @@
-package com.example.geominder
+package com.example.geominder.settings
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,11 +8,20 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import com.example.geominder.R
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 
 
 class PasswordEditDialogFragment : DialogFragment() {
+
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.setLayout(
+            (resources.displayMetrics.widthPixels * 0.9).toInt(),
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

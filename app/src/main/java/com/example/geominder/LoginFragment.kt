@@ -16,29 +16,38 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
-class LoginFragment : Fragment() {
+class LoginFragment : Fragment()
+{
 
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
 
-
+    private lateinit var googleSignInBtn : SignInButton
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Initialize Firebase Auth
         auth = FirebaseAuth.getInstance()
 
-        // Configure Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
 
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
+    }
+
+    fun setGoogleLogInButton(view: View)
+    {
+        googleSignInBtn = view.findViewById(R.id.googleSignInButton)
+        googleSignInBtn.setOnClickListener {
+            signInWithGoogle()
+
+        }
     }
 
     override fun onCreateView(
@@ -49,6 +58,9 @@ class LoginFragment : Fragment() {
         val loginButton = view.findViewById<Button>(R.id.loginSubmit)
         val emailEditText = view.findViewById<TextInputEditText>(R.id.emailEditText)
         val passwordEditText = view.findViewById<TextInputEditText>(R.id.passwordEditText)
+
+
+        setGoogleLogInButton(view)
         loginButton.setOnClickListener {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
@@ -72,12 +84,10 @@ class LoginFragment : Fragment() {
         val signUpRedirect = view.findViewById<TextView>(R.id.redirect_signup)
         signUpRedirect.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_signUpFragment2)
-
         }
 
         return view
     }
-
 
     private fun signInWithGoogle() {
         val signInIntent = googleSignInClient.signInIntent
@@ -91,6 +101,10 @@ class LoginFragment : Fragment() {
             try {
                 val account = task.getResult(ApiException::class.java)
                 firebaseAuthWithGoogle(account)
+                val intent = Intent(requireContext(), MainActivity::class.java)
+                startActivity(intent)
+                requireActivity().finish()
+
             } catch (e: ApiException) {
                 Toast.makeText(requireContext(), "Google sign-in failed: ${e.message}", Toast.LENGTH_SHORT).show()
             }
@@ -98,7 +112,6 @@ class LoginFragment : Fragment() {
     }
 
     private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount?) {
-        Log.d("test", "test2")
         val credential = GoogleAuthProvider.getCredential(acct?.idToken, null)
         auth.signInWithCredential(credential)
             .addOnCompleteListener(requireActivity()) { task ->
@@ -111,6 +124,6 @@ class LoginFragment : Fragment() {
     }
 
     companion object {
-        private const val RC_SIGN_IN = 9001
+        const val RC_SIGN_IN = 9001
     }
 }

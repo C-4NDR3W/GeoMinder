@@ -9,11 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.ToggleButton
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Firebase
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -22,6 +24,7 @@ import com.google.type.Date
 import java.util.Locale
 
 class NoteViewFragment : Fragment() {
+    private lateinit var toggleButton: ToggleButton
     private lateinit var recyclerView: RecyclerView
     private lateinit var noteAdapter: NoteAdapter
     private lateinit var selectedDateTextView: TextView
@@ -29,6 +32,8 @@ class NoteViewFragment : Fragment() {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val notesList = mutableListOf<Note>()
     private val searchBarVisible = false
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,41 +45,122 @@ class NoteViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//      selectedDateTextView = view.findViewById(R.id.selectedDateTextView)
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        noteAdapter = NoteAdapter(notesList)
+
+        noteAdapter = NoteAdapter(emptyList(),
+            onEditClicked = { note ->
+            val bundle = Bundle().apply {
+                putString("title", note.title)
+                putString("content", note.content)
+                putString("time", note.time)
+                putString("place", note.place)
+            }
+            findNavController().navigate(R.id.action_noteViewFragment_to_noteCreatorFragment, bundle)
+        },
+            onDeleteClicked = { note ->
+                deleteNote(note)
+            },
+            onPinClicked = { note ->
+                pinNote(note)
+            })
         recyclerView.adapter = noteAdapter
 
+        toggleButton = view.findViewById(R.id.toggleButton)
 
-//        val selectedDate = arguments?.getString("selectedDate")
-//        selectedDateTextView.text = selectedDate
-//        Fetch notes for the selected date
-        val mapButton: View = view.findViewById(R.id.mapButton)
-        mapButton.setOnClickListener {
-            redirectToMap()
+        val toggleState = arguments?.getBoolean("toggleState", false) ?: false
+        toggleButton.isChecked = toggleState
+
+        toggleButton.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                redirectToMap()
+            }
         }
 
         fetchNotes()
     }
 
     private fun fetchNotes() {
-        val userID = auth.currentUser?.uid
-        if (userID == null)  {
-            return
-        }
+        val userID = auth.currentUser?.uid ?: return
+
         firestore.collection("users")
             .document(userID)
             .collection("notes")
-            .orderBy("dateTime", Query.Direction.DESCENDING)
+            .orderBy("date", Query.Direction.DESCENDING) // Order by date
             .get()
             .addOnSuccessListener { documents ->
                 notesList.clear()
+                val now = System.currentTimeMillis() // Get current time in milliseconds
+
                 for (document in documents) {
                     val note = document.toObject(Note::class.java)
-                    notesList.add(note)
+
+                    val dateString = note.date
+                    val timeString = note.time
+
+                    if (dateString != null && timeString != null) {
+                        // Combine date and time to get a comparable time in milliseconds
+                        val formattedDate = "$dateString $timeString"
+                        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                        try {
+                            val noteTime = sdf.parse(formattedDate)?.time ?: 0L
+
+                            if (noteTime < now) {
+                                // Delete expired note from Firestore
+                                document.reference.delete()
+                                    .addOnSuccessListener {
+                                        Log.d("NoteViewFragment", "Expired note successfully deleted")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e("NoteViewFragment", "Failed to delete expired note: ${e.message}")
+                                    }
+                            } else {
+                                // Reformat time to ensure two-digit minutes
+                                val timeSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+                                val parsedTime = sdf.parse(formattedDate)
+                                note.time = parsedTime?.let { timeSdf.format(it) } ?: timeString
+
+                                // Add non-expired note to the list
+                                notesList.add(note)
+                            }
+                        } catch (e: Exception) {
+                            Log.e("NoteViewFragment", "Error parsing date: ${e.message}")
+                        }
+                    } else {
+                        Log.w("NoteViewFragment", "Note date or time is null, skipping.")
+                    }
                 }
-                noteAdapter.notifyDataSetChanged()
+
+                // Sort notes by combined date and time
+                notesList.sortBy { note ->
+                    val formattedDate = "${note.date} ${note.time}"
+                    val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                    sdf.parse(formattedDate)?.time ?: 0L
+                }
+
+                val groupedNotes = groupNotesByDate(notesList)
+                noteAdapter = NoteAdapter(groupedNotes = groupedNotes,
+                    onEditClicked = { note ->
+                        // Handle edit action
+                        val bundle = Bundle().apply {
+                            putString("noteId", note.id)
+                            putString("title", note.title)
+                            putString("content", note.content)
+                            putString("date", note.date)
+                            putString("time", note.time)
+                            putString("place", note.place)
+                        }
+                        findNavController().navigate(R.id.action_noteViewFragment_to_noteCreatorFragment, bundle)
+                    },
+                    onDeleteClicked = { note ->
+                        // Handle delete action
+                        deleteNote(note)
+                    },
+                    onPinClicked = { note ->
+                        // Handle pin action
+                        pinNote(note)
+                    })
+                recyclerView.adapter = noteAdapter
             }
             .addOnFailureListener { exception ->
                 Log.e("NoteViewFragment", "Error fetching notes: ${exception.message}")
@@ -82,8 +168,64 @@ class NoteViewFragment : Fragment() {
             }
     }
 
+    private fun groupNotesByDate(notes: List<Note>): List<Pair<String, List<Note>>> {
+        val notesByDate = notes.groupBy { it.date }
+        return notesByDate.map { Pair(it.key, it.value) }
+    }
+
+    private fun deleteNote(note: Note) {
+        val userID = auth.currentUser?.uid ?: return
+
+        firestore.collection("users")
+            .document(userID)
+            .collection("notes")
+            .document(note.id)
+            .delete()
+            .addOnSuccessListener {
+                Toast.makeText(requireContext(), "Note deleted successfully", Toast.LENGTH_SHORT).show()
+                notesList.remove(note)
+                fetchNotes()
+            }
+            .addOnFailureListener { e ->
+                Log.e("NoteViewFragment", "Failed to delete note: ${e.message}")
+                Toast.makeText(requireContext(), "Failed to delete note", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun pinNote(note: Note) {
+        notesList.remove(note)
+        notesList.add(0, note) // Add the note to the top of the list
+        val groupedNotes = groupNotesByDate(notesList)
+        noteAdapter = NoteAdapter(groupedNotes = groupedNotes,
+            onEditClicked = { note ->
+                // Handle edit action
+                val bundle = Bundle().apply {
+                    putString("noteId", note.id)
+                    putString("title", note.title)
+                    putString("content", note.content)
+                    putString("date", note.date)
+                    putString("time", note.time)
+                    putString("place", note.place)
+                }
+                findNavController().navigate(R.id.action_noteViewFragment_to_noteCreatorFragment, bundle)
+            },
+            onDeleteClicked = { note ->
+                // Handle delete action
+                deleteNote(note)
+            },
+            onPinClicked = { note ->
+                // Handle pin action
+                pinNote(note)
+            })
+        recyclerView.adapter = noteAdapter
+    }
+
     private fun redirectToMap() {
         val navController = findNavController()
-        navController.navigate(R.id.action_noteViewFragment_to_mapFragment)
+
+        val bundle = Bundle()
+        bundle.putBoolean("toggleState", toggleButton.isChecked)
+
+        navController.navigate(R.id.action_noteViewFragment_to_mapFragment, bundle)
     }
 }
