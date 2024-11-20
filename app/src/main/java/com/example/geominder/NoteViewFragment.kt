@@ -48,7 +48,22 @@ class NoteViewFragment : Fragment() {
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        noteAdapter = NoteAdapter(emptyList())
+        noteAdapter = NoteAdapter(emptyList(),
+            onEditClicked = { note ->
+            val bundle = Bundle().apply {
+                putString("title", note.title)
+                putString("content", note.content)
+                putString("time", note.time)
+                putString("place", note.place)
+            }
+            findNavController().navigate(R.id.action_noteViewFragment_to_noteCreatorFragment, bundle)
+        },
+            onDeleteClicked = { note ->
+                deleteNote(note)
+            },
+            onPinClicked = { note ->
+                pinNote(note)
+            })
         recyclerView.adapter = noteAdapter
 
         toggleButton = view.findViewById(R.id.toggleButton)
@@ -79,26 +94,72 @@ class NoteViewFragment : Fragment() {
 
                 for (document in documents) {
                     val note = document.toObject(Note::class.java)
-                    notesList.add(note)
-                }
 
-                notesList.sortBy { note ->
                     val dateString = note.date
                     val timeString = note.time
 
-                    // Combine date and time to form a datetime string for comparison
-                    val formattedDate = "$dateString $timeString"
-                    val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-                    try {
-                        sdf.parse(formattedDate)?.time
-                    } catch (e: Exception) {
-                        Log.e("NoteViewFragment", "Error parsing date: ${e.message}")
-                        0L // If the date parsing fails, return 0L
+                    if (dateString != null && timeString != null) {
+                        // Combine date and time to get a comparable time in milliseconds
+                        val formattedDate = "$dateString $timeString"
+                        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                        try {
+                            val noteTime = sdf.parse(formattedDate)?.time ?: 0L
+
+                            if (noteTime < now) {
+                                // Delete expired note from Firestore
+                                document.reference.delete()
+                                    .addOnSuccessListener {
+                                        Log.d("NoteViewFragment", "Expired note successfully deleted")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e("NoteViewFragment", "Failed to delete expired note: ${e.message}")
+                                    }
+                            } else {
+                                // Reformat time to ensure two-digit minutes
+                                val timeSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+                                val parsedTime = sdf.parse(formattedDate)
+                                note.time = parsedTime?.let { timeSdf.format(it) } ?: timeString
+
+                                // Add non-expired note to the list
+                                notesList.add(note)
+                            }
+                        } catch (e: Exception) {
+                            Log.e("NoteViewFragment", "Error parsing date: ${e.message}")
+                        }
+                    } else {
+                        Log.w("NoteViewFragment", "Note date or time is null, skipping.")
                     }
                 }
 
+                // Sort notes by combined date and time
+                notesList.sortBy { note ->
+                    val formattedDate = "${note.date} ${note.time}"
+                    val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                    sdf.parse(formattedDate)?.time ?: 0L
+                }
+
                 val groupedNotes = groupNotesByDate(notesList)
-                noteAdapter = NoteAdapter(groupedNotes)
+                noteAdapter = NoteAdapter(groupedNotes = groupedNotes,
+                    onEditClicked = { note ->
+                        // Handle edit action
+                        val bundle = Bundle().apply {
+                            putString("noteId", note.id)
+                            putString("title", note.title)
+                            putString("content", note.content)
+                            putString("date", note.date)
+                            putString("time", note.time)
+                            putString("place", note.place)
+                        }
+                        findNavController().navigate(R.id.action_noteViewFragment_to_noteCreatorFragment, bundle)
+                    },
+                    onDeleteClicked = { note ->
+                        // Handle delete action
+                        deleteNote(note)
+                    },
+                    onPinClicked = { note ->
+                        // Handle pin action
+                        pinNote(note)
+                    })
                 recyclerView.adapter = noteAdapter
             }
             .addOnFailureListener { exception ->
@@ -110,6 +171,53 @@ class NoteViewFragment : Fragment() {
     private fun groupNotesByDate(notes: List<Note>): List<Pair<String, List<Note>>> {
         val notesByDate = notes.groupBy { it.date }
         return notesByDate.map { Pair(it.key, it.value) }
+    }
+
+    private fun deleteNote(note: Note) {
+        val userID = auth.currentUser?.uid ?: return
+
+        firestore.collection("users")
+            .document(userID)
+            .collection("notes")
+            .document(note.id)
+            .delete()
+            .addOnSuccessListener {
+                Toast.makeText(requireContext(), "Note deleted successfully", Toast.LENGTH_SHORT).show()
+                notesList.remove(note)
+                fetchNotes()
+            }
+            .addOnFailureListener { e ->
+                Log.e("NoteViewFragment", "Failed to delete note: ${e.message}")
+                Toast.makeText(requireContext(), "Failed to delete note", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun pinNote(note: Note) {
+        notesList.remove(note)
+        notesList.add(0, note) // Add the note to the top of the list
+        val groupedNotes = groupNotesByDate(notesList)
+        noteAdapter = NoteAdapter(groupedNotes = groupedNotes,
+            onEditClicked = { note ->
+                // Handle edit action
+                val bundle = Bundle().apply {
+                    putString("noteId", note.id)
+                    putString("title", note.title)
+                    putString("content", note.content)
+                    putString("date", note.date)
+                    putString("time", note.time)
+                    putString("place", note.place)
+                }
+                findNavController().navigate(R.id.action_noteViewFragment_to_noteCreatorFragment, bundle)
+            },
+            onDeleteClicked = { note ->
+                // Handle delete action
+                deleteNote(note)
+            },
+            onPinClicked = { note ->
+                // Handle pin action
+                pinNote(note)
+            })
+        recyclerView.adapter = noteAdapter
     }
 
     private fun redirectToMap() {

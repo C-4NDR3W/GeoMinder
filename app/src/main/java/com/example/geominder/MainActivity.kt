@@ -78,8 +78,8 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
 
-                R.id.navigation_profile -> {
-                    navController.navigate(R.id.navigation_profile)
+                R.id.navigation_settings -> {
+                    navController.navigate(R.id.navigation_settings)
                     true
                 }
 
@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun onLocationPermissionGranted() {
-        Toast.makeText(this, "Location permissions granted", Toast.LENGTH_SHORT).show()
+        Log.d("D", "Location Permission Granted")
     }
 
     private fun requestBackgroundLocationPermission() {

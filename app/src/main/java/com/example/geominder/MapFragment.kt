@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
+import androidx.preference.PreferenceManager
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -99,6 +100,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
+//        applyMapsettings()  //unfinished
 
         when{
             hasLocationPermission() -> getLastLocation()
@@ -109,6 +111,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
         }
     }
+
+//    private fun applyMapsettings() {
+//        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+//        updateMapType(sharedPreferences.getString("map_type", "normal") ?: "normal")
+//        updateTrafficLayer(sharedPreferences.getBoolean("traffic_layer", false))
+//        updateTerrainLayer(sharedPreferences.getBoolean("terrain_layer", false))
+//        updateDefaultZoom(sharedPreferences.getInt("default_zoom", 15))
+//        updateScaleBarVisibility(sharedPreferences.getBoolean("show_scale_bar", true))
+//    }
 
     override fun onResume() {
         super.onResume()

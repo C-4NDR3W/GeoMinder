@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -75,19 +77,32 @@ class PermissionSettingsFragment : Fragment() {
 
     private fun handlePermissionToggle(permission: Permission, isChecked: Boolean) {
         if (isChecked) {
-            requestPermission(permission.name)
+            if(shouldShowRequestPermissionRationale(permission.name)){
+                AlertDialog.Builder(requireContext()).setTitle("Permission Required")
+                    .setMessage("This App requires ${permission.description} for better functionality.")
+                    .setPositiveButton("Grant"){_,_ ->
+                        requestPermission(permission.name)
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            } else {
+                requestPermission(permission.name)
+            }
         } else {
             Toast.makeText(
                 requireContext(),
-                "Cannot revoke permissions programmatically.",
+                "Cannot change permissions, please use app settings",
                 Toast.LENGTH_SHORT
             ).show()
         }
     }
 
     private fun requestPermission(permission: String) {
-        // Trigger permission request dialog.
-        requestPermissions(arrayOf(permission), PERMISSION_REQUEST_CODE)
+        ActivityCompat.requestPermissions(
+            requireActivity(),
+            arrayOf(permission),
+            PERMISSION_REQUEST_CODE
+        )
     }
 
     companion object {

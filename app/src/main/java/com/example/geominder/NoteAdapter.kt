@@ -4,12 +4,16 @@ import android.icu.text.SimpleDateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.type.Date
 import java.util.Locale
 
-class NoteAdapter(private val groupedNotes: List<Pair<String, List<Note>>>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class NoteAdapter(private val groupedNotes: List<Pair<String, List<Note>>>,
+                  private val onEditClicked: (Note) -> Unit,
+                  private val onDeleteClicked: (Note) -> Unit,
+                  private val onPinClicked: (Note) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         private const val TYPE_DATE_HEADER = 0
@@ -25,6 +29,9 @@ class NoteAdapter(private val groupedNotes: List<Pair<String, List<Note>>>) : Re
         val noteContent: TextView = itemView.findViewById(R.id.noteContent)
         val noteTime: TextView = itemView.findViewById(R.id.noteTime)
         val notePlace: TextView = itemView.findViewById(R.id.notePlace)
+        val editButton: ImageButton = itemView.findViewById(R.id.editButton)
+        val deleteButton: ImageButton = itemView.findViewById(R.id.deleteButton)
+        val pinButton: ImageButton = itemView.findViewById(R.id.pinButton)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -64,6 +71,22 @@ class NoteAdapter(private val groupedNotes: List<Pair<String, List<Note>>>) : Re
                 noteHolder.noteContent.text = note.content
                 noteHolder.noteTime.text = note.time
                 noteHolder.notePlace.text = note.place
+
+                // Edit button click
+                noteHolder.editButton.setOnClickListener {
+                    onEditClicked(note)
+                }
+
+                // Delete button click
+                noteHolder.deleteButton.setOnClickListener {
+                    onDeleteClicked(note)
+                }
+
+                // Pin button click
+                noteHolder.pinButton.setOnClickListener {
+                    onPinClicked(note)
+                }
+
                 return
             }
             currentIndex += notesInGroup.size

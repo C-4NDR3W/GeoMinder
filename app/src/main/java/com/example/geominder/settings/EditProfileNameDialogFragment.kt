@@ -14,6 +14,14 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class EditProfileNameDialogFragment : DialogFragment() {
 
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.setLayout(
+            (resources.displayMetrics.widthPixels * 0.9).toInt(),
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
