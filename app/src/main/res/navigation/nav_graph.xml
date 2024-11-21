@@ -158,6 +158,9 @@
         <action
             android:id="@+id/action_navigation_settings_to_settings_navigation_appearance"
             app:destination="@+id/settings_navigation_appearance"/>
+        <action
+            android:id="@+id/action_navigation_settings_to_settings_navigation_notification"
+            app:destination="@+id/settings_navigation_notification"/>
     </fragment>
 
     <fragment
@@ -194,6 +197,12 @@
         android:id="@+id/settings_navigation_appearance"
         android:name="com.example.geominder.settings.AppearanceSettingFragment"
         android:label="Appearance Settings Page">
+    </fragment>
+
+    <fragment
+        android:id="@+id/settings_navigation_notification"
+        android:name="com.example.geominder.settings.NotificationSettingFragment"
+        android:label="Notification Settings Page">
     </fragment>
 
 
