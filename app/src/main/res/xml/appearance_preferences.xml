@@ -1,0 +1,13 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/theme_header">
+
+        <SwitchPreferenceCompat
+            app:key="isDarkMode"
+            app:title="Dark Mode"/>
+
+    </PreferenceCategory>
+<!--    we prolly should have stuff like
+hide bottom nav when scrolling/focused on map-->
+
+</PreferenceScreen>

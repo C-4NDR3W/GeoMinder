@@ -53,7 +53,7 @@ class EditProfileNameDialogFragment : DialogFragment() {
                         .addOnFailureListener {
                             Toast.makeText(
                                 requireContext(),
-                                "Unexpected Error Occured, please try again later",
+                                "Unexpected Error Occurred, please try again later",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }

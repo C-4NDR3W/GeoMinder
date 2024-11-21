@@ -63,11 +63,11 @@ class SettingsFragment : Fragment() {
         }
 
         helpButton.setOnClickListener{
-
+            findNavController().navigate(R.id.action_navigation_settings_to_settings_navigation_help)
         }
 
         appearanceButton.setOnClickListener{
-
+            findNavController().navigate(R.id.action_navigation_settings_to_settings_navigation_appearance)
         }
 
         notificationButton.setOnClickListener{
