@@ -55,19 +55,19 @@ class SettingsFragment : Fragment() {
         }
 
         mapButton.setOnClickListener{
-            findNavController().navigate(R.id.action_noteViewFragment_to_mapFragment)
+            findNavController().navigate(R.id.action_navigation_settings_to_settings_navigation_map)
         }
 
         dataButton.setOnClickListener{
-
+            findNavController().navigate(R.id.action_navigation_settings_to_settings_navigation_data)
         }
 
         helpButton.setOnClickListener{
-
+            findNavController().navigate(R.id.action_navigation_settings_to_settings_navigation_help)
         }
 
         appearanceButton.setOnClickListener{
-
+            findNavController().navigate(R.id.action_navigation_settings_to_settings_navigation_appearance)
         }
 
         notificationButton.setOnClickListener{
