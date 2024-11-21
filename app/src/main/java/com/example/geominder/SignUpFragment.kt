@@ -67,6 +67,13 @@ class SignUpFragment : Fragment() {
             .build()
 
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
+
+
+        if (auth.currentUser != null) {
+            val intent = Intent(requireContext(), MainActivity::class.java)
+            startActivity(intent)
+            requireActivity().finish()
+        }
     }
 
     fun setGoogleSignUpButton(view: View)
@@ -238,7 +245,7 @@ class SignUpFragment : Fragment() {
                     val userId = currentUser?.uid
                     if (userId != null) {
                         val userData = hashMapOf(
-                            "email" to ""
+                            "email" to email
                         )
                         db.collection("users").document(userId)
                             .set(userData)

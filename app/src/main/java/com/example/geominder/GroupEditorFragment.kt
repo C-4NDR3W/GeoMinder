@@ -10,12 +10,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.getField
+import kotlinx.coroutines.tasks.await
 
 
 class GroupEditorFragment : Fragment() {
@@ -23,6 +25,8 @@ class GroupEditorFragment : Fragment() {
     private lateinit var suggestionField: AutoCompleteTextView
     private lateinit var userListField: ListView
     private lateinit var fragmentTitleText : TextView
+    private lateinit var actionButton : Button
+    private lateinit var groupNameField : TextView
 
     private var addedUsers = mutableListOf<String>("kevinhadinata11@gmail.com", "kennylukman@gmail.com")
     private var suggestions = mutableListOf<String>("kevinhadinata11@gmail.com", "kennylukman@gmail.com")
@@ -49,12 +53,14 @@ class GroupEditorFragment : Fragment() {
         }
 
         fragmentTitleText = view.findViewById(R.id.newGroupText)
+        actionButton = view.findViewById(R.id.groupActionButton)
 
         //jika fragment dipakai untuk mengedit group
         if (arguments?.getStringArrayList("users") != null)
         {
             addedUsers = arguments?.getStringArrayList("users") as MutableList<String>
             fragmentTitleText.text = "Edit Group"
+            actionButton.text = "Edit Group"
 
         }
 
@@ -79,7 +85,6 @@ class GroupEditorFragment : Fragment() {
             }
         })
 
-
         suggestionField.setOnItemClickListener { parent, view, position, id ->
             val selectedUser = parent.getItemAtPosition(position) as String
 
@@ -99,6 +104,19 @@ class GroupEditorFragment : Fragment() {
         return view
     }
 
+
+//    fun setActionButtonListener(isEditing: Boolean)
+//    {
+//        val name = groupNameField.text.toString()
+//
+//        actionButton.setOnClickListener({
+//            if (isEditing) {
+//                return
+//            }
+//
+//            createGroup(addedUsers, name)
+//        })
+//    }
     fun generateUserSuggestions(query: String) {
         db.collection("users")
             .whereGreaterThanOrEqualTo("email", query)
@@ -130,5 +148,37 @@ class GroupEditorFragment : Fragment() {
     }
 //
 
+    suspend fun obtainUserIds(users: List<String>) : MutableList<String>
+    {
+
+        var userIds = mutableListOf<String>()
+        for (user : String in users) {
+
+            val snapshot = db.collection("users")
+                .whereEqualTo("email", user)
+                .get()
+                .await()
+
+            if (!snapshot.isEmpty) {
+                val documentId = snapshot.documents[0].id
+                userIds.add(documentId)
+            }
+        }
+
+        return userIds
+
+    }
+
+    suspend fun createGroup(users: List<String>, groupName : String)
+    {
+
+        val listOfIds = obtainUserIds(users)
+        val groupData = hashMapOf(
+            "name" to groupName,
+            "members" to users
+        )
+        val group = Group(groupName, listOfIds.toString())
+        db.collection("groups").add(groupData)
+    }
 
 }

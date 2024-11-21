@@ -73,7 +73,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         ContextCompat.checkSelfPermission(requireContext(), ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED
 
-
     private fun showPermissionRationale(positiveAction: () -> Unit) {
         AlertDialog.Builder(requireContext())
             .setTitle("Location permission")

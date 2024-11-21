@@ -52,11 +52,4 @@
             android:clickable="true" />
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="test"
-        android:textColor="@android:color/white" />
-
 </FrameLayout>
