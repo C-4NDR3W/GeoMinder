@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,9 +21,7 @@ class GroupViewFragment : Fragment() {
     private lateinit var db: FirebaseFirestore
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         db = FirebaseFirestore.getInstance()
         val view = inflater.inflate(R.layout.fragment_group_view, container, false)
 
@@ -41,25 +38,26 @@ class GroupViewFragment : Fragment() {
         return view
     }
 
-    private fun loadGroupDetails(groupName: String) {
+    private fun loadGroupDetails(groupId: String) {
+        if (groupId.isEmpty()) {
+            Log.d("GroupViewFragment", "No Group ID provided")
+            return
+        }
+
         db.collection("groups")
-            .whereEqualTo("name", groupName)
+            .document(groupId)
             .get()
-            .addOnSuccessListener { documents ->
-                if (documents.isEmpty) {
-                    Log.d("Firestore", "No groups found with the name: $groupName")
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val group = documentSnapshot.toObject(Group::class.java)
+                    groupNameTextView.text = group?.name
+                    // Update the UI or RecyclerView adapter based on group data
                 } else {
-                    for (document in documents) {
-                        val group = document.toObject(Group::class.java)
-                        groupNameTextView.text = group.name
-                        // Set other details or proceed with fetching members etc.
-                        break // Break after the first match if name is unique
-                    }
+                    Log.d("GroupViewFragment", "No such group with ID: $groupId")
                 }
             }
-            .addOnFailureListener { exception ->
-                Log.e("Firestore", "Error fetching group details", exception)
+            .addOnFailureListener { e ->
+                Log.e("GroupViewFragment", "Error fetching group details", e)
             }
     }
-
 }

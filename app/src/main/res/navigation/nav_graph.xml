@@ -222,12 +222,12 @@
     <fragment
         android:id="@+id/groupViewFragment"
         android:name="com.example.geominder.GroupViewFragment"
-        android:label="Group View"
-        tools:layout="@layout/fragment_group_view">
+        android:label="Group View">
         <argument
-            android:name="groupName"
+            android:name="groupId"
             app:argType="string" />
     </fragment>
+
 
 
 </navigation>

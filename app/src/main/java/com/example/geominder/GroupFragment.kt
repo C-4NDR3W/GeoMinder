@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.navigation.Navigator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
@@ -23,15 +22,12 @@ class GroupFragment : Fragment() {
     private lateinit var addGroupButton: ImageView
     private lateinit var navController: NavController
     private lateinit var auth : FirebaseAuth
-    private var isNewGroup = true
     private val groups = mutableListOf<Group>()
 
     private lateinit var db : FirebaseFirestore
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_group, container, false)
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
         recyclerView = view.findViewById(R.id.recyclerView)
@@ -41,24 +37,21 @@ class GroupFragment : Fragment() {
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
-//        groups.add(Group("Me and the boys", "You, Clay, Javier, Kevin"))
-//        groups.add(Group("Mi Familia", "You, Clay, Javier, Kevin"))
-//        groups.add(Group("Kevin's party", "You, Clay, Javier, Kevin"))
+        groupAdapter = GroupAdapter(groups) { group ->
+            val action = GroupFragmentDirections.actionNavigationGroupToGroupViewFragment(group.name)
+            navController.navigate(action)
+        }
 
-
-
-        groupAdapter = GroupAdapter(groups)
         recyclerView.adapter = groupAdapter
 
         fetchGroups()
 
-        addGroupButton.setOnClickListener({
+        addGroupButton.setOnClickListener {
             navigateToGroupEditor()
-        })
+        }
 
         return view
     }
-
 
     fun fetchGroups() {
         val currentUser = auth.currentUser
@@ -67,10 +60,10 @@ class GroupFragment : Fragment() {
             return
         }
 
-        // Fetching data from Firestore (for example, inside your fetchGroups function)
         db.collection("groups")
             .get()
             .addOnSuccessListener { documents ->
+                groups.clear()  // Clear the list before adding
                 for (document in documents) {
                     val groupName = document.getString("name") ?: "Unknown"
                     val membersList =
@@ -94,15 +87,11 @@ class GroupFragment : Fragment() {
             .addOnFailureListener { exception ->
                 Log.e("FetchGroups", "Error fetching groups: ", exception)
             }
-
     }
 
-
-    fun navigateToGroupEditor()
-    {
+    fun navigateToGroupEditor() {
         val bundle = Bundle()
         bundle.putString("type", "newGroup")
-       navController.navigate(R.id.action_navigation_group_to_groupEditorFragment)
+        navController.navigate(R.id.action_navigation_group_to_groupEditorFragment, bundle)
     }
-
 }
