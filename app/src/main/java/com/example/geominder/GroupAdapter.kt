@@ -1,5 +1,6 @@
 package com.example.geominder
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,8 +22,25 @@ class GroupAdapter(private val groups: List<Group>) : RecyclerView.Adapter<Group
     override fun onBindViewHolder(holder: GroupViewHolder, position: Int) {
         val group = groups[position]
         holder.groupName.text = group.name
-        holder.groupMembers.text = group.members
+        holder.groupMembers.text = ""
+
+        var membersText = StringBuilder()
+        var idx = 0
+        for (member : User in group.members) {
+            membersText.append(member.email)
+            idx++
+            if (idx != group.members.size) {
+                membersText.append(", ")
+            }
+
+            Log.d("GroupAdapter", "Member: ${member.email}")
+        }
+
+        holder.groupMembers.text = membersText.toString()
     }
+
 
     override fun getItemCount(): Int = groups.size
 }
+
+

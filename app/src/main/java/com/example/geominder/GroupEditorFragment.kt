@@ -14,9 +14,11 @@ import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.getField
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 
@@ -27,6 +29,7 @@ class GroupEditorFragment : Fragment() {
     private lateinit var fragmentTitleText : TextView
     private lateinit var actionButton : Button
     private lateinit var groupNameField : TextView
+    private var isEditing = false
 
     private var addedUsers = mutableListOf<String>("kevinhadinata11@gmail.com", "kennylukman@gmail.com")
     private var suggestions = mutableListOf<String>("kevinhadinata11@gmail.com", "kennylukman@gmail.com")
@@ -54,10 +57,12 @@ class GroupEditorFragment : Fragment() {
 
         fragmentTitleText = view.findViewById(R.id.newGroupText)
         actionButton = view.findViewById(R.id.groupActionButton)
+        groupNameField = view.findViewById(R.id.groupNameField)
 
         //jika fragment dipakai untuk mengedit group
         if (arguments?.getStringArrayList("users") != null)
         {
+            isEditing = true
             addedUsers = arguments?.getStringArrayList("users") as MutableList<String>
             fragmentTitleText.text = "Edit Group"
             actionButton.text = "Edit Group"
@@ -85,6 +90,7 @@ class GroupEditorFragment : Fragment() {
             }
         })
 
+        setActionButtonListener(isEditing)
         suggestionField.setOnItemClickListener { parent, view, position, id ->
             val selectedUser = parent.getItemAtPosition(position) as String
 
@@ -105,18 +111,24 @@ class GroupEditorFragment : Fragment() {
     }
 
 
-//    fun setActionButtonListener(isEditing: Boolean)
-//    {
-//        val name = groupNameField.text.toString()
-//
-//        actionButton.setOnClickListener({
-//            if (isEditing) {
-//                return
-//            }
-//
-//            createGroup(addedUsers, name)
-//        })
-//    }
+    fun setActionButtonListener(isEditing: Boolean) {
+        actionButton.setOnClickListener {
+            val name = groupNameField.text.toString()
+            viewLifecycleOwner.lifecycleScope.launch {
+                try {
+                    if (isEditing) {
+                        return@launch
+                    }
+                    createGroup(addedUsers, name)
+                    Toast.makeText(context, "Group created successfully!", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    Log.e("GroupError", "Failed to create group", e)
+                    Toast.makeText(context, "Error creating group: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
     fun generateUserSuggestions(query: String) {
         db.collection("users")
             .whereGreaterThanOrEqualTo("email", query)
@@ -169,16 +181,20 @@ class GroupEditorFragment : Fragment() {
 
     }
 
-    suspend fun createGroup(users: List<String>, groupName : String)
-    {
+    suspend fun createGroup(users: List<String>, groupName: String) {
+        val userObjects = obtainUserIds(users).mapIndexed { index, userId ->
+            hashMapOf(
+                "email" to users[index],
+                "userId" to userId
+            )
+        }
 
-        val listOfIds = obtainUserIds(users)
         val groupData = hashMapOf(
             "name" to groupName,
-            "members" to users
+            "members" to userObjects
         )
-        val group = Group(groupName, listOfIds.toString())
         db.collection("groups").add(groupData)
     }
+
 
 }
