@@ -124,6 +124,10 @@
         <action
             android:id="@+id/action_navigation_group_to_groupEditorFragment"
             app:destination="@id/groupEditorFragment" />
+
+        <action
+            android:id="@+id/action_navigation_group_to_groupViewFragment"
+            app:destination="@id/groupViewFragment" />
     </fragment>
 
     <fragment
@@ -214,4 +218,16 @@
         android:name="com.example.geominder.GroupEditorFragment"
         android:label="fragment_group_editor"
         tools:layout="@layout/fragment_group_editor" />
+
+    <fragment
+        android:id="@+id/groupViewFragment"
+        android:name="com.example.geominder.GroupViewFragment"
+        android:label="Group View"
+        tools:layout="@layout/fragment_group_view">
+        <argument
+            android:name="groupName"
+            app:argType="string" />
+    </fragment>
+
+
 </navigation>
