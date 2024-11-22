@@ -53,8 +53,8 @@ class ReminderWorker(
 
         // Bangun notifikasi dengan PendingIntent
         val notification = NotificationCompat.Builder(applicationContext, channelId)
-            .setContentTitle("Geominder")
-            .setContentText("Your event is starting soon!")
+            .setContentTitle("Geominder") // Judul notifikasi tetap
+            .setContentText(noteTitle)   // Isi notifikasi diatur menjadi `noteTitle`
             .setSmallIcon(R.drawable.baseline_notifications_24)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent) // Set PendingIntent di sini
@@ -73,6 +73,7 @@ class ReminderWorker(
             vibrator.vibrate(1000)
         }
     }
+
 
     private fun saveNotificationToFirestore(noteTitle: String, noteId: String) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
