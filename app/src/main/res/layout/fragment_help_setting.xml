@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".settings.HelpSettingFragment">
+<!--64 kalo ga ada search bar otherwise 32dp-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textStyle="bold"
+        android:text="@string/help_about"
+        android:padding="16dp"
+        android:layout_marginTop="32dp"
+        android:textSize="16sp"
+        android:id="@+id/about_project"
+        android:textColor="@color/black"
+        />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/version_number_container"
+        app:layout_constraintTop_toBottomOf="@id/about_project"
+        android:padding="16dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@+id/version_number_container"
+            app:layout_constraintBottom_toBottomOf="@+id/version_number_container"
+            android:textStyle="bold"
+            android:text="@string/version_display"
+            android:textSize="16sp"
+            android:id="@+id/version_number"
+            android:textColor="@color/black"
+            android:clickable="true"
+            android:focusable="true"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/version_number"
+            app:layout_constraintStart_toStartOf="@+id/version_number"
+            android:text="@string/version_number"
+            android:textSize="16sp"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

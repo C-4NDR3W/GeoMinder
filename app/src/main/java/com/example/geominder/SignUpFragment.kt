@@ -27,7 +27,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 
 class SignUpFragment : Fragment() {
-    private lateinit var firestore: FirebaseFirestore
 
     private lateinit var auth: FirebaseAuth
     private lateinit var emailEditText: EditText
@@ -43,7 +42,7 @@ class SignUpFragment : Fragment() {
     private lateinit var googleSignUpBtn : SignInButton
     private lateinit var googleSignInClient: GoogleSignInClient
 
-
+    private lateinit var db : FirebaseFirestore
 
     data object errors {
         var emailError = false
@@ -61,12 +60,20 @@ class SignUpFragment : Fragment() {
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()
 
+        db = FirebaseFirestore.getInstance()
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
 
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
+
+
+        if (auth.currentUser != null) {
+            val intent = Intent(requireContext(), MainActivity::class.java)
+            startActivity(intent)
+            requireActivity().finish()
+        }
     }
 
     fun setGoogleSignUpButton(view: View)
@@ -77,6 +84,7 @@ class SignUpFragment : Fragment() {
 
         }
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -147,37 +155,60 @@ class SignUpFragment : Fragment() {
 
         signUpButton.setOnClickListener {
             resetErrors()
+
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
             val confirm = confirmPassword.text.toString().trim()
-            if (email.isNotEmpty() && password.isNotEmpty() && confirm.isNotEmpty()
-                && validateEmail(email) && validatePass(password) && comparePass(password, confirm)) {
-                signUpUser(email, password)
-            }
-//
-            else {
-                updateErrorIndicators()
+
+
+            val isEmailValid = validateEmail(email)
+            val isPasswordValid = validatePass(password)
+            val isPasswordConfirmed = comparePass(password, confirm)
+
+            updateErrorIndicators()
+
+            if (isEmailValid && isPasswordValid && isPasswordConfirmed) {
+
+                checkMatchingEmail(email) { isUnique ->
+                    if (isUnique) {
+                        signUpUser(email, password)
+                    } else {
+                        errors.emailError = true
+                        updateErrorIndicators()
+                    }
+                }
             }
         }
+
     }
 
+    private fun checkMatchingEmail(email: String, callback: (Boolean) -> Unit) {
+        db.collection("users").whereEqualTo("email", email).get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val documents = task.result
+                    if (documents != null && !documents.isEmpty) {
+                        Toast.makeText(requireContext(), "Email already in use", Toast.LENGTH_SHORT).show()
+                        callback(false)
+                    } else {
+                        callback(true)
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Error checking email", Toast.LENGTH_SHORT).show()
+                    callback(false)
+                }
+            }
+    }
     private fun validatePass(password: String): Boolean {
-        errors.passwordError = true
         if (password.length <= 8) {
+            errors.passwordError = true
             return false
         }
+
         val specialCharacters = "!@#$%^&*()-_=+[]{}|;:'\",.<>?/`~"
-        var hasSpecialCharacter = false
-        for (char in password) {
-            if (char in specialCharacters) {
-                hasSpecialCharacter = true
-                break
-            }
-        }
+        val hasSpecialCharacter = password.any { it in specialCharacters }
 
-
-
-        errors.passwordError = hasSpecialCharacter
+        errors.passwordError = !hasSpecialCharacter
         return hasSpecialCharacter
     }
 
@@ -209,14 +240,14 @@ class SignUpFragment : Fragment() {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+
                     val currentUser = FirebaseAuth.getInstance().currentUser
                     val userId = currentUser?.uid
                     if (userId != null) {
                         val userData = hashMapOf(
-                            "name" to ""
+                            "email" to email
                         )
-
-                        firestore.collection("users").document(userId)
+                        db.collection("users").document(userId)
                             .set(userData)
                             .addOnSuccessListener {
                                 Toast.makeText(context, "User info saved", Toast.LENGTH_SHORT).show()
@@ -225,6 +256,7 @@ class SignUpFragment : Fragment() {
                                 Toast.makeText(context, "Failed to save user info: ${e.message}", Toast.LENGTH_SHORT).show()
                             }
                     }
+                    Log.d("success", "success")
                     Toast.makeText(context, "Sign-up successful", Toast.LENGTH_SHORT).show()
                     redirectToLogin()
                 } else {
