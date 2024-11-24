@@ -204,12 +204,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/settings_navigation_notification"
-        android:name="com.example.geominder.settings.NotificationSettingFragment"
-        android:label="Notification Settings Page">
-    </fragment>
-
-    <fragment
         android:id="@+id/mapFragment"
         android:name="com.example.geominder.MapFragment"
         android:label="fragment_map"
