@@ -1,0 +1,47 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory app:title="@string/notification_header">
+
+        <DropDownPreference
+            app:defaultValue="10 minutes"
+            app:entries="@array/notification_delay_entries"
+            app:entryValues="@array/notification_delay_values"
+            app:key="notificationDelay"
+            app:summary="Sets the delay between location hits"
+            app:title="@string/notification_delay" />
+
+        <DropDownPreference
+            app:title="@string/notification_strength"
+            app:entries="@array/notification_strength_entries"
+            app:entryValues="@array/notification_strength_values"
+            app:key="notificationStrength"/>
+
+        <SwitchPreferenceCompat
+            app:title="@string/enable_vibration"
+            app:key="enableVibration"
+            app:defaultValue="true"
+            />
+
+        <DropDownPreference
+            app:key="vibrationMode"
+            app:title="@string/vibration_mode"
+            app:entries="@array/vibration_mode_entries"
+            app:entryValues="@array/vibration_mode_values"
+            app:dependency="enableVibration"
+            app:summary="Set Vibration mode"
+            />
+
+        <DropDownPreference
+            app:key="vibrationLength"
+            app:title="@string/vibration_length"
+            app:entries="@array/vibration_length_entries"
+            app:entryValues="@array/vibration_length_values"
+            app:dependency="enableVibration"
+            app:summary="Set Vibration length"
+            />
+
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

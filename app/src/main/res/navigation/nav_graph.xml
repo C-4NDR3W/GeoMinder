@@ -145,6 +145,9 @@
             android:id="@+id/action_navigation_settings_to_navigation_group"
             app:destination="@id/navigation_group" />
         <action
+            android:id="@+id/action_navigation_settings_to_navigation_notifications"
+            app:destination="@id/navigation_notifications" />
+        <action
             android:id="@+id/action_navigation_settings_to_settings_navigation_profile"
             app:destination="@id/settings_navigation_profile" />
         <action
@@ -165,6 +168,9 @@
         <action
             android:id="@+id/action_navigation_settings_to_settings_navigation_appearance"
             app:destination="@+id/settings_navigation_appearance"/>
+        <action
+            android:id="@+id/action_navigation_settings_to_settings_navigation_notification"
+            app:destination="@+id/settings_navigation_notification"/>
     </fragment>
 
     <fragment
@@ -202,6 +208,13 @@
         android:name="com.example.geominder.settings.AppearanceSettingFragment"
         android:label="Appearance Settings Page">
     </fragment>
+
+    <fragment
+        android:id="@+id/settings_navigation_notification"
+        android:name="com.example.geominder.settings.NotificationSettingFragment"
+        android:label="Notification Settings Page">
+    </fragment>
+
 
     <fragment
         android:id="@+id/mapFragment"

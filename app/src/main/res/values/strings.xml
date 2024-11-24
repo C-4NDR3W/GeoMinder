@@ -106,4 +106,9 @@
     <string name="version_display">Version Number</string>
     <string name="version_number">v1.0</string>
     <string name="theme_header">Theme</string>
+    <string name="notification_delay">Set Notification Delay</string>
+    <string name="notification_strength">Notification Strength</string>
+    <string name="enable_vibration">Vibration</string>
+    <string name="vibration_mode">Vibration Mode\n</string>
+    <string name="vibration_length">Vibration Length\n</string>
 </resources>

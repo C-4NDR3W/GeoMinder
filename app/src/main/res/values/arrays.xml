@@ -62,5 +62,54 @@
         <item>monthly</item>
         <item>manual</item>
     </string-array>
+    <string-array name="notification_delay_entries">
+        <item>5 minutes</item>
+        <item>10 minutes</item>
+        <item>15 minutes</item>
+        <item>20 minutes</item>
+    </string-array>
+
+    <string-array name="notification_delay_values">
+        <item>5minutes</item>
+        <item>10minutes</item>
+        <item>15minutes</item>
+        <item>20minutes</item>
+    </string-array>
+
+    <string-array name="notification_strength_entries">
+        <item>High</item>
+        <item>Default</item>
+        <item>Low</item>
+    </string-array>
+
+    <string-array name="notification_strength_values">
+        <item>high</item>
+        <item>default</item>
+        <item>low</item>
+    </string-array>
+
+    <string-array name="vibration_mode_entries">
+        <item>Default</item>
+        <item>Click</item>
+        <item>Heavy Click</item>
+        <item>Tick</item>
+    </string-array>
+    <string-array name="vibration_mode_values">
+        <item>default</item>
+        <item>click</item>
+        <item>heavy_click</item>
+        <item>tick</item>
+    </string-array>
+
+    <string-array name="vibration_length_entries">
+        <item>Medium</item>
+        <item>Short</item>
+        <item>Long</item>
+    </string-array>
+    <string-array name="vibration_length_values">
+        <item>medium</item>
+        <item>short</item>
+        <item>long</item>
+    </string-array>
 
 </resources>
