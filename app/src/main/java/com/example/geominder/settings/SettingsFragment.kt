@@ -71,7 +71,7 @@ class SettingsFragment : Fragment() {
         }
 
         notificationButton.setOnClickListener{
-
+            findNavController().navigate(R.id.action_navigation_settings_to_settings_navigation_notification)
         }
 
     }
