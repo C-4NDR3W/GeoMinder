@@ -9,12 +9,15 @@
     tools:context=".GroupFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/SettingsText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="16dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="12dp"
         android:paddingHorizontal="16dp"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:layout_width="wrap_content"
@@ -29,8 +32,8 @@
 
         <ImageView
             android:id="@+id/addGroupButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:clickable="true"
             tools:layout_editor_absoluteX="16dp"
             tools:layout_editor_absoluteY="16dp"
