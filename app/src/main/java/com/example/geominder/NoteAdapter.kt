@@ -11,7 +11,7 @@ import com.google.type.Date
 import java.util.Locale
 
 class NoteAdapter(private val groupedNotes: List<Pair<String, List<Note>>>,
-                  private val onEditClicked: (Note) -> Unit,
+                  private val onNoteClicked: (Note) -> Unit,
                   private val onDeleteClicked: (Note) -> Unit,
                   private val onPinClicked: (Note) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -29,7 +29,6 @@ class NoteAdapter(private val groupedNotes: List<Pair<String, List<Note>>>,
         val noteContent: TextView = itemView.findViewById(R.id.noteContent)
         val noteTime: TextView = itemView.findViewById(R.id.noteTime)
         val notePlace: TextView = itemView.findViewById(R.id.notePlace)
-        val editButton: ImageButton = itemView.findViewById(R.id.editButton)
         val deleteButton: ImageButton = itemView.findViewById(R.id.deleteButton)
         val pinButton: ImageButton = itemView.findViewById(R.id.pinButton)
     }
@@ -73,8 +72,8 @@ class NoteAdapter(private val groupedNotes: List<Pair<String, List<Note>>>,
                 noteHolder.notePlace.text = note.place
 
                 // Edit button click
-                noteHolder.editButton.setOnClickListener {
-                    onEditClicked(note)
+                noteHolder.itemView.setOnClickListener {
+                    onNoteClicked(note)
                 }
 
                 // Delete button click

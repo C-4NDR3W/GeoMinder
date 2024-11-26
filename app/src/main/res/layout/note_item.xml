@@ -29,14 +29,6 @@
             android:gravity="end">
 
             <ImageButton
-                android:id="@+id/editButton"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/edit_button"
-                android:layout_marginHorizontal="4dp"
-                android:background="@android:color/transparent"/>
-
-            <ImageButton
                 android:id="@+id/pinButton"
                 android:layout_width="20dp"
                 android:layout_height="20dp"

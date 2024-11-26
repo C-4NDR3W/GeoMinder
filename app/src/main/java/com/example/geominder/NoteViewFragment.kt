@@ -49,7 +49,7 @@ class NoteViewFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         noteAdapter = NoteAdapter(emptyList(),
-            onEditClicked = { note ->
+            onNoteClicked = { note ->
             val bundle = Bundle().apply {
                 putString("title", note.title)
                 putString("content", note.content)
@@ -140,7 +140,7 @@ class NoteViewFragment : Fragment() {
 
                 val groupedNotes = groupNotesByDate(notesList)
                 noteAdapter = NoteAdapter(groupedNotes = groupedNotes,
-                    onEditClicked = { note ->
+                    onNoteClicked = { note ->
                         // Handle edit action
                         val bundle = Bundle().apply {
                             putString("noteId", note.id)
@@ -197,7 +197,7 @@ class NoteViewFragment : Fragment() {
         notesList.add(0, note) // Add the note to the top of the list
         val groupedNotes = groupNotesByDate(notesList)
         noteAdapter = NoteAdapter(groupedNotes = groupedNotes,
-            onEditClicked = { note ->
+            onNoteClicked = { note ->
                 // Handle edit action
                 val bundle = Bundle().apply {
                     putString("noteId", note.id)
