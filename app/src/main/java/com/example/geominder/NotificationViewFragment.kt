@@ -27,7 +27,7 @@ class NotificationViewFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        notificationAdapter = NotificationAdapter(notificationsList)
+        notificationAdapter = NotificationAdapter(notificationsList, requireContext())
         recyclerView.adapter = notificationAdapter
 
         fetchNotifications()

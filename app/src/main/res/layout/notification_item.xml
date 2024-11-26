@@ -21,7 +21,7 @@
         android:id="@+id/placeTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Place/Note ID"
+        android:text=""
         android:textSize="14sp"
         android:paddingBottom="4dp"/>
 

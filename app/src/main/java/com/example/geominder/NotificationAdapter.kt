@@ -1,5 +1,7 @@
 package com.example.geominder
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-class NotificationAdapter(private val notifications: List<Notification>) : RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
+class NotificationAdapter(private val notifications: List<Notification>, private val context: Context) : RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
+
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("PlacesCache", Context.MODE_PRIVATE)
 
     class NotificationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val titleTextView: TextView = itemView.findViewById(R.id.titleTextView)
@@ -25,9 +29,15 @@ class NotificationAdapter(private val notifications: List<Notification>) : Recyc
         val notification = notifications[position]
         holder.titleTextView.text = notification.title
 
-        // Ambil `place` berdasarkan `noteId`
-        fetchPlace(notification.noteId) { place ->
-            holder.placeTextView.text = place
+        // Ambil `place` dari cache atau fetch baru jika perlu
+        val cachedPlace = sharedPreferences.getString(notification.noteId, null)
+        if (cachedPlace != null) {
+            holder.placeTextView.text = cachedPlace
+        } else {
+            fetchPlace(notification.noteId) { place ->
+                holder.placeTextView.text = place
+                savePlaceToCache(notification.noteId, place)
+            }
         }
 
         holder.dateTimeTextView.text = formatDateTime(notification.dateTime)
@@ -47,19 +57,21 @@ class NotificationAdapter(private val notifications: List<Notification>) : Recyc
             .document(noteId)
             .get()
             .addOnSuccessListener { document ->
-                if (document != null && document.exists()) {
-                    val place = document.getString("place") ?: "Unknown Place"
-                    callback(place)
-                } else {
-                    callback("Unknown Place")
-                }
+                val place = document.getString("place") ?: "Unknown Place"
+                callback(place)
+                savePlaceToCache(noteId, place)  // Save to cache when fetched
             }
             .addOnFailureListener {
                 callback("Unknown Place")
             }
     }
 
+    private fun savePlaceToCache(noteId: String, place: String) {
+        with(sharedPreferences.edit()) {
+            putString(noteId, place)
+            apply()
+        }
+    }
 
     override fun getItemCount() = notifications.size
 }
-
