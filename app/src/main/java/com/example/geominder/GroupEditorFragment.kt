@@ -16,6 +16,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.getField
 import kotlinx.coroutines.launch
@@ -31,15 +32,18 @@ class GroupEditorFragment : Fragment() {
     private lateinit var groupNameField : TextView
     private var isEditing = false
 
-    private var addedUsers = mutableListOf<String>("kevinhadinata11@gmail.com", "kennylukman@gmail.com")
-    private var suggestions = mutableListOf<String>("kevinhadinata11@gmail.com", "kennylukman@gmail.com")
+    private var addedUsers = mutableListOf<String>()
+    private var suggestions = mutableListOf<String>()
 
     private lateinit var adapter: ArrayAdapter<String>
+    private lateinit var auth: FirebaseAuth
     private lateinit var userListsAdapter : ArrayAdapter<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         db = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
+
     }
 
 
@@ -111,15 +115,33 @@ class GroupEditorFragment : Fragment() {
     }
 
 
+    fun validateGroupContent() : Boolean
+    {
+        if (groupNameField.text.isEmpty() || addedUsers.size < 2)
+        {
+
+            return false
+        }
+
+
+        return true
+    }
+
+    fun deleteUserSuggestion(view : View)
+    {
+        view.setOnClickListener()
+    }
+
     fun setActionButtonListener(isEditing: Boolean) {
         actionButton.setOnClickListener {
             val name = groupNameField.text.toString()
             viewLifecycleOwner.lifecycleScope.launch {
                 try {
-                    if (isEditing) {
+                    if (isEditing || auth.currentUser == null) {
                         return@launch
                     }
-                    createGroup(addedUsers, name)
+
+                    createGroup(addedUsers, auth.currentUser!!.uid, name)
                     Toast.makeText(context, "Group created successfully!", Toast.LENGTH_SHORT).show()
                 } catch (e: Exception) {
                     Log.e("GroupError", "Failed to create group", e)
@@ -151,8 +173,6 @@ class GroupEditorFragment : Fragment() {
                 adapter.addAll(suggestions)
                 adapter.notifyDataSetChanged()
 
-
-
             }
             .addOnFailureListener { e ->
                 Log.w("Error", "Error fetching documents", e)
@@ -162,10 +182,8 @@ class GroupEditorFragment : Fragment() {
 
     suspend fun obtainUserIds(users: List<String>) : MutableList<String>
     {
-
-        var userIds = mutableListOf<String>()
+        val userIds = mutableListOf<String>()
         for (user : String in users) {
-
             val snapshot = db.collection("users")
                 .whereEqualTo("email", user)
                 .get()
@@ -181,7 +199,15 @@ class GroupEditorFragment : Fragment() {
 
     }
 
-    suspend fun createGroup(users: List<String>, groupName: String) {
+    suspend fun createGroup(users: List<String>, adminId:String, groupName: String) {
+
+        if (!validateGroupContent())
+        {
+            Toast.makeText(requireContext(), "Group must have at least two members and name cannot be empty!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+
         val userObjects = obtainUserIds(users).mapIndexed { index, userId ->
             hashMapOf(
                 "email" to users[index],
@@ -191,8 +217,10 @@ class GroupEditorFragment : Fragment() {
 
         val groupData = hashMapOf(
             "name" to groupName,
+            "admin" to adminId,
             "members" to userObjects
         )
+
         db.collection("groups").add(groupData)
     }
 
