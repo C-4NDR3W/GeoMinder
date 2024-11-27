@@ -33,8 +33,6 @@ class NoteViewFragment : Fragment() {
     private val notesList = mutableListOf<Note>()
     private val searchBarVisible = false
 
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -86,14 +84,21 @@ class NoteViewFragment : Fragment() {
         firestore.collection("users")
             .document(userID)
             .collection("notes")
+            .orderBy("isPinned", Query.Direction.DESCENDING) // Order by pinned notes first
             .orderBy("date", Query.Direction.DESCENDING) // Order by date
             .get()
+            .addOnFailureListener { e ->
+                Log.e("FirestoreError", "Error fetching notes: ${e.message}")
+            }
             .addOnSuccessListener { documents ->
                 notesList.clear()
                 val now = System.currentTimeMillis() // Get current time in milliseconds
 
                 for (document in documents) {
                     val note = document.toObject(Note::class.java)
+
+                    val isPinned = document.getBoolean("isPinned") ?: false
+                    note.isPinned = isPinned
 
                     val dateString = note.date
                     val timeString = note.time
@@ -193,32 +198,38 @@ class NoteViewFragment : Fragment() {
     }
 
     private fun pinNote(note: Note) {
-        notesList.remove(note)
-        notesList.add(0, note) // Add the note to the top of the list
-        val groupedNotes = groupNotesByDate(notesList)
-        noteAdapter = NoteAdapter(groupedNotes = groupedNotes,
-            onNoteClicked = { note ->
-                // Handle edit action
-                val bundle = Bundle().apply {
-                    putString("noteId", note.id)
-                    putString("title", note.title)
-                    putString("content", note.content)
-                    putString("date", note.date)
-                    putString("time", note.time)
-                    putString("place", note.place)
+        val userID = auth.currentUser?.uid ?: return
+
+        val noteRef = firestore.collection("users")
+            .document(userID)
+            .collection("notes")
+            .document(note.id)
+
+        // Retrieve the current value of isPinned
+        noteRef.get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val currentIsPinned = document.getBoolean("isPinned") ?: false
+                    val newIsPinned = !currentIsPinned
+
+                    // Update the value to the opposite
+                    noteRef.update("isPinned", newIsPinned)
+                        .addOnSuccessListener {
+                            val message = if (newIsPinned) {
+                                "Note pinned successfully"
+                            } else {
+                                "Note unpinned successfully"
+                            }
+                            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                            fetchNotes()
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("NoteViewFragment", "Failed to toggle pin status: ${e.message}")
+                            Toast.makeText(requireContext(), "Failed to update pin status", Toast.LENGTH_SHORT).show()
+                        }
                 }
-                findNavController().navigate(R.id.action_noteViewFragment_to_noteCreatorFragment, bundle)
-            },
-            onDeleteClicked = { note ->
-                // Handle delete action
-                deleteNote(note)
-            },
-            onPinClicked = { note ->
-                // Handle pin action
-                pinNote(note)
-            })
-        recyclerView.adapter = noteAdapter
-    }
+            }
+        }
 
     private fun redirectToMap() {
         val navController = findNavController()

@@ -1,6 +1,7 @@
 package com.example.geominder
 
 import android.icu.text.SimpleDateFormat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -70,6 +71,12 @@ class NoteAdapter(private val groupedNotes: List<Pair<String, List<Note>>>,
                 noteHolder.noteContent.text = note.content
                 noteHolder.noteTime.text = note.time
                 noteHolder.notePlace.text = note.place
+
+                if (note.isPinned) {
+                    noteHolder.pinButton.isSelected = true
+                } else {
+                    noteHolder.pinButton.isSelected = false
+                }
 
                 // Edit button click
                 noteHolder.itemView.setOnClickListener {

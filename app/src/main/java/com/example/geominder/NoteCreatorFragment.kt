@@ -128,7 +128,8 @@ class NoteCreatorFragment : Fragment() {
             "place" to place,
             "date" to selectedDate,
             "time" to selectedTime,
-            "status" to true
+            "status" to true,
+            "isPinned" to false
         )
 
         noteRef.set(noteData)

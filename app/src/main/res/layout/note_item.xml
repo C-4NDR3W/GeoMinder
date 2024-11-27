@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="150dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="8dp"
     android:background="@drawable/card_background"
     android:padding="16dp"
@@ -32,17 +33,19 @@
                 android:id="@+id/pinButton"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/pin_button"
+                android:src="@drawable/note_button_pin"
                 android:layout_marginHorizontal="4dp"
-                android:background="@android:color/transparent"/>
+                android:background="@android:color/transparent"
+                app:tint="@color/pin_button_tint_selector" />
 
             <ImageButton
                 android:id="@+id/deleteButton"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/delete_button"
+                android:src="@drawable/note_button_delete"
                 android:layout_marginHorizontal="4dp"
-                android:background="@android:color/transparent"/>
+                android:background="@android:color/transparent"
+                app:tint="@color/hintColor" />
         </LinearLayout>
     </RelativeLayout>
 
