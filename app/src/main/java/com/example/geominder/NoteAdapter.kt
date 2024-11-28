@@ -11,10 +11,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.type.Date
 import java.util.Locale
 
-class NoteAdapter(private val groupedNotes: List<Pair<String, List<Note>>>,
+class NoteAdapter(private var groupedNotes: List<Pair<String, List<Note>>>,
                   private val onNoteClicked: (Note) -> Unit,
                   private val onDeleteClicked: (Note) -> Unit,
                   private val onPinClicked: (Note) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    fun updateNotes(newGroupedNotes: List<Pair<String, List<Note>>>) {
+        groupedNotes = newGroupedNotes
+        notifyDataSetChanged()
+    }
 
     companion object {
         private const val TYPE_DATE_HEADER = 0

@@ -26,10 +26,11 @@
 <!--            app:tint="@android:color/darker_gray" />-->
 
         <EditText
+            android:id="@+id/searchBar"
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_weight="1"
-            android:hint="Search"
+            android:hint="Search Note"
             android:drawableStart="@android:drawable/ic_menu_search"
             android:background="@drawable/rounded_edittext"
             android:padding="10dp"

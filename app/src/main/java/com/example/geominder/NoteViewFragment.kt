@@ -3,10 +3,13 @@ package com.example.geominder
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
@@ -45,6 +48,19 @@ class NoteViewFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        val searchBar: EditText = view.findViewById(R.id.searchBar) // Assuming the EditText ID is `searchBar`
+
+        searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val searchText = s.toString().lowercase(Locale.getDefault())
+                filterNotes(searchText)
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
 
         noteAdapter = NoteAdapter(emptyList(),
             onNoteClicked = { note ->
@@ -234,6 +250,21 @@ class NoteViewFragment : Fragment() {
                 }
             }
         }
+
+    private fun filterNotes(query: String) {
+        val filteredNotes = if (query.isEmpty()) {
+            notesList // Show all notes if the query is empty
+        } else {
+            notesList.filter { note ->
+                note.title.lowercase(Locale.getDefault()).contains(query) ||
+                        note.content.lowercase(Locale.getDefault()).contains(query) ||
+                        note.place?.lowercase(Locale.getDefault())?.contains(query) == true
+            }
+        }
+
+        val groupedNotes = groupNotes(filteredNotes)
+        noteAdapter.updateNotes(groupedNotes)
+    }
 
     private fun redirectToMap() {
         val navController = findNavController()
