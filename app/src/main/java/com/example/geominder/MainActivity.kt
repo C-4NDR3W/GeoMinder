@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
     private final var requestBackgroundPermissionCode = 201
 
 
-    private fun authCheck() {
+    fun authCheck() {
         val auth = FirebaseAuth.getInstance()
         if (auth.currentUser == null) {
 

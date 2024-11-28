@@ -16,8 +16,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
+import com.example.geominder.MainActivity
 import com.example.geominder.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -49,6 +51,7 @@ class ProfileFragment : Fragment() {
         val editEmailButton = view.findViewById<ImageView>(R.id.emailEditButton)
         val editPasswordButton = view.findViewById<ImageView>(R.id.passwordEditButton)
         val editProfilePictureButton = view.findViewById<ImageView>(R.id.profileEditButton)
+        val logOutButton = view.findViewById<ConstraintLayout>(R.id.logoutLayout)
 
         editNameButton.setOnClickListener {
             handleEditName()
@@ -69,6 +72,21 @@ class ProfileFragment : Fragment() {
                 requestCameraPermission()
                 requestGalleryPermission()
             }
+        }
+
+        logOutButton.setOnClickListener{
+            val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
+            builder.setMessage("Are you sure you want to log out?")
+                .setTitle("Log Out")
+                .setPositiveButton("Yes"){ _, _ ->
+                    FirebaseAuth.getInstance().signOut()
+                    (activity as? MainActivity)?.authCheck()
+                }
+                .setNegativeButton("Cancel"){dialog, _ ->
+                    dialog.dismiss()
+                }
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
         }
 
     }
