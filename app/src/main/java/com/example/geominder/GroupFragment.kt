@@ -15,6 +15,7 @@ import android.os.Bundle
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Filter
+import com.google.gson.Gson
 
 class GroupFragment : Fragment() {
 
@@ -39,14 +40,15 @@ class GroupFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
 
         groupAdapter = GroupAdapter(groups) { group ->
-            val action = GroupFragmentDirections.actionNavigationGroupToGroupViewFragment(group.name)
+            val gson = Gson()
+            val members = gson.toJson(group.members)
+            Log.d("GroupFragment", "admin id: ${group.admin}")
+            val action = GroupFragmentDirections.actionNavigationGroupToGroupViewFragment(group.name, group.admin, group.desc, members)
             navController.navigate(action)
         }
 
         recyclerView.adapter = groupAdapter
-
         fetchGroups()
-
         addGroupButton.setOnClickListener {
             navigateToGroupEditor()
         }
@@ -56,7 +58,6 @@ class GroupFragment : Fragment() {
 
     fun fetchGroups() {
         val currentUser = auth.currentUser
-
 
         if (currentUser == null) {
             Log.d("FetchGroups", "User not logged in")
@@ -72,6 +73,8 @@ class GroupFragment : Fragment() {
                 groups.clear()
                 for (document in documents) {
                     val groupName = document.getString("name") ?: "Unknown"
+                    val groupDesc = document.getString("desc") ?: "Unknown"
+                    val groupAdmin = document.getString("admin") ?: "Unknown"
                     val membersList =
                         document.get("members") as? List<Map<String, Any>> ?: emptyList()
 
@@ -85,7 +88,7 @@ class GroupFragment : Fragment() {
                         }
                     }
 
-                    val group = Group(groupName, currentUser.uid, userList)
+                    val group = Group(groupName, groupAdmin, groupDesc, userList)
                     groups.add(group)
                     groupAdapter.notifyDataSetChanged()
                 }

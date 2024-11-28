@@ -11,6 +11,8 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
@@ -29,7 +31,8 @@ class GroupEditorFragment : Fragment() {
     private lateinit var userListField: ListView
     private lateinit var fragmentTitleText : TextView
     private lateinit var actionButton : Button
-    private lateinit var groupNameField : TextView
+    private lateinit var groupNameField : EditText
+    private lateinit var groupDescField : EditText
     private var isEditing = false
 
     private var addedUsers = mutableListOf<String>()
@@ -62,19 +65,54 @@ class GroupEditorFragment : Fragment() {
         fragmentTitleText = view.findViewById(R.id.newGroupText)
         actionButton = view.findViewById(R.id.groupActionButton)
         groupNameField = view.findViewById(R.id.groupNameField)
+        groupDescField = view.findViewById(R.id.groupDescField)
 
         //jika fragment dipakai untuk mengedit group
-        if (arguments?.getStringArrayList("users") != null)
+        if (arguments?.getString("members") != null)
         {
+
+            Log.d("edit", "CURRENTLY EDITING")
             isEditing = true
-            addedUsers = arguments?.getStringArrayList("users") as MutableList<String>
+            val groupName = arguments?.getString("groupName")
+            val groupDesc = arguments?.getString("groupDesc")
+//            addedUsers = arguments?.getStringArrayList("users") as MutableList<String>
             fragmentTitleText.text = "Edit Group"
             actionButton.text = "Edit Group"
+
+            groupNameField.setText("now")
+            groupDescField.setText(groupDesc)
 
         }
 
         userListField = view.findViewById(R.id.userPreviewList)
-        userListsAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, addedUsers)
+        val userListsAdapter = object : ArrayAdapter<String>(
+            requireContext(),
+            R.layout.simple_user_dropdown_item,
+            addedUsers
+        ) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                // Inflate the custom layout
+                val view = convertView ?: LayoutInflater.from(context)
+                    .inflate(R.layout.simple_user_dropdown_item, parent, false)
+
+
+                val upperText = view.findViewById<TextView>(R.id.upperText)
+                val deleteButton = view.findViewById<ImageView>(R.id.deleteButton)
+
+                val user = getItem(position)
+                upperText.text = user  // Set user name
+
+                deleteButton.setOnClickListener {
+                    Toast.makeText(context, "$user deleted", Toast.LENGTH_SHORT).show()
+                    addedUsers.remove(user)
+                    notifyDataSetChanged()
+
+                }
+
+                return view
+            }
+        }
+
         userListField.adapter = userListsAdapter
 
         suggestionField = view.findViewById(R.id.userSuggestions)
@@ -135,13 +173,14 @@ class GroupEditorFragment : Fragment() {
     fun setActionButtonListener(isEditing: Boolean) {
         actionButton.setOnClickListener {
             val name = groupNameField.text.toString()
+            val desc = groupDescField.text.toString()
             viewLifecycleOwner.lifecycleScope.launch {
                 try {
                     if (isEditing || auth.currentUser == null) {
                         return@launch
                     }
 
-                    createGroup(addedUsers, auth.currentUser!!.uid, name)
+                    createGroup(addedUsers, auth.currentUser!!.uid, name, desc)
                     Toast.makeText(context, "Group created successfully!", Toast.LENGTH_SHORT).show()
                 } catch (e: Exception) {
                     Log.e("GroupError", "Failed to create group", e)
@@ -199,7 +238,7 @@ class GroupEditorFragment : Fragment() {
 
     }
 
-    suspend fun createGroup(users: List<String>, adminId:String, groupName: String) {
+    suspend fun createGroup(users: List<String>, adminId:String, groupName: String, groupDesc : String) {
 
         if (!validateGroupContent())
         {
@@ -218,6 +257,7 @@ class GroupEditorFragment : Fragment() {
         val groupData = hashMapOf(
             "name" to groupName,
             "admin" to adminId,
+            "desc" to groupDesc,
             "members" to userObjects
         )
 

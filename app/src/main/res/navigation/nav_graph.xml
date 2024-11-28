@@ -226,15 +226,46 @@
         android:id="@+id/groupEditorFragment"
         android:name="com.example.geominder.GroupEditorFragment"
         android:label="fragment_group_editor"
-        tools:layout="@layout/fragment_group_editor" />
+        tools:layout="@layout/fragment_group_editor" >
+
+        <argument
+            android:name="groupName"
+            app:argType="string" />
+
+        <argument
+            android:name="adminId"
+            app:argType="string" />
+
+        <argument
+            android:name="groupDesc"
+            app:argType="string" />
+
+        <argument
+            android:name="members"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/groupViewFragment"
         android:name="com.example.geominder.GroupViewFragment"
         android:label="Group View">
         <argument
-            android:name="groupId"
+            android:name="groupName"
             app:argType="string" />
+
+        <argument
+            android:name="groupDesc"
+            app:argType="string"/>
+        <argument
+            android:name="adminId"
+            app:argType="string"/>
+
+        <argument
+            android:name="members"
+            app:argType="string"/>
+        <action
+            android:id="@+id/action_groupViewFragment_to_groupEditorFragment"
+            app:destination="@id/groupEditorFragment" />
     </fragment>
 
 </navigation>

@@ -45,10 +45,10 @@
         android:id="@+id/editMembersButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Edit Members"
-        app:layout_constraintStart_toStartOf="parent"
+        android:text="Edit Group"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/notesEditText"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/notesEditText" />
 
     <Button
         android:id="@+id/saveNoteButton"
