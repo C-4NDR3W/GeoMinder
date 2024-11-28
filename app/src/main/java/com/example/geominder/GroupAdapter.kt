@@ -1,16 +1,23 @@
 package com.example.geominder
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class GroupAdapter(private val groups: List<Group>) : RecyclerView.Adapter<GroupAdapter.GroupViewHolder>() {
+class GroupAdapter(private val groups: List<Group>, private val onItemClick: (Group) -> Unit) : RecyclerView.Adapter<GroupAdapter.GroupViewHolder>() {
 
     class GroupViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val groupName: TextView = view.findViewById(R.id.textViewGroupName)
         val groupMembers: TextView = view.findViewById(R.id.textViewGroupMembers)
+
+        fun bind(group: Group, clickListener: (Group) -> Unit) {
+            itemView.setOnClickListener { clickListener(group) }
+            groupName.text = group.name
+            groupMembers.text = group.members.joinToString(separator = ", ") { it.email }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
@@ -20,8 +27,7 @@ class GroupAdapter(private val groups: List<Group>) : RecyclerView.Adapter<Group
 
     override fun onBindViewHolder(holder: GroupViewHolder, position: Int) {
         val group = groups[position]
-        holder.groupName.text = group.name
-        holder.groupMembers.text = group.members
+        holder.bind(group, onItemClick)
     }
 
     override fun getItemCount(): Int = groups.size

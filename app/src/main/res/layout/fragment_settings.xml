@@ -6,25 +6,39 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".settings.SettingsFragment">
 
-    <SearchView
-        android:id="@+id/searchBarSettings"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/SettingsText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
-        android:padding="16dp"/>
+        android:paddingTop="20dp"
+        android:paddingBottom="12dp"
+        android:paddingHorizontal="16dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="parent">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Settings"
+            android:textColor="@android:color/black"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profileSettingButton"
-        app:layout_constraintTop_toBottomOf="@+id/searchBarSettings"
+        app:layout_constraintTop_toBottomOf="@+id/SettingsText"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:padding="24dp">
+        android:layout_marginTop="8dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp"
+        android:background="@drawable/settings_divider">
 
         <ImageView
             android:layout_width="32dp"
@@ -40,14 +54,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/profile_setting_icon"
             android:layout_marginStart="16dp"
             android:text="@string/profile_settings"/>
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -55,7 +68,9 @@
         app:layout_constraintTop_toBottomOf="@+id/profileSettingButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp"
+        android:background="@drawable/settings_divider">
 
         <ImageView
             android:layout_width="32dp"
@@ -71,14 +86,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/permissions_setting_icon"
             android:layout_marginStart="16dp"
             android:text="@string/permission_settings"/>
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -86,7 +100,9 @@
         app:layout_constraintTop_toBottomOf="@+id/permissionsSettingButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp"
+        android:background="@drawable/settings_divider">
 
         <ImageView
             android:layout_width="32dp"
@@ -102,14 +118,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/notification_setting_icon"
             android:layout_marginStart="16dp"
             android:text="@string/notification_settings"/>
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -117,7 +132,9 @@
         app:layout_constraintTop_toBottomOf="@+id/notificationSettingButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp"
+        android:background="@drawable/settings_divider">
 
         <ImageView
             android:layout_width="32dp"
@@ -133,14 +150,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/map_setting_icon"
             android:layout_marginStart="16dp"
             android:text="@string/map_settings"/>
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -148,7 +164,9 @@
         app:layout_constraintTop_toBottomOf="@+id/mapSettingButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp"
+        android:background="@drawable/settings_divider">
 
         <ImageView
             android:layout_width="32dp"
@@ -164,14 +182,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/data_setting_icon"
             android:layout_marginStart="16dp"
             android:text="@string/data_settings"/>
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -179,7 +196,9 @@
         app:layout_constraintTop_toBottomOf="@+id/dataSettingButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp"
+        android:background="@drawable/settings_divider">
 
         <ImageView
             android:layout_width="32dp"
@@ -195,14 +214,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/help_setting_icon"
             android:layout_marginStart="16dp"
             android:text="@string/help_settings"/>
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -210,7 +228,9 @@
         app:layout_constraintTop_toBottomOf="@+id/helpSettingButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp"
+        android:background="@drawable/settings_divider">
 
         <ImageView
             android:layout_width="32dp"
@@ -226,14 +246,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/appearance_settings_icon"
             android:layout_marginStart="16dp"
             android:text="@string/appearance_settings"/>
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -121,6 +121,13 @@
         <action
             android:id="@+id/action_navigation_group_to_navigation_settings"
             app:destination="@id/navigation_settings" />
+        <action
+            android:id="@+id/action_navigation_group_to_groupEditorFragment"
+            app:destination="@id/groupEditorFragment" />
+
+        <action
+            android:id="@+id/action_navigation_group_to_groupViewFragment"
+            app:destination="@id/groupViewFragment" />
     </fragment>
 
     <fragment
@@ -147,6 +154,9 @@
             android:id="@+id/action_navigation_settings_to_settings_navigation_permission"
             app:destination="@+id/settings_navigation_permission"/>
         <action
+            android:id="@+id/action_navigation_settings_to_settings_navigation_notification"
+            app:destination="@+id/settings_navigation_notification"/>
+        <action
             android:id="@+id/action_navigation_settings_to_settings_navigation_map"
             app:destination="@+id/settings_navigation_map"/>
         <action
@@ -158,9 +168,6 @@
         <action
             android:id="@+id/action_navigation_settings_to_settings_navigation_appearance"
             app:destination="@+id/settings_navigation_appearance"/>
-        <action
-            android:id="@+id/action_navigation_settings_to_settings_navigation_notification"
-            app:destination="@+id/settings_navigation_notification"/>
     </fragment>
 
     <fragment
@@ -215,4 +222,19 @@
             android:id="@+id/action_mapFragment_to_navigation_home"
             app:destination="@id/navigation_home" />
     </fragment>
+    <fragment
+        android:id="@+id/groupEditorFragment"
+        android:name="com.example.geominder.GroupEditorFragment"
+        android:label="fragment_group_editor"
+        tools:layout="@layout/fragment_group_editor" />
+
+    <fragment
+        android:id="@+id/groupViewFragment"
+        android:name="com.example.geominder.GroupViewFragment"
+        android:label="Group View">
+        <argument
+            android:name="groupId"
+            app:argType="string" />
+    </fragment>
+
 </navigation>

@@ -8,7 +8,7 @@
     <item
         android:id="@+id/navigation_notifications"
         android:icon="@drawable/baseline_notifications_24"
-        android:title="Notifications"/>
+        android:title="Notifs"/>
 
     <item
         android:id="@+id/navigation_note_creator"

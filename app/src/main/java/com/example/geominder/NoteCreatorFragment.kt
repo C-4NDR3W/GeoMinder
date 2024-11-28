@@ -14,11 +14,17 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.work.Data
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 class NoteCreatorFragment : Fragment() {
     private lateinit var noteId: String
@@ -47,11 +53,9 @@ class NoteCreatorFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_note_creator, container, false)
 
-        // Initialize Firebase and UI components
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
-        // Initialize UI components
         titleEditText = view.findViewById(R.id.titleEditText)
         contentEditText = view.findViewById(R.id.contentEditText)
         placeEditText = view.findViewById(R.id.placeEditText)
@@ -61,12 +65,9 @@ class NoteCreatorFragment : Fragment() {
 
         val fab: FloatingActionButton = requireActivity().findViewById(R.id.fab_add)
         val bottomNavigationView: BottomNavigationView = requireActivity().findViewById(R.id.bottom_navigation)
-
-        // Hide FAB and Bottom Navigation when on NoteCreatorFragment
         fab.visibility = View.GONE
         bottomNavigationView.visibility = View.GONE
 
-        // Get data from arguments (if any)
         val bundle = requireArguments()
         noteId = bundle.getString("noteId", "")
         title = bundle.getString("title", "")
@@ -75,20 +76,11 @@ class NoteCreatorFragment : Fragment() {
         time = bundle.getString("time", "")
         place = bundle.getString("place", "")
 
-        Log.d("NoteCreatorFragment", "Editing note with ID: $noteId")
-        Log.d("NoteCreatorFragment", "Editing note with Title: $title")
-        Log.d("NoteCreatorFragment", "Editing note with Content: $content")
-        Log.d("NoteCreatorFragment", "Editing note with Date: $date")
-        Log.d("NoteCreatorFragment", "Editing note with Time: $time")
-        Log.d("NoteCreatorFragment", "Editing note with Place: $place")
-
-        // Set values if editing an existing note
         titleEditText.setText(title)
         contentEditText.setText(content)
         timePickerButton.text = "Selected: $date $time"
         placeEditText.setText(place)
 
-        // Set up listeners
         timePickerButton.setOnClickListener { showDateTimePicker() }
         backButton.setOnClickListener { navigateBack() }
         saveButton.setOnClickListener { saveNote() }
@@ -99,10 +91,10 @@ class NoteCreatorFragment : Fragment() {
     private fun showDateTimePicker() {
         val calendar = Calendar.getInstance()
         val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-            selectedDate = "$dayOfMonth/${month + 1}/$year" // Save selected date
+            selectedDate = "$dayOfMonth/${month + 1}/$year"
 
             val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-                selectedTime = "$hourOfDay:$minute" // Save selected time
+                selectedTime = "$hourOfDay:$minute"
                 timePickerButton.text = "Selected: $selectedDate $selectedTime"
             }
 
@@ -123,76 +115,66 @@ class NoteCreatorFragment : Fragment() {
         }
 
         val userID = auth.currentUser?.uid ?: return
-        val noteRef: DocumentReference
-
-        // If editing an existing note, use the passed noteId
-        if (noteId.isNotEmpty()) {
-            noteRef = firestore.collection("users")
-                .document(userID)
-                .collection("notes")
-                .document(noteId)
-
-            // Check if the document exists before updating
-            noteRef.get()
-                .addOnSuccessListener { documentSnapshot ->
-                    if (documentSnapshot.exists()) {
-                        // Document exists, update it
-                        val noteData = hashMapOf(
-                            "id" to noteRef.id,
-                            "title" to title,
-                            "content" to content,
-                            "place" to place,
-                            "date" to selectedDate,
-                            "time" to selectedTime,
-                            "status" to true
-                        )
-
-                        noteRef.set(noteData)
-                            .addOnSuccessListener {
-                                Toast.makeText(requireContext(), "Note updated successfully!", Toast.LENGTH_SHORT).show()
-                                navigateToNoteView()
-                            }
-                            .addOnFailureListener { exception ->
-                                Log.e("NoteCreatorFragment", "Error updating note: ${exception.message}")
-                                Toast.makeText(requireContext(), "Error updating note: ${exception.message}", Toast.LENGTH_SHORT).show()
-                            }
-                    } else {
-                        // Document does not exist
-                        Toast.makeText(requireContext(), "Note not found, unable to update.", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Log.e("NoteCreatorFragment", "Error checking note existence: ${exception.message}")
-                    Toast.makeText(requireContext(), "Error checking note existence: ${exception.message}", Toast.LENGTH_SHORT).show()
-                }
+        val noteRef: DocumentReference = if (noteId.isNotEmpty()) {
+            firestore.collection("users").document(userID).collection("notes").document(noteId)
         } else {
-            // If creating a new note, generate a new document reference
-            noteRef = firestore.collection("users")
-                .document(userID)
-                .collection("notes")
-                .document()  // Automatically generate a new document ID
+            firestore.collection("users").document(userID).collection("notes").document()
+        }
 
-            val noteData = hashMapOf(
-                "id" to noteRef.id,
-                "title" to title,
-                "content" to content,
-                "place" to place,
-                "date" to selectedDate,
-                "time" to selectedTime,
-                "status" to true
-            )
+        val noteData = hashMapOf(
+            "id" to noteRef.id,
+            "title" to title,
+            "content" to content,
+            "place" to place,
+            "date" to selectedDate,
+            "time" to selectedTime,
+            "status" to true
+        )
 
-            noteRef.set(noteData)
-                .addOnSuccessListener {
-                    Toast.makeText(requireContext(), "Note saved successfully!", Toast.LENGTH_SHORT).show()
-                    navigateToNoteView()
+        noteRef.set(noteData)
+            .addOnSuccessListener {
+                Toast.makeText(requireContext(), "Note saved successfully!", Toast.LENGTH_SHORT).show()
+                scheduleNotification(
+                    noteRef.id,
+                    noteTitle = title
+                )
+                navigateToNoteView()
+            }
+            .addOnFailureListener { exception ->
+                Log.e("NoteCreatorFragment", "Error saving note: ${exception.message}")
+                Toast.makeText(requireContext(), "Error saving note: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun scheduleNotification(noteId: String, noteTitle: String) {
+        val noteRef = firestore.collection("users").document(auth.currentUser?.uid ?: return).collection("notes").document(noteId)
+        noteRef.get().addOnSuccessListener { documentSnapshot ->
+            if (documentSnapshot.exists()) {
+                val noteTime = documentSnapshot.getString("time") ?: return@addOnSuccessListener
+                val noteDate = documentSnapshot.getString("date") ?: return@addOnSuccessListener
+
+                val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                val date = sdf.parse("$noteDate $noteTime") ?: return@addOnSuccessListener
+                val reminderTime = date.time - TimeUnit.MINUTES.toMillis(15)
+                val delay = reminderTime - System.currentTimeMillis()
+
+                if (delay > 0) {
+                    val inputData = Data.Builder()
+                        .putString("noteTitle", noteTitle)
+                        .putString("noteId", noteId)
+                        .build()
+
+                    val reminderRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .setInputData(inputData)
+                        .build()
+
+                    WorkManager.getInstance(requireContext()).enqueue(reminderRequest)
                 }
-                .addOnFailureListener { exception ->
-                    Log.e("NoteCreatorFragment", "Error saving note: ${exception.message}")
-                    Toast.makeText(requireContext(), "Error saving note: ${exception.message}", Toast.LENGTH_SHORT).show()
-                }
+            }
         }
     }
+
 
     private fun navigateToNoteView() {
         findNavController().navigate(R.id.navigation_home)
@@ -205,10 +187,8 @@ class NoteCreatorFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
 
-        // Show FAB and Bottom Navigation when leaving NoteCreatorFragment
         val fab: FloatingActionButton = requireActivity().findViewById(R.id.fab_add)
         val bottomNavigationView: BottomNavigationView = requireActivity().findViewById(R.id.bottom_navigation)
-
         fab.visibility = View.VISIBLE
         bottomNavigationView.visibility = View.VISIBLE
     }
