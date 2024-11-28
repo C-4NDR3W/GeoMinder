@@ -127,10 +127,10 @@ class GroupEditorFragment : Fragment() {
         return true
     }
 
-    fun deleteUserSuggestion(view : View)
-    {
-        view.setOnClickListener()
-    }
+//    fun deleteUserSuggestion(view : View)
+//    {
+//        view.setOnClickListener()
+//    }
 
     fun setActionButtonListener(isEditing: Boolean) {
         actionButton.setOnClickListener {

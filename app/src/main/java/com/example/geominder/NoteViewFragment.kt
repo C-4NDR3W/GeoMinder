@@ -84,8 +84,8 @@ class NoteViewFragment : Fragment() {
         firestore.collection("users")
             .document(userID)
             .collection("notes")
-            .orderBy("isPinned", Query.Direction.DESCENDING) // Order by pinned notes first
-            .orderBy("date", Query.Direction.DESCENDING) // Order by date
+//            .orderBy("isPinned", Query.Direction.DESCENDING) // Order by pinned notes first
+//            .orderBy("date", Query.Direction.DESCENDING) // Order by date
             .get()
             .addOnFailureListener { e ->
                 Log.e("FirestoreError", "Error fetching notes: ${e.message}")
@@ -143,7 +143,7 @@ class NoteViewFragment : Fragment() {
                     sdf.parse(formattedDate)?.time ?: 0L
                 }
 
-                val groupedNotes = groupNotesByDate(notesList)
+                val groupedNotes = groupNotes(notesList)
                 noteAdapter = NoteAdapter(groupedNotes = groupedNotes,
                     onNoteClicked = { note ->
                         // Handle edit action
@@ -173,9 +173,13 @@ class NoteViewFragment : Fragment() {
             }
     }
 
-    private fun groupNotesByDate(notes: List<Note>): List<Pair<String, List<Note>>> {
-        val notesByDate = notes.groupBy { it.date }
-        return notesByDate.map { Pair(it.key, it.value) }
+    private fun groupNotes(notes: List<Note>): List<Pair<String, List<Note>>> {
+        val sortedNotes = notes.sortedWith(compareByDescending<Note> { it.isPinned }
+            .thenBy { SimpleDateFormat("dd/MM/yyyy").parse(it.date) })
+
+        // Group by date after sorting
+        val notesByDate = sortedNotes.groupBy { it.date }
+        return notesByDate.map { (date, notes) -> date to notes }
     }
 
     private fun deleteNote(note: Note) {
