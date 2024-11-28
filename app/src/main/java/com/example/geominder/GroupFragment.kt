@@ -14,6 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import android.os.Bundle
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.Filter
 
 class GroupFragment : Fragment() {
 
@@ -55,15 +56,20 @@ class GroupFragment : Fragment() {
 
     fun fetchGroups() {
         val currentUser = auth.currentUser
+
+
         if (currentUser == null) {
             Log.d("FetchGroups", "User not logged in")
             return
         }
 
-        db.collection("groups")
+        db.collection("groups").where(Filter.or(
+            Filter.arrayContains("members", currentUser.uid),
+            Filter.equalTo("admin", currentUser.uid)
+        ))
             .get()
             .addOnSuccessListener { documents ->
-                groups.clear()  // Clear the list before adding
+                groups.clear()
                 for (document in documents) {
                     val groupName = document.getString("name") ?: "Unknown"
                     val membersList =
