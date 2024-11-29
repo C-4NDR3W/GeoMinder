@@ -21,6 +21,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.getField
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -33,6 +35,8 @@ class GroupEditorFragment : Fragment() {
     private lateinit var actionButton : Button
     private lateinit var groupNameField : EditText
     private lateinit var groupDescField : EditText
+
+
     private var isEditing = false
 
     private var addedUsers = mutableListOf<String>()
@@ -67,6 +71,9 @@ class GroupEditorFragment : Fragment() {
         groupNameField = view.findViewById(R.id.groupNameField)
         groupDescField = view.findViewById(R.id.groupDescField)
 
+        val members = arguments?.getString("groupName")
+
+
         //jika fragment dipakai untuk mengedit group
         if (arguments?.getString("members") != null)
         {
@@ -75,11 +82,13 @@ class GroupEditorFragment : Fragment() {
             isEditing = true
             val groupName = arguments?.getString("groupName")
             val groupDesc = arguments?.getString("groupDesc")
-//            addedUsers = arguments?.getStringArrayList("users") as MutableList<String>
+            val membersJson = arguments?.getString("members")
+
+            addedUsers = populateMembersWithEmails(membersJson)
             fragmentTitleText.text = "Edit Group"
             actionButton.text = "Edit Group"
 
-            groupNameField.setText("now")
+            groupNameField.setText(groupName)
             groupDescField.setText(groupDesc)
 
         }
@@ -100,7 +109,7 @@ class GroupEditorFragment : Fragment() {
                 val deleteButton = view.findViewById<ImageView>(R.id.deleteButton)
 
                 val user = getItem(position)
-                upperText.text = user  // Set user name
+                upperText.text = user  
 
                 deleteButton.setOnClickListener {
                     Toast.makeText(context, "$user deleted", Toast.LENGTH_SHORT).show()
@@ -153,6 +162,31 @@ class GroupEditorFragment : Fragment() {
     }
 
 
+    fun populateMembersWithEmails(membersJson : String?) : MutableList<String>
+    {
+
+        if (membersJson == null)
+        {
+            return mutableListOf<String>()
+        }
+
+        val gson = Gson()
+        val listType = object : TypeToken<MutableList<User>>() {}.type
+        val members = gson.fromJson<MutableList<User>>(membersJson, listType)
+        val newList = mutableListOf<String>()
+
+        for (member : User in members)
+        {
+            newList.add(member.email)
+
+        }
+
+        return newList
+
+
+    }
+
+
     fun validateGroupContent() : Boolean
     {
         if (groupNameField.text.isEmpty() || addedUsers.size < 2)
@@ -174,9 +208,18 @@ class GroupEditorFragment : Fragment() {
         actionButton.setOnClickListener {
             val name = groupNameField.text.toString()
             val desc = groupDescField.text.toString()
+
+            val groupId = arguments?.getString("groupId")
+            Log.d("GroupEditorFragment", "groupId: $groupId")
             viewLifecycleOwner.lifecycleScope.launch {
                 try {
-                    if (isEditing || auth.currentUser == null) {
+                    if (auth.currentUser == null || groupId == null)
+                    {
+                        return@launch
+                    }
+                    if (isEditing) {
+
+                        editGroup(addedUsers, groupId, auth.currentUser!!.uid, name, desc)
                         return@launch
                     }
 
@@ -235,6 +278,42 @@ class GroupEditorFragment : Fragment() {
         }
 
         return userIds
+
+    }
+
+    suspend fun editGroup(users: List<String>, groupId:String, adminId:String, groupName: String, groupDesc : String)
+    {
+
+        if (!validateGroupContent())
+        {
+            Toast.makeText(requireContext(), "Group must have at least two members and name cannot be empty!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val userObjects = obtainUserIds(users).mapIndexed { index, userId ->
+            hashMapOf(
+                "email" to users[index],
+                "userId" to userId
+            )
+        }
+
+        val groupData = hashMapOf(
+            "name" to groupName,
+            "admin" to adminId,
+            "desc" to groupDesc,
+            "members" to userObjects
+        )
+
+
+        db.collection("groups").document(groupId).update(groupData)
+            .addOnSuccessListener {
+                Toast.makeText(requireContext(), "Group updated successfully", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { exception ->
+                Log.e("Firestore", "Error updating group", exception)
+                Toast.makeText(requireContext(), "Failed to update group", Toast.LENGTH_SHORT).show()
+            }
+
 
     }
 

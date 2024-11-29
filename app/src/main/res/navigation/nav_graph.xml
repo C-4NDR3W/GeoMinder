@@ -233,6 +233,10 @@
             app:argType="string" />
 
         <argument
+            android:name="groupId"
+            app:argType="string" />
+
+        <argument
             android:name="adminId"
             app:argType="string" />
 
@@ -254,10 +258,15 @@
             app:argType="string" />
 
         <argument
-            android:name="groupDesc"
-            app:argType="string"/>
+            android:name="groupId"
+            app:argType="string" />
+
         <argument
             android:name="adminId"
+            app:argType="string"/>
+
+        <argument
+            android:name="groupDesc"
             app:argType="string"/>
 
         <argument

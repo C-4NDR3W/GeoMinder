@@ -42,8 +42,10 @@ class GroupFragment : Fragment() {
         groupAdapter = GroupAdapter(groups) { group ->
             val gson = Gson()
             val members = gson.toJson(group.members)
-            Log.d("GroupFragment", "admin id: ${group.admin}")
-            val action = GroupFragmentDirections.actionNavigationGroupToGroupViewFragment(group.name, group.admin, group.desc, members)
+
+            Log.d("GroupFragment", "group id: ${group.id}")
+
+            val action = GroupFragmentDirections.actionNavigationGroupToGroupViewFragment(group.name, group.id, group.admin, group.desc, members)
             navController.navigate(action)
         }
 
@@ -75,6 +77,7 @@ class GroupFragment : Fragment() {
                     val groupName = document.getString("name") ?: "Unknown"
                     val groupDesc = document.getString("desc") ?: "Unknown"
                     val groupAdmin = document.getString("admin") ?: "Unknown"
+                    val groupId = document.id
                     val membersList =
                         document.get("members") as? List<Map<String, Any>> ?: emptyList()
 
@@ -88,7 +91,7 @@ class GroupFragment : Fragment() {
                         }
                     }
 
-                    val group = Group(groupName, groupAdmin, groupDesc, userList)
+                    val group = Group(groupName, groupAdmin, groupId, groupDesc, userList)
                     groups.add(group)
                     groupAdapter.notifyDataSetChanged()
                 }

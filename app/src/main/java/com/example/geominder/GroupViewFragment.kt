@@ -38,8 +38,6 @@ class GroupViewFragment : Fragment() {
     private lateinit var adminId : String
 
 
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         db = FirebaseFirestore.getInstance()
@@ -60,6 +58,7 @@ class GroupViewFragment : Fragment() {
         groupDesc =  arguments?.getString("groupDesc") ?: ""
         membersJson = arguments?.getString("members") ?: ""
 
+        Log.d("GroupViewFragment", "members: $membersJson")
         val gson = Gson()
         val listType = object : TypeToken<List<User>>() {}.type
         val members = gson.fromJson<ArrayList<User>>(membersJson, listType)
@@ -112,9 +111,9 @@ class GroupViewFragment : Fragment() {
     private fun editGroup()
     {
         val bundle = Bundle()
-        val action = GroupViewFragmentDirections.actionGroupViewFragmentToGroupEditorFragment(groupName, adminId, groupDesc, membersJson)
+        val action = GroupViewFragmentDirections.actionGroupViewFragmentToGroupEditorFragment(groupName, groupId, adminId, groupDesc, membersJson)
 
-        navController.navigate(R.id.action_groupViewFragment_to_groupEditorFragment, bundle)
+        navController.navigate(action)
     }
 
 
