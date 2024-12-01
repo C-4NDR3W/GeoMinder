@@ -111,4 +111,5 @@
     <string name="enable_vibration">Vibration</string>
     <string name="vibration_mode">Vibration Mode\n</string>
     <string name="vibration_length">Vibration Length\n</string>
+    <string name="logout_hint">Log Out</string>
 </resources>

@@ -6,4 +6,5 @@
     <color name="hintColor">#9E9E9E</color>
     <color name="error">#FF0000</color>
     <color name="colorSelectedBackground">#10FFFFFF</color>
+    <color name="materialErrorRed">#D32F2F</color>
 </resources>
