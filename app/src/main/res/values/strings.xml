@@ -12,10 +12,10 @@
 
     <!--    note hints-->
     <string name="title_hint">Title</string>
-    <string name="time_hint">Add a Time</string>
+    <string name="time_hint">Add a Date and Time</string>
     <string name="location_hint">Add a Location</string>
     <string name="group_note_hint">Add a Group</string>
-    <string name="description_hint">Description</string>
+    <string name="description_hint">Add a Description</string>
     <!--    -->
 
     <!--  profile stuff, basically  -->

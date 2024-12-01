@@ -45,7 +45,7 @@
             android:id="@+id/titleEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Title"
+            android:hint="@string/title_hint"
             android:inputType="text"
             android:layout_marginBottom="8dp"
             android:textSize="32sp"
@@ -58,7 +58,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="8dp">
+            android:layout_marginVertical="8dp">
 
             <ImageView
                 android:id="@+id/dateTimeImage"
@@ -73,7 +73,7 @@
                 android:id="@+id/timePickerButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Add Date and Time"
+                android:text="@string/time_hint"
                 android:textColor="#A9A9A9"
                 android:layout_weight="1"
                 android:background="?attr/selectableItemBackground"
@@ -86,7 +86,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="8dp">
+            android:layout_marginVertical="8dp">
 
             <ImageView
                 android:id="@+id/placeImage"
@@ -101,18 +101,19 @@
                 android:id="@+id/placeEditText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Add a Place"
+                android:hint="@string/location_hint"
                 android:inputType="text"
                 android:layout_weight="1"
                 android:textSize="16sp"
-                android:textColorHint="#A9A9A9" />
+                android:textColorHint="#A9A9A9"
+                android:background="@android:color/transparent"/>
         </LinearLayout>
 
         <EditText
             android:id="@+id/contentEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Details"
+            android:hint="@string/description_hint"
             android:inputType="textMultiLine"
             android:minLines="5"
             android:gravity="top|start"

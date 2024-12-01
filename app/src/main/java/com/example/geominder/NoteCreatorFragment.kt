@@ -78,7 +78,7 @@ class NoteCreatorFragment : Fragment() {
 
         titleEditText.setText(title)
         contentEditText.setText(content)
-        timePickerButton.text = "Selected: $date $time"
+        timePickerButton.text = "Add a time or date"
         placeEditText.setText(place)
 
         timePickerButton.setOnClickListener { showDateTimePicker() }
