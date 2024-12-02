@@ -1,7 +1,10 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="Data Backup and Recovery">
-        <ListPreference
+    <PreferenceCategory
+        app:title="Data Backup and Recovery"
+        app:titleTextAppearance="@style/CustomPreferenceTitle">
+
+    <ListPreference
             app:key="backup_frequency"
             app:title="Backup Frequency"
             app:summary="Set how often your data is backed up"

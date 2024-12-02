@@ -15,13 +15,14 @@
         android:paddingHorizontal="16dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
+        android:background="@color/colorSecondary"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Settings"
-            android:textColor="@android:color/black"
+            android:textColor="@android:color/white"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
