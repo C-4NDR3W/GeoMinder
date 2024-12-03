@@ -18,11 +18,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.google.common.reflect.TypeToken
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.getField
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -31,7 +31,6 @@ class GroupEditorFragment : Fragment() {
     private lateinit var db: FirebaseFirestore
     private lateinit var suggestionField: AutoCompleteTextView
     private lateinit var userListField: ListView
-    private lateinit var fragmentTitleText : TextView
     private lateinit var actionButton : Button
     private lateinit var groupNameField : EditText
     private lateinit var groupDescField : EditText
@@ -66,7 +65,6 @@ class GroupEditorFragment : Fragment() {
 //            userListsAdapter = ArrayAdapter(it, android.R.layout.simple_dropdown_item_1line, addedUsers)
         }
 
-        fragmentTitleText = view.findViewById(R.id.newGroupText)
         actionButton = view.findViewById(R.id.groupActionButton)
         groupNameField = view.findViewById(R.id.groupNameField)
         groupDescField = view.findViewById(R.id.groupDescField)
@@ -85,7 +83,6 @@ class GroupEditorFragment : Fragment() {
             val membersJson = arguments?.getString("members")
 
             addedUsers = populateMembersWithEmails(membersJson)
-            fragmentTitleText.text = "Edit Group"
             actionButton.text = "Edit Group"
 
             groupNameField.setText(groupName)
@@ -178,7 +175,6 @@ class GroupEditorFragment : Fragment() {
         for (member : User in members)
         {
             newList.add(member.email)
-
         }
 
         return newList
