@@ -55,7 +55,7 @@ class GroupViewFragment : Fragment() {
         memberListRecyclerView = view.findViewById(R.id.memberListRecyclerView)
         editMembersButton = view.findViewById(R.id.editMembersButton)
         saveNoteButton = view.findViewById(R.id.saveNoteButton)
-        notesEditText = view.findViewById(R.id.notesEditText)
+//        notesEditText = view.findViewById(R.id.notesEditText)
 
         titleEditText = view.findViewById(R.id.titleEditText)
         placeEditText = view.findViewById(R.id.placeEditText)

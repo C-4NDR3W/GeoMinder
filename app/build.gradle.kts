@@ -1,3 +1,4 @@
+
 plugins {
     id("com.google.gms.google-services")
     alias(libs.plugins.android.application)
@@ -81,6 +82,10 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.7.1")
     implementation("com.google.code.gson:gson:2.11.0")
 
+
+    implementation ("com.google.android.libraries.places:places:3.3.0")
+
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -93,6 +98,7 @@ dependencies {
     implementation(libs.firebase.storage.ktx)
     implementation(libs.androidx.preference)
     implementation(libs.androidx.recyclerview)
+    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

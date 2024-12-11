@@ -22,9 +22,15 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.GeoMinder"
         tools:targetApi="31">
+<!--        <meta-data-->
+<!--            android:name="com.google.android.geo.API_KEY"-->
+<!--            android:value="${MAPS_API_KEY}" />-->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="${MAPS_API_KEY}" />
+            android:value="AIzaSyBFXvpxCuHeq_1A8_iJxZazxyjvwCrjOaw" />
+
+
+
         <activity
             android:name=".AuthActivity"
             android:exported="true">
