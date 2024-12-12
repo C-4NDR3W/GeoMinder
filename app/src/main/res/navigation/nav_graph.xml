@@ -125,9 +125,6 @@
             android:id="@+id/action_navigation_group_to_groupEditorFragment"
             app:destination="@id/groupEditorFragment" />
 
-        <action
-            android:id="@+id/action_navigation_group_to_groupViewFragment"
-            app:destination="@id/groupViewFragment" />
     </fragment>
 
     <fragment

@@ -45,8 +45,8 @@ class GroupFragment : Fragment() {
 
             Log.d("GroupFragment", "group id: ${group.id}")
 
-            val action = GroupFragmentDirections.actionNavigationGroupToGroupViewFragment(group.name, group.id, group.admin, group.desc, members)
-            navController.navigate(action)
+
+
         }
 
         recyclerView.adapter = groupAdapter
