@@ -15,7 +15,7 @@
         android:id="@+id/searchLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:padding="8dp"
         android:layout_marginTop="12dp"
         android:layout_marginStart="8dp"
@@ -23,33 +23,48 @@
         android:background="@android:color/transparent"
         android:gravity="center_vertical"
         android:elevation="4dp">
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:hint="Search"
+                android:drawableStart="@android:drawable/ic_menu_search"
+                android:background="@drawable/rounded_edittext"
+                android:padding="10dp"
+                android:textColor="@android:color/black"
+                android:singleLine="true"
+                android:layout_marginEnd="8dp" />
 
-        <EditText
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:hint="Search"
-            android:drawableStart="@android:drawable/ic_menu_search"
-            android:background="@drawable/rounded_edittext"
-            android:padding="10dp"
-            android:textColor="@android:color/black"
-            android:singleLine="true"
-            android:layout_marginEnd="8dp" />
+            <!-- ToggleButton -->
+            <ToggleButton
+                android:id="@+id/toggleButton"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:paddingHorizontal="12dp"
+                android:background="@drawable/toggle_button"
+                android:drawableLeft="@drawable/icon_note"
+                android:drawableRight="@drawable/icon_map"
+                android:textOn=""
+                android:textOff=""
+                android:focusable="true"
+                android:clickable="true" />
+        </LinearLayout>
 
-        <!-- ToggleButton -->
-        <ToggleButton
-            android:id="@+id/toggleButton"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:paddingHorizontal="12dp"
-            android:background="@drawable/toggle_button"
-            android:drawableLeft="@drawable/icon_note"
-            android:drawableRight="@drawable/icon_map"
-            android:textOn=""
-            android:textOff=""
-            android:focusable="true"
-            android:clickable="true" />
+
+
+<!--        <fragment-->
+<!--            android:id="@+id/autocomplete_fragment"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment" />-->
     </LinearLayout>
+
+    
+
 
 </FrameLayout>

@@ -209,11 +209,12 @@ class GroupEditorFragment : Fragment() {
             Log.d("GroupEditorFragment", "groupId: $groupId")
             viewLifecycleOwner.lifecycleScope.launch {
                 try {
-                    if (auth.currentUser == null || groupId == null)
+                    if (auth.currentUser == null)
                     {
+                        Toast.makeText(context, "Failed to create group because idk", Toast.LENGTH_SHORT).show()
                         return@launch
                     }
-                    if (isEditing) {
+                    if (isEditing && groupId != null) {
 
                         editGroup(addedUsers, groupId, auth.currentUser!!.uid, name, desc)
                         return@launch
