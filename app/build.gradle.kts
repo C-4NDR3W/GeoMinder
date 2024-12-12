@@ -79,6 +79,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
     implementation ("androidx.work:work-runtime-ktx:2.7.1")
+    implementation ("com.google.android.material:material:1.12.0")
 
 
 

@@ -7,4 +7,9 @@
     <color name="error">#FF0000</color>
     <color name="colorSelectedBackground">#10FFFFFF</color>
     <color name="materialErrorRed">#D32F2F</color>
+
+<!--    dark theme colors-->
+    <color name="dark_grey">#121212</color>
+    <color name="colorPrimaryDark">#85963c</color>
+
 </resources>
