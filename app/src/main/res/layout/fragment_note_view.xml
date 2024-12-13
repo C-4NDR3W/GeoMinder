@@ -23,7 +23,7 @@
             android:layout_height="40dp"
             android:layout_weight="1"
             android:hint="Search"
-            android:drawableStart="@drawable/note_button_delete"
+            android:drawableStart="@drawable/baseline_search_24"
             android:background="@drawable/rounded_edittext"
             android:padding="10dp"
             android:textColor="@android:color/black"

@@ -32,7 +32,7 @@
                 android:layout_height="40dp"
                 android:layout_weight="1"
                 android:hint="Search"
-                android:drawableStart="@android:drawable/ic_menu_search"
+                android:drawableStart="@drawable/baseline_search_24"
                 android:background="@drawable/rounded_edittext"
                 android:padding="10dp"
                 android:textColor="@android:color/black"
@@ -59,8 +59,5 @@
 <!--            android:layout_height="wrap_content"-->
 <!--            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment" />-->
     </LinearLayout>
-
-    
-
 
 </FrameLayout>
