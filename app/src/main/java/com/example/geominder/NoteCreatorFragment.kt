@@ -220,12 +220,6 @@ class NoteCreatorFragment : Fragment() {
             }
     }
 
-
-
-
-
-
-
     private fun navigateToNoteView() {
         findNavController().navigate(R.id.navigation_home)
     }
