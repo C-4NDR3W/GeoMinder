@@ -4,5 +4,12 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="backgroundColor">@color/white</item>
         <item name="android:windowBackground">@android:color/white</item>
+
+        <item name="switchStyle">@style/CustomSwitchStyle</item>
+    </style>
+
+    <style name="CustomSwitchStyle" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="android:thumb">@drawable/thumb</item>
+        <item name="android:track">@drawable/track</item>
     </style>
 </resources>

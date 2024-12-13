@@ -47,21 +47,28 @@ class NoteViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        toggleButton = view.findViewById(R.id.toggleButton)
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         val searchBar: EditText = view.findViewById(R.id.searchBar) // Assuming the EditText ID is `searchBar`
-
         searchBar.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val searchText = s.toString().lowercase(Locale.getDefault())
                 filterNotes(searchText)
             }
-
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        val toggleState = arguments?.getBoolean("toggleState", false) ?: false
+        toggleButton.isChecked = toggleState
+
+        toggleButton.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                redirectToMap()
+            }
+        }
 
         noteAdapter = NoteAdapter(emptyList(),
             onNoteClicked = { note ->
@@ -80,17 +87,6 @@ class NoteViewFragment : Fragment() {
                 pinNote(note)
             })
         recyclerView.adapter = noteAdapter
-
-        toggleButton = view.findViewById(R.id.toggleButton)
-
-        val toggleState = arguments?.getBoolean("toggleState", false) ?: false
-        toggleButton.isChecked = toggleState
-
-        toggleButton.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                redirectToMap()
-            }
-        }
 
         fetchNotes()
     }

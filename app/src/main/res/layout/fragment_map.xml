@@ -43,10 +43,11 @@
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/toggleButton"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:paddingHorizontal="12dp"
-                android:background="@drawable/toggle_button">
+                android:thumb="@drawable/thumb"
+                app:track="@drawable/track">
             </androidx.appcompat.widget.SwitchCompat>
         </LinearLayout>
 

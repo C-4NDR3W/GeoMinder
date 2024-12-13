@@ -6,12 +6,15 @@
         <solid
             android:color="@color/colorPrimary"/>
         <size
-            android:height="8dp"
-            android:width="8dp"/>
+            android:height="32dp"
+            android:width="32dp"/>
         <stroke/>
     </shape>
 </item>
 
 <item
-    android:drawable="@drawable/icon_map" />
+    android:drawable="@drawable/icon_map"
+    android:height="24dp"
+    android:width="24dp"
+    android:gravity="center"/>
 </layer-list>

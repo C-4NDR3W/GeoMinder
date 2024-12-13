@@ -49,8 +49,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var googleMap: GoogleMap? = null
 
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -64,9 +62,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mapView = view.findViewById(R.id.google_map)
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
-
-
-
 
         return view
     }
@@ -83,6 +78,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 redirectToNote()
             }
         }
+
         requestPermissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
