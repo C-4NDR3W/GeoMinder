@@ -21,6 +21,7 @@ import android.widget.ToggleButton
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
@@ -43,7 +44,7 @@ private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
 class MapFragment : Fragment(), OnMapReadyCallback {
 
-    private lateinit var toggleButton: ToggleButton
+    private lateinit var toggleButton: SwitchCompat
     private lateinit var mapView: MapView
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var googleMap: GoogleMap? = null

@@ -31,19 +31,14 @@
             android:singleLine="true"/>
 
         <!-- ToggleButton -->
-        <ToggleButton
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/toggleButton"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:paddingHorizontal="12dp"
-            android:background="@drawable/toggle_button"
-            android:drawableLeft="@drawable/icon_note"
-            android:drawableRight="@drawable/icon_map"
-            android:textOn=""
-            android:textOff=""
-            android:focusable="true"
-            android:clickable="true" />
+            android:thumb="@drawable/thumb">
+        </androidx.appcompat.widget.SwitchCompat>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

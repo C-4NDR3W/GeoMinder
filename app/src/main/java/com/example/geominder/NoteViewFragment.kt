@@ -13,6 +13,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
+import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,7 +28,7 @@ import com.google.type.Date
 import java.util.Locale
 
 class NoteViewFragment : Fragment() {
-    private lateinit var toggleButton: ToggleButton
+    private lateinit var toggleButton: SwitchCompat
     private lateinit var recyclerView: RecyclerView
     private lateinit var noteAdapter: NoteAdapter
     private lateinit var selectedDateTextView: TextView

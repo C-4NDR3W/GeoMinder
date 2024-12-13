@@ -82,7 +82,6 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.7.1")
     implementation("com.google.code.gson:gson:2.11.0")
 
-
     implementation ("com.google.android.libraries.places:places:3.3.0")
 
 
