@@ -85,8 +85,15 @@ class NoteCreatorFragment : Fragment() {
 
         titleEditText.setText(title)
         contentEditText.setText(content)
-        timePickerButton.text = "Add a time or date"
         placeEditText.setText(place)
+
+        if (noteId.isNotEmpty()) {
+            loadNoteDataFromFirebase(noteId)
+        } else {
+            titleEditText.setText(title)
+            contentEditText.setText(content)
+            placeEditText.setText(place)
+        }
 
         groupSpinner = view.findViewById(R.id.groupSpinner)
         loadGroups()
@@ -99,19 +106,56 @@ class NoteCreatorFragment : Fragment() {
         return view
     }
 
+    private fun loadNoteDataFromFirebase(noteId: String) {
+        val userID = auth.currentUser?.uid ?: return
+
+        firestore.collection("users").document(userID)
+            .collection("notes").document(noteId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val title = document.getString("title") ?: ""
+                    val content = document.getString("content") ?: ""
+                    val place = document.getString("place") ?: ""
+                    val date = document.getString("date") ?: ""
+                    val time = document.getString("time") ?: ""
+
+                    titleEditText.setText(title)
+                    contentEditText.setText(content)
+                    placeEditText.setText(place)
+                    selectedDate = date
+                    selectedTime = time
+
+                    if (date.isNotEmpty() && time.isNotEmpty()) {
+                        val timeParts = time.split(":")
+                        val hour = timeParts.getOrNull(0)?.toIntOrNull() ?: 0
+                        val minute = timeParts.getOrNull(1)?.toIntOrNull() ?: 0
+
+                        // Format the time using %02d for hour and minute
+                        val formattedTime = String.format("%02d:%02d", hour, minute)
+
+                        // Set the text with formatted time
+                        timePickerButton.text = "$date, $formattedTime"
+                        timePickerButton.setTextColor(resources.getColor(android.R.color.black))
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("NoteCreatorFragment", "Error loading note: ${exception.message}")
+                Toast.makeText(requireContext(), "Error loading note: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+
     private fun showDateTimePicker() {
         val calendar = Calendar.getInstance()
         val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
             selectedDate = "$dayOfMonth/${month + 1}/$year"
-
             val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-                selectedTime = "$hourOfDay:$minute"
-                timePickerButton.text = "Selected: $selectedDate $selectedTime"
+                //timePickerButton.text = "$selectedDate $selectedTime"
             }
-
             TimePickerDialog(requireContext(), timeSetListener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
         }
-
         DatePickerDialog(requireContext(), dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
     }
 
@@ -120,7 +164,8 @@ class NoteCreatorFragment : Fragment() {
         val content = contentEditText.text.toString().trim()
         val place = placeEditText.text.toString().trim()
 
-        if (title.isEmpty() || content.isEmpty() || place.isEmpty() || selectedDate == null || selectedTime == null) {
+        // Check if any required fields are empty
+        if (title.isEmpty() || content.isEmpty() || place.isEmpty() || selectedDate.isNullOrEmpty() || selectedTime.isNullOrEmpty()) {
             Toast.makeText(requireContext(), "Please fill in all fields.", Toast.LENGTH_SHORT).show()
             return
         }

@@ -47,7 +47,8 @@
                 android:layout_gravity="center"
                 android:paddingHorizontal="12dp"
                 android:thumb="@drawable/thumb"
-                app:track="@drawable/track">
+                app:track="@drawable/track"
+                style="@style/CustomSwitchStyle">
             </androidx.appcompat.widget.SwitchCompat>
         </LinearLayout>
 
