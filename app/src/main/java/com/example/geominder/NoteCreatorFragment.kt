@@ -8,8 +8,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -43,6 +45,11 @@ class NoteCreatorFragment : Fragment() {
     private lateinit var saveButton: ImageButton
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
+
+    private lateinit var groupSpinner: Spinner
+    private var groupList = mutableListOf<String>()
+    private var groupIdList = mutableListOf<String>()
+
 
     private var selectedDate: String? = null
     private var selectedTime: String? = null
@@ -80,6 +87,10 @@ class NoteCreatorFragment : Fragment() {
         contentEditText.setText(content)
         timePickerButton.text = "Add a time or date"
         placeEditText.setText(place)
+
+        groupSpinner = view.findViewById(R.id.groupSpinner)
+        loadGroups()
+
 
         timePickerButton.setOnClickListener { showDateTimePicker() }
         backButton.setOnClickListener { navigateBack() }
@@ -121,6 +132,9 @@ class NoteCreatorFragment : Fragment() {
             firestore.collection("users").document(userID).collection("notes").document()
         }
 
+        val selectedGroupPosition = groupSpinner.selectedItemPosition
+        val selectedGroupId = if (selectedGroupPosition > 0) groupIdList[selectedGroupPosition] else ""
+
         val noteData = hashMapOf(
             "id" to noteRef.id,
             "title" to title,
@@ -129,7 +143,8 @@ class NoteCreatorFragment : Fragment() {
             "date" to selectedDate,
             "time" to selectedTime,
             "status" to true,
-            "isPinned" to false
+            "isPinned" to false,
+            "groupId" to selectedGroupId
         )
 
         noteRef.set(noteData)
@@ -176,6 +191,34 @@ class NoteCreatorFragment : Fragment() {
         }
     }
 
+    private fun loadGroups() {
+        val userID = auth.currentUser?.uid ?: return
+
+        firestore.collection("groups")
+            .whereEqualTo("admin", userID)
+            .get()
+            .addOnSuccessListener { documents ->
+                groupList.clear()
+                groupIdList.clear()
+                groupList.add("Select a Group")
+                groupIdList.add("")
+
+                for (document in documents) {
+                    val groupName = document.getString("name") ?: "Unnamed Group"
+                    val groupId = document.id
+                    groupList.add(groupName)
+                    groupIdList.add(groupId)
+                }
+
+                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, groupList)
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                groupSpinner.adapter = adapter
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(requireContext(), "Failed to load groups: ${exception.message}", Toast.LENGTH_SHORT).show()
+                Log.e("NoteCreatorFragment", "Error loading groups: ${exception.message}", exception)
+            }
+    }
 
     private fun navigateToNoteView() {
         findNavController().navigate(R.id.navigation_home)

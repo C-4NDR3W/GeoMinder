@@ -95,6 +95,7 @@ dependencies {
     implementation(libs.firebase.storage.ktx)
     implementation(libs.androidx.preference)
     implementation(libs.androidx.recyclerview)
+    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

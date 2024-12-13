@@ -31,6 +31,7 @@ class NoteAdapter(private var groupedNotes: List<Pair<String, List<Note>>>,
     }
 
     class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val noteGroup: TextView = itemView.findViewById(R.id.noteGroup)
         val noteTitle: TextView = itemView.findViewById(R.id.noteTitle)
         val noteContent: TextView = itemView.findViewById(R.id.noteContent)
         val noteTime: TextView = itemView.findViewById(R.id.noteTime)
@@ -76,6 +77,8 @@ class NoteAdapter(private var groupedNotes: List<Pair<String, List<Note>>>,
                 noteHolder.noteContent.text = note.content
                 noteHolder.noteTime.text = note.time
                 noteHolder.notePlace.text = note.place
+                
+
 
                 if (note.isPinned) {
                     noteHolder.pinButton.isSelected = true
