@@ -1,9 +1,12 @@
 package com.example.geominder.settings
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -77,10 +80,11 @@ class PermissionSettingsFragment : Fragment() {
 
     private fun handlePermissionToggle(permission: Permission, isChecked: Boolean) {
         if (isChecked) {
-            if(shouldShowRequestPermissionRationale(permission.name)){
-                AlertDialog.Builder(requireContext()).setTitle("Permission Required")
+            if (shouldShowRequestPermissionRationale(permission.name)) {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Permission Required")
                     .setMessage("This App requires ${permission.description} for better functionality.")
-                    .setPositiveButton("Grant"){_,_ ->
+                    .setPositiveButton("Grant") { _, _ ->
                         requestPermission(permission.name)
                     }
                     .setNegativeButton("Cancel", null)
@@ -89,12 +93,23 @@ class PermissionSettingsFragment : Fragment() {
                 requestPermission(permission.name)
             }
         } else {
-            Toast.makeText(
-                requireContext(),
-                "Cannot change permissions, please use app settings",
-                Toast.LENGTH_SHORT
-            ).show()
+            // Redirect to app settings for permission management
+            AlertDialog.Builder(requireContext())
+                .setTitle("Manage Permissions")
+                .setMessage("You can manage this permission from the app settings.")
+                .setPositiveButton("Open Settings") { _, _ ->
+                    openAppSettings()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
         }
+    }
+
+    private fun openAppSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = Uri.fromParts("package", requireContext().packageName, null)
+        }
+        startActivity(intent)
     }
 
     private fun requestPermission(permission: String) {

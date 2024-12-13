@@ -1,28 +1,5 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory
-        app:title="Data Backup and Recovery"
-        app:titleTextAppearance="@style/CustomPreferenceTitle">
-
-    <ListPreference
-            app:key="backup_frequency"
-            app:title="Backup Frequency"
-            app:summary="Set how often your data is backed up"
-            app:entries="@array/backup_frequency_options"
-            app:entryValues="@array/backup_frequency_values"
-            app:defaultValue="weekly" />
-
-        <Preference
-            app:key="manual_backup"
-            app:title="Backup Now"
-            app:summary="Manually back up your notes to the cloud" />
-
-        <Preference
-            app:key="restore_backup"
-            app:title="Restore Backup"
-            app:summary="Restore data from your most recent backup" />
-    </PreferenceCategory>
-
     <PreferenceCategory app:title="Data Privacy and Security">
         <Preference
             app:key="data_export"

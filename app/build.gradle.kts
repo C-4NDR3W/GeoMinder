@@ -1,4 +1,3 @@
-
 plugins {
     id("com.google.gms.google-services")
     alias(libs.plugins.android.application)
@@ -78,11 +77,10 @@ dependencies {
     implementation("androidx.preference:preference-ktx:1.2.0")
     implementation("com.google.android.gms:play-services-maps:19.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
-    implementation("androidx.recyclerview:recyclerview:1.2.1")
-    implementation("androidx.work:work-runtime-ktx:2.7.1")
-    implementation("com.google.code.gson:gson:2.11.0")
+    implementation ("androidx.recyclerview:recyclerview:1.2.1")
+    implementation ("androidx.work:work-runtime-ktx:2.7.1")
+    implementation ("com.google.android.material:material:1.12.0")
 
-    implementation ("com.google.android.libraries.places:places:3.3.0")
 
 
     implementation(libs.androidx.core.ktx)
@@ -97,7 +95,6 @@ dependencies {
     implementation(libs.firebase.storage.ktx)
     implementation(libs.androidx.preference)
     implementation(libs.androidx.recyclerview)
-    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
