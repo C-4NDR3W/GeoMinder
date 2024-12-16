@@ -247,28 +247,9 @@
     </fragment>
 
     <fragment
-        android:id="@+id/groupViewFragment"
-        android:name="com.example.geominder.GroupViewFragment"
+        android:id="@+id/groupFragment"
+        android:name="com.example.geominder.GroupFragment"
         android:label="Group View">
-        <argument
-            android:name="groupName"
-            app:argType="string" />
-
-        <argument
-            android:name="groupId"
-            app:argType="string" />
-
-        <argument
-            android:name="adminId"
-            app:argType="string"/>
-
-        <argument
-            android:name="groupDesc"
-            app:argType="string"/>
-
-        <argument
-            android:name="members"
-            app:argType="string"/>
         <action
             android:id="@+id/action_groupViewFragment_to_groupEditorFragment"
             app:destination="@id/groupEditorFragment" />

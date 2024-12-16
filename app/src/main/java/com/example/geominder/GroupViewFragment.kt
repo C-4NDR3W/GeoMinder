@@ -101,9 +101,9 @@ class GroupViewFragment : Fragment() {
             showDateTimePicker()
         }
 
-        editMembersButton.setOnClickListener {
-            editGroup()
-        }
+//        editMembersButton.setOnClickListener {
+//            editGroup()
+//        }
 
         return view
     }
@@ -167,10 +167,10 @@ class GroupViewFragment : Fragment() {
         DatePickerDialog(requireContext(), dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
     }
 
-    private fun editGroup() {
-        val bundle = Bundle()
-        val action = GroupViewFragmentDirections.actionGroupViewFragmentToGroupEditorFragment(groupName, groupId, adminId, groupDesc, membersJson)
-
-        navController.navigate(action)
-    }
+//    private fun editGroup() {
+//        val bundle = Bundle()
+//        val action = GroupViewFragmentDirections.actionGroupViewFragmentToGroupEditorFragment(groupName, groupId, adminId, groupDesc, membersJson)
+//
+//        navController.navigate(action)
+//    }
 }
