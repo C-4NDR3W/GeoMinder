@@ -205,7 +205,7 @@ class NoteCreatorFragment : Fragment() {
             "groupId" to selectedGroupId
         )
 
-        if (selectedGroupId.isNotEmpty()) {
+        if (selectedGroupId != "Personal") {
             firestore.collection("groups").document(selectedGroupId).get()
                 .addOnSuccessListener { document ->
                     val members = document.get("members") as? List<HashMap<String, String>> ?: emptyList()
@@ -215,7 +215,6 @@ class NoteCreatorFragment : Fragment() {
                         if (memberUserId != null) {
                             val memberNoteRef = firestore.collection("users").document(memberUserId).collection("notes").document()
 
-                            // Buat salinan catatan untuk anggota grup
                             val memberNoteData = noteData.toMutableMap()
                             memberNoteData["id"] = memberNoteRef.id
 
@@ -233,7 +232,10 @@ class NoteCreatorFragment : Fragment() {
                 }
                 .addOnFailureListener { e ->
                     Log.e("NoteCreatorFragment", "Failed to fetch group members: ${e.message}", e)
+                    Toast.makeText(requireContext(), "Error sharing note with group.", Toast.LENGTH_SHORT).show()
                 }
+        } else {
+            Toast.makeText(requireContext(), "Note saved as personal!", Toast.LENGTH_SHORT).show()
         }
 
         noteRef.set(noteData)
