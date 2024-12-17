@@ -97,8 +97,6 @@ class NoteViewFragment : Fragment() {
         firestore.collection("users")
             .document(userID)
             .collection("notes")
-//            .orderBy("isPinned", Query.Direction.DESCENDING) // Order by pinned notes first
-//            .orderBy("date", Query.Direction.DESCENDING) // Order by date
             .get()
             .addOnFailureListener { e ->
                 Log.e("FirestoreError", "Error fetching notes: ${e.message}")
@@ -109,7 +107,6 @@ class NoteViewFragment : Fragment() {
 
                 for (document in documents) {
                     val note = document.toObject(Note::class.java)
-
                     val isPinned = document.getBoolean("isPinned") ?: false
                     note.isPinned = isPinned
 
@@ -167,6 +164,8 @@ class NoteViewFragment : Fragment() {
                             putString("date", note.date)
                             putString("time", note.time)
                             putString("place", note.place)
+                            putString("groupID", note.groupId)
+                            putString("groupName", note.groupName)
                         }
                         findNavController().navigate(R.id.action_noteViewFragment_to_noteCreatorFragment, bundle)
                     },
@@ -183,6 +182,20 @@ class NoteViewFragment : Fragment() {
             .addOnFailureListener { exception ->
                 Log.e("NoteViewFragment", "Error fetching notes: ${exception.message}")
                 Toast.makeText(requireContext(), "Error fetching notes: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun fetchGroupName(groupId: String, callback: (String) -> Unit) {
+        firestore.collection("groups")
+            .document(groupId)
+            .get()
+            .addOnSuccessListener { document ->
+                val groupName = document.getString("name") ?: "Unknown Group"
+                callback(groupName)
+            }
+            .addOnFailureListener { e ->
+                Log.e("NoteViewFragment", "Error fetching group name: ${e.message}")
+                callback("Unknown Group")
             }
     }
 

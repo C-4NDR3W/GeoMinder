@@ -1,20 +1,21 @@
 package com.example.geominder
 
 import android.icu.text.SimpleDateFormat
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.type.Date
+import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Locale
 
 class NoteAdapter(private var groupedNotes: List<Pair<String, List<Note>>>,
                   private val onNoteClicked: (Note) -> Unit,
                   private val onDeleteClicked: (Note) -> Unit,
                   private val onPinClicked: (Note) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private val firestore = FirebaseFirestore.getInstance()
 
     fun updateNotes(newGroupedNotes: List<Pair<String, List<Note>>>) {
         groupedNotes = newGroupedNotes
@@ -36,6 +37,7 @@ class NoteAdapter(private var groupedNotes: List<Pair<String, List<Note>>>,
         val noteContent: TextView = itemView.findViewById(R.id.noteContent)
         val noteTime: TextView = itemView.findViewById(R.id.noteTime)
         val notePlace: TextView = itemView.findViewById(R.id.notePlace)
+        val group: TextView = itemView.findViewById(R.id.noteGroup)
         val deleteButton: ImageButton = itemView.findViewById(R.id.deleteButton)
         val pinButton: ImageButton = itemView.findViewById(R.id.pinButton)
     }
@@ -73,33 +75,28 @@ class NoteAdapter(private var groupedNotes: List<Pair<String, List<Note>>>,
                 val notePosition = position - currentIndex
                 val note = notesInGroup[notePosition]
                 val noteHolder = holder as NoteViewHolder
+
+                fetchGroupName(note.groupId) { groupName ->
+                    note.groupName = groupName // Update the note's groupName
+                    noteHolder.noteGroup.text = note.groupName // Display the groupName
+                }
+
                 noteHolder.noteTitle.text = note.title
                 noteHolder.noteContent.text = note.content
                 noteHolder.noteTime.text = note.time
                 noteHolder.notePlace.text = note.place
-                
-
-
-                if (note.isPinned) {
-                    noteHolder.pinButton.isSelected = true
-                } else {
-                    noteHolder.pinButton.isSelected = false
-                }
+                noteHolder.pinButton.isSelected = note.isPinned
 
                 // Edit button click
-                noteHolder.itemView.setOnClickListener {
-                    onNoteClicked(note)
-                }
+                noteHolder.itemView.setOnClickListener { onNoteClicked(note) }
 
                 // Delete button click
                 noteHolder.deleteButton.setOnClickListener {
-                    onDeleteClicked(note)
+                    showDeleteConfirmationDialog(holder.itemView, note)
                 }
 
                 // Pin button click
-                noteHolder.pinButton.setOnClickListener {
-                    onPinClicked(note)
-                }
+                noteHolder.pinButton.setOnClickListener { onPinClicked(note) }
 
                 return
             }
@@ -142,4 +139,39 @@ class NoteAdapter(private var groupedNotes: List<Pair<String, List<Note>>>,
             dateString
         }
     }
+
+    private fun fetchGroupName(groupId: String, callback: (String) -> Unit) {
+        firestore.collection("groups")
+            .document(groupId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val groupName = document.getString("name") ?: ""
+                    callback(groupName)
+                } else {
+                    callback("")
+                }
+            }
+            .addOnFailureListener {
+                callback("")
+            }
+    }
+
+    private fun showDeleteConfirmationDialog(view: View, note: Note) {
+        val context = view.context
+        val builder = androidx.appcompat.app.AlertDialog.Builder(context)
+        builder.setTitle("Delete Note")
+        builder.setMessage("Are you sure you want to delete this note?")
+
+        builder.setPositiveButton("Delete") { _, _ ->
+            onDeleteClicked(note)
+        }
+
+        builder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        builder.create().show()
+    }
+
 }

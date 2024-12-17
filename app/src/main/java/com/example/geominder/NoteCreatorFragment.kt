@@ -152,11 +152,25 @@ class NoteCreatorFragment : Fragment() {
         val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
             selectedDate = "$dayOfMonth/${month + 1}/$year"
             val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-                //timePickerButton.text = "$selectedDate $selectedTime"
+                selectedTime = String.format("%02d:%02d", hourOfDay, minute)
+                timePickerButton.text = "$selectedDate, $selectedTime"
+                timePickerButton.setTextColor(resources.getColor(android.R.color.black))
             }
-            TimePickerDialog(requireContext(), timeSetListener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
+            TimePickerDialog(
+                requireContext(),
+                timeSetListener,
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE),
+                true
+            ).show()
         }
-        DatePickerDialog(requireContext(), dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
+        DatePickerDialog(
+            requireContext(),
+            dateSetListener,
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).show()
     }
 
     private fun saveNote() {
@@ -178,7 +192,7 @@ class NoteCreatorFragment : Fragment() {
         }
 
         val selectedGroupPosition = groupSpinner.selectedItemPosition
-        val selectedGroupId = if (selectedGroupPosition > 0) groupIdList[selectedGroupPosition] else ""
+        val selectedGroupId = if (selectedGroupPosition > 0) groupIdList[selectedGroupPosition] else "Personal"
 
         val noteData = hashMapOf(
             "id" to noteRef.id,

@@ -132,8 +132,6 @@
                 android:background="?android:attr/selectableItemBackground" />
         </LinearLayout>
 
-
-
         <EditText
             android:id="@+id/contentEditText"
             android:layout_width="match_parent"
