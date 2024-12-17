@@ -215,7 +215,6 @@ class NoteCreatorFragment : Fragment() {
                         if (memberUserId != null) {
                             val memberNoteRef = firestore.collection("users").document(memberUserId).collection("notes").document()
 
-                            // Buat salinan catatan untuk anggota grup
                             val memberNoteData = noteData.toMutableMap()
                             memberNoteData["id"] = memberNoteRef.id
 
