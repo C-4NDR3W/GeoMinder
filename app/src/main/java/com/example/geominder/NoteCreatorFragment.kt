@@ -178,8 +178,7 @@ class NoteCreatorFragment : Fragment() {
         val content = contentEditText.text.toString().trim()
         val place = placeEditText.text.toString().trim()
 
-        // Check if any required fields are empty
-        if (title.isEmpty() || content.isEmpty() || place.isEmpty() || selectedDate.isNullOrEmpty() || selectedTime.isNullOrEmpty()) {
+        if (title.isEmpty() || content.isEmpty() || place.isEmpty() || selectedDate == null || selectedTime == null) {
             Toast.makeText(requireContext(), "Please fill in all fields.", Toast.LENGTH_SHORT).show()
             return
         }
@@ -206,13 +205,41 @@ class NoteCreatorFragment : Fragment() {
             "groupId" to selectedGroupId
         )
 
+        if (selectedGroupId.isNotEmpty()) {
+            firestore.collection("groups").document(selectedGroupId).get()
+                .addOnSuccessListener { document ->
+                    val members = document.get("members") as? List<HashMap<String, String>> ?: emptyList()
+
+                    for (member in members) {
+                        val memberUserId = member["userId"]
+                        if (memberUserId != null) {
+                            val memberNoteRef = firestore.collection("users").document(memberUserId).collection("notes").document()
+
+                            // Buat salinan catatan untuk anggota grup
+                            val memberNoteData = noteData.toMutableMap()
+                            memberNoteData["id"] = memberNoteRef.id
+
+                            memberNoteRef.set(memberNoteData)
+                                .addOnSuccessListener {
+                                    Log.d("NoteCreatorFragment", "Note shared with user: $memberUserId")
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.e("NoteCreatorFragment", "Failed to share note with user: $memberUserId", e)
+                                }
+                        }
+                    }
+
+                    Toast.makeText(requireContext(), "Note shared with group members!", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener { e ->
+                    Log.e("NoteCreatorFragment", "Failed to fetch group members: ${e.message}", e)
+                }
+        }
+
         noteRef.set(noteData)
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "Note saved successfully!", Toast.LENGTH_SHORT).show()
-                scheduleNotification(
-                    noteRef.id,
-                    noteTitle = title
-                )
+                scheduleNotification(noteRef.id, noteTitle = title)
                 navigateToNoteView()
             }
             .addOnFailureListener { exception ->
@@ -220,6 +247,7 @@ class NoteCreatorFragment : Fragment() {
                 Toast.makeText(requireContext(), "Error saving note: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
     }
+
 
     private fun scheduleNotification(noteId: String, noteTitle: String) {
         val noteRef = firestore.collection("users").document(auth.currentUser?.uid ?: return).collection("notes").document(noteId)
