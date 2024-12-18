@@ -29,6 +29,7 @@ class GroupEditorFragment : Fragment() {
     private lateinit var userListField: ListView
     private var addedUsers = mutableListOf<User>()
     private var suggestions = mutableListOf<String>()
+    private lateinit var userListsAdapter: ArrayAdapter<User>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,14 +55,10 @@ class GroupEditorFragment : Fragment() {
         groupNameEditText.setText(groupName)
         groupDescriptionEditText.setText(groupDescription)
 
-        if (groupId.isNotEmpty()) {
-            loadGroupDataFromFirebase(groupId)
-        }
-
         userListField = view.findViewById(R.id.userPreviewList)
 
         // Create an adapter for displaying added users with the new layout
-        val userListsAdapter = object : ArrayAdapter<User>(
+        userListsAdapter = object : ArrayAdapter<User>(
             requireContext(),
             R.layout.simple_user_dropdown_item,  // This is the layout you provided
             addedUsers
@@ -77,7 +74,7 @@ class GroupEditorFragment : Fragment() {
 
                 val user = getItem(position)
                 upperText.text = user?.email
-                lowerText.text = "Some additional info" // You can replace with any other data
+                lowerText.text = ""
 
                 // Set up the delete button to remove the user from the addedUsers list
                 deleteButton.setOnClickListener {
@@ -91,6 +88,18 @@ class GroupEditorFragment : Fragment() {
 
         // Set the adapter for the ListView
         userListField.adapter = userListsAdapter
+
+        val currentUserEmail = auth.currentUser?.email
+        if (!currentUserEmail.isNullOrEmpty() && addedUsers.none { it.email == currentUserEmail }) {
+            val currentUserId = auth.currentUser?.uid ?: return view
+            val currentUser = User(userId = currentUserId, email = currentUserEmail)
+            addedUsers.add(0, currentUser)  // Add the logged-in user at the top
+            userListsAdapter.notifyDataSetChanged()  // Refresh the ListView
+        }
+
+        if (groupId.isNotEmpty()) {
+            loadGroupDataFromFirebase(groupId)
+        }
 
         // Set up the suggestion field for user search (auto-complete)
         suggestionField = view.findViewById(R.id.userSuggestions)
@@ -148,8 +157,6 @@ class GroupEditorFragment : Fragment() {
     }
 
     private fun loadGroupDataFromFirebase(groupId: String) {
-        val userID = auth.currentUser?.uid ?: return
-
         firestore.collection("groups")
             .document(groupId)
             .get()
@@ -160,6 +167,24 @@ class GroupEditorFragment : Fragment() {
 
                     groupNameEditText.setText(name)
                     groupDescriptionEditText.setText(description)
+
+                    // Load members from Firestore and add them to addedUsers
+                    val members = document.get("members") as? List<Map<String, Any>> ?: emptyList()
+
+                    // Clear existing users in addedUsers to prevent duplicates
+                    addedUsers.clear()
+
+                    // Loop through the members and add each to addedUsers list
+                    members.forEach { member ->
+                        val userId = member["userId"] as? String
+                        val email = member["email"] as? String
+
+                        if (userId != null && email != null) {
+                            val user = User(userId = userId, email = email)
+                            addedUsers.add(user)
+                        }
+                    }
+                    userListsAdapter.notifyDataSetChanged()  // Refresh the ListView
                 }
             }
             .addOnFailureListener { exception ->
