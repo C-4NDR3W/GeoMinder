@@ -14,119 +14,111 @@ import com.google.firebase.firestore.FirebaseFirestore
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.Filter
-import com.google.gson.Gson
 
 class GroupFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var groupAdapter: GroupAdapter
-    private lateinit var addGroupButton: ImageView
-    private lateinit var navController: NavController
-    private lateinit var auth: FirebaseAuth
-    private val groups = mutableListOf<Group>()
-
-    private lateinit var db: FirebaseFirestore
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val groupsList = mutableListOf<Group>()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_group, container, false)
+        return inflater.inflate(R.layout.fragment_group, container, false)
+    }
 
-        // Initialize UI components
-        navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
-        recyclerView = view.findViewById(R.id.recyclerView)
-        addGroupButton = view.findViewById(R.id.addGroupButton)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        db = FirebaseFirestore.getInstance()
-        auth = FirebaseAuth.getInstance()
+        recyclerView = view.findViewById(R.id.recyclerViewGroup)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        // Initialize Adapter with onDeleteClick listener
+        // Set up adapter
         groupAdapter = GroupAdapter(
-            groups = groups,
-            onItemClick = { group ->
-                val gson = Gson()
-                val members = gson.toJson(group.members)
-                Log.d("GroupFragment", "group id: ${group.id}, members: $members")
-            },
-            onDeleteClick = { group ->
-                deleteGroup(group)
-            }
+            groups = emptyList(),
+            onGroupClicked = { group -> navigateToGroupEditor(group) },
+            onDeleteClick = { group -> deleteGroup(group) }
         )
-
         recyclerView.adapter = groupAdapter
 
-        // Fetch groups from Firestore
-        fetchGroups()
-
+        val addGroupButton: ImageView = view.findViewById(R.id.addGroupButton)
         addGroupButton.setOnClickListener {
-            navigateToGroupEditor()
+            navigateToGroupEditor(createDefaultGroup())
         }
 
-        return view
+        fetchGroups()
     }
 
     private fun fetchGroups() {
-        val currentUser = auth.currentUser
+        val userId = auth.currentUser?.uid // Get the current logged-in user's ID
 
-        if (currentUser == null) {
-            Log.d("FetchGroups", "User not logged in")
-            return
+        if (userId != null) {
+            // Query groups where the user is a member
+            firestore.collection("groups")
+                .get()
+                .addOnSuccessListener { documents ->
+                    groupsList.clear()
+                    for (document in documents) {
+                        val group = document.toObject(Group::class.java)
+                        group.id = document.id
+
+                        if (group.members.any { it.userId == userId }) {
+                            groupsList.add(group)
+                        }
+                    }
+                    groupAdapter = GroupAdapter(
+                        groups = groupsList,
+                        onGroupClicked = { group -> navigateToGroupEditor(group) },
+                        onDeleteClick = { group -> deleteGroup(group) }
+                    )
+                    recyclerView.adapter = groupAdapter
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("GroupFragment", "Error fetching groups: ${exception.message}")
+                }
+        } else {
+            Toast.makeText(requireContext(), "User not logged in", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun navigateToGroupEditor(group: Group) {
+        // Create a bundle with group data
+        val bundle = Bundle().apply {
+            putString("groupId", group.id)
+            putString("groupName", group.name)
+            putString("groupDesc", group.desc)
         }
 
-        db.collection("groups").where(
-            Filter.or(
-                Filter.arrayContains("members", currentUser.uid),
-                Filter.equalTo("admin", currentUser.uid)
-            )
+        // Navigate to GroupDetailsFragment (or relevant destination)
+        findNavController().navigate(R.id.action_navigation_group_to_groupEditorFragment, bundle)
+    }
+
+    private fun createDefaultGroup(): Group {
+        // Create and return a default group with empty values
+        return Group(
+            id = "",  // Empty ID, can be generated later
+            name = "",  // Empty group name
+            desc = "",  // Empty group description
+            members = emptyList()  // Empty members list
         )
-            .get()
-            .addOnSuccessListener { documents ->
-                groups.clear() // Clear previous data
-                for (document in documents) {
-                    val groupName = document.getString("name") ?: "Unknown"
-                    val groupDesc = document.getString("desc") ?: "No description"
-                    val groupAdmin = document.getString("admin") ?: "Unknown"
-                    val groupId = document.id
-                    val membersList =
-                        document.get("members") as? List<Map<String, Any>> ?: emptyList()
-
-                    val userList = membersList.mapNotNull { member ->
-                        val email = member["email"] as? String
-                        val userId = member["userId"] as? String
-                        if (email != null && userId != null) User(email, userId) else null
-                    }
-
-                    val group = Group(groupName, groupAdmin, groupId, groupDesc, userList)
-                    groups.add(group)
-                }
-                groupAdapter.notifyDataSetChanged() // Notify adapter once after all groups are fetched
-            }
-            .addOnFailureListener { exception ->
-                Log.e("FetchGroups", "Error fetching groups: ", exception)
-                Toast.makeText(context, "Error fetching groups", Toast.LENGTH_SHORT).show()
-            }
     }
 
     private fun deleteGroup(group: Group) {
-        db.collection("groups").document(group.id)
+        firestore.collection("groups").document(group.id)
             .delete()
             .addOnSuccessListener {
                 Toast.makeText(context, "${group.name} deleted", Toast.LENGTH_SHORT).show()
-                groups.remove(group) // Remove from local list
+                groupsList.remove(group)
                 groupAdapter.notifyDataSetChanged()
             }
             .addOnFailureListener { exception ->
                 Log.e("DeleteGroup", "Error deleting group: ", exception)
                 Toast.makeText(context, "Error deleting group", Toast.LENGTH_SHORT).show()
             }
-    }
-
-    private fun navigateToGroupEditor() {
-        val bundle = Bundle()
-        bundle.putString("type", "newGroup")
-        navController.navigate(R.id.action_navigation_group_to_groupEditorFragment, bundle)
     }
 }

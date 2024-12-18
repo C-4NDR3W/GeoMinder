@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class GroupAdapter(private val groups: List<Group>,
-                   private val onItemClick: (Group) -> Unit,
+                   private val onGroupClicked: (Group) -> Unit,
                    private val onDeleteClick: (Group) -> Unit
 ): RecyclerView.Adapter<GroupAdapter.GroupViewHolder>() {
 
@@ -44,7 +44,7 @@ class GroupAdapter(private val groups: List<Group>,
 
     override fun onBindViewHolder(holder: GroupViewHolder, position: Int) {
         val group = groups[position]
-        holder.bind(group, onItemClick, onDeleteClick)
+        holder.bind(group, onGroupClicked, onDeleteClick)
     }
 
     override fun getItemCount(): Int = groups.size

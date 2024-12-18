@@ -185,20 +185,6 @@ class NoteViewFragment : Fragment() {
             }
     }
 
-    private fun fetchGroupName(groupId: String, callback: (String) -> Unit) {
-        firestore.collection("groups")
-            .document(groupId)
-            .get()
-            .addOnSuccessListener { document ->
-                val groupName = document.getString("name") ?: "Unknown Group"
-                callback(groupName)
-            }
-            .addOnFailureListener { e ->
-                Log.e("NoteViewFragment", "Error fetching group name: ${e.message}")
-                callback("Unknown Group")
-            }
-    }
-
     private fun groupNotes(notes: List<Note>): List<Pair<String, List<Note>>> {
         val sortedNotes = notes.sortedWith(compareByDescending<Note> { it.isPinned }
             .thenBy { SimpleDateFormat("dd/MM/yyyy").parse(it.date) })
