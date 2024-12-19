@@ -89,16 +89,16 @@ class GroupEditorFragment : Fragment() {
         // Set the adapter for the ListView
         userListField.adapter = userListsAdapter
 
-        val currentUserEmail = auth.currentUser?.email
-        if (!currentUserEmail.isNullOrEmpty() && addedUsers.none { it.email == currentUserEmail }) {
-            val currentUserId = auth.currentUser?.uid ?: return view
-            val currentUser = User(userId = currentUserId, email = currentUserEmail)
-            addedUsers.add(0, currentUser)  // Add the logged-in user at the top
-            userListsAdapter.notifyDataSetChanged()  // Refresh the ListView
-        }
-
         if (groupId.isNotEmpty()) {
             loadGroupDataFromFirebase(groupId)
+        } else {
+            val currentUserEmail = auth.currentUser?.email
+            if (!currentUserEmail.isNullOrEmpty() && addedUsers.none { it.email == currentUserEmail }) {
+                val currentUserId = auth.currentUser?.uid ?: return view
+                val currentUser = User(userId = currentUserId, email = currentUserEmail)
+                addedUsers.add(0, currentUser)  // Add the logged-in user at the top
+                userListsAdapter.notifyDataSetChanged()  // Refresh the ListView
+            }
         }
 
         // Set up the suggestion field for user search (auto-complete)
