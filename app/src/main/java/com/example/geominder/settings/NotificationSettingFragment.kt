@@ -16,8 +16,49 @@ class NotificationSettingFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.notification_preferences, rootKey)
 
+        val notificationDelayPreference = findPreference<ListPreference>("notificationDelay")
+        val vibrationModePreference = findPreference<ListPreference>("vibrationMode")
+        val vibrationLengthPreference = findPreference<ListPreference>("vibrationLength")
+        val notificationStrengthPreference = findPreference<ListPreference>("notificationStrength")
+
+        notificationDelayPreference?.apply {
+            summary = entry
+            setOnPreferenceChangeListener { _, newValue ->
+                val index = findIndexOfValue(newValue.toString())
+                summary = if (index >= 0) entries[index] else newValue.toString()
+                true
+            }
+        }
+        notificationStrengthPreference?.apply {
+            summary = entry
+            setOnPreferenceChangeListener { _, newValue ->
+                val index = findIndexOfValue(newValue.toString())
+                summary = if (index >= 0) entries[index] else newValue.toString()
+                true
+            }
+        }
+
+        vibrationModePreference?.apply {
+            summary = entry // Set current value as summary
+            setOnPreferenceChangeListener { _, newValue ->
+                val index = findIndexOfValue(newValue.toString())
+                summary = if (index >= 0) entries[index] else newValue.toString()
+                true
+            }
+        }
+        vibrationLengthPreference?.apply {
+            summary = entry // Set current value as summary
+            setOnPreferenceChangeListener { _, newValue ->
+                val index = findIndexOfValue(newValue.toString())
+                summary = if (index >= 0) entries[index] else newValue.toString()
+                true
+            }
+        }
+
+
         setupListeners()
     }
+
 
     private fun setupListeners() {
         val enableVibrationPref = findPreference<SwitchPreferenceCompat>("enableVibration")
@@ -83,7 +124,8 @@ class NotificationSettingFragment : PreferenceFragmentCompat() {
             }
             vibrator.vibrate(vibrationEffect)
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val vibrationEffect = VibrationEffect.createOneShot(length, VibrationEffect.DEFAULT_AMPLITUDE)
+            val vibrationEffect =
+                VibrationEffect.createOneShot(length, VibrationEffect.DEFAULT_AMPLITUDE)
             vibrator.vibrate(vibrationEffect)
         } else {
             vibrator.vibrate(length)
