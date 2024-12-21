@@ -15,7 +15,7 @@
         android:textStyle="bold"
         android:text="@string/help_about"
         android:padding="16dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="64dp"
         android:textSize="16sp"
         android:id="@+id/about_project"
         android:textColor="@color/black"

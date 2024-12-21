@@ -164,8 +164,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
 
-//        applyMapsettings()  //unfinished
-        Toast.makeText(requireContext(), "Maps Accessed", Toast.LENGTH_SHORT).show()
+        applyMapSettings()
+//        Toast.makeText(requireContext(), "Maps Accessed", Toast.LENGTH_SHORT).show()
         when {
             hasLocationPermission() -> getLastLocation()
             shouldShowRequestPermissionRationale(ACCESS_FINE_LOCATION) -> {
@@ -174,16 +174,39 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 }
             }
         }
+
+        applyMapSettings()
     }
 
-//    private fun applyMapsettings() {
-//        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-//        updateMapType(sharedPreferences.getString("map_type", "normal") ?: "normal")
-//        updateTrafficLayer(sharedPreferences.getBoolean("traffic_layer", false))
-//        updateTerrainLayer(sharedPreferences.getBoolean("terrain_layer", false))
-//        updateDefaultZoom(sharedPreferences.getInt("default_zoom", 15))
-//        updateScaleBarVisibility(sharedPreferences.getBoolean("show_scale_bar", true))
-//    }
+    fun applyMapSettings() {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+
+        // Map type
+        val mapType = sharedPreferences.getString("map_type", "normal") ?: "normal"
+        val googleMapType = when (mapType) {
+            "normal" -> GoogleMap.MAP_TYPE_NORMAL
+            "satellite" -> GoogleMap.MAP_TYPE_SATELLITE
+            "terrain" -> GoogleMap.MAP_TYPE_TERRAIN
+            "hybrid" -> GoogleMap.MAP_TYPE_HYBRID
+            else -> GoogleMap.MAP_TYPE_NORMAL
+        }
+        googleMap?.mapType = googleMapType
+
+        // Traffic layer
+        val trafficEnabled = sharedPreferences.getBoolean("traffic_layer", false)
+        googleMap?.isTrafficEnabled = trafficEnabled
+
+        // Default zoom (optional)
+        val zoomLevel = sharedPreferences.getInt("default_zoom", 15)
+        googleMap?.moveCamera(
+            CameraUpdateFactory.zoomTo(zoomLevel.toFloat())
+        )
+
+        val showZoomControls = sharedPreferences.getBoolean("show_zoom_controls", true)
+
+        Log.d(requireContext().toString(), "Map settings applied!")
+    }
+
 
     override fun onResume() {
         super.onResume()
