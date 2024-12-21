@@ -184,16 +184,13 @@ class NoteCreatorFragment : Fragment() {
         }
 
         val userID = auth.currentUser?.uid ?: return
-        val noteRef: DocumentReference = if (noteId.isNotEmpty()) {
-            firestore.collection("users").document(userID).collection("notes").document(noteId)
-        } else {
-            firestore.collection("users").document(userID).collection("notes").document()
-        }
+
+        val noteRef: DocumentReference = firestore.collection("users").document(userID).collection("notes").document(noteId.ifEmpty { firestore.collection("users").document(userID).collection("notes").document().id })
 
         val selectedGroupPosition = groupSpinner.selectedItemPosition
         val selectedGroupId = if (selectedGroupPosition > 0) groupIdList[selectedGroupPosition] else "Personal"
 
-        val noteData = hashMapOf(
+        val noteData: HashMap<String, Any?> = hashMapOf(
             "id" to noteRef.id,
             "title" to title,
             "content" to content,
@@ -205,50 +202,50 @@ class NoteCreatorFragment : Fragment() {
             "groupId" to selectedGroupId
         )
 
-        if (selectedGroupId != "Personal") {
-            firestore.collection("groups").document(selectedGroupId).get()
-                .addOnSuccessListener { document ->
-                    val members = document.get("members") as? List<HashMap<String, String>> ?: emptyList()
-
-                    for (member in members) {
-                        val memberUserId = member["userId"]
-                        if (memberUserId != null) {
-                            val memberNoteRef = firestore.collection("users").document(memberUserId).collection("notes").document()
-
-                            val memberNoteData = noteData.toMutableMap()
-                            memberNoteData["id"] = memberNoteRef.id
-
-                            memberNoteRef.set(memberNoteData)
-                                .addOnSuccessListener {
-                                    Log.d("NoteCreatorFragment", "Note shared with user: $memberUserId")
-                                }
-                                .addOnFailureListener { e ->
-                                    Log.e("NoteCreatorFragment", "Failed to share note with user: $memberUserId", e)
-                                }
-                        }
-                    }
-
-                    Toast.makeText(requireContext(), "Note shared with group members!", Toast.LENGTH_SHORT).show()
-                }
-                .addOnFailureListener { e ->
-                    Log.e("NoteCreatorFragment", "Failed to fetch group members: ${e.message}", e)
-                    Toast.makeText(requireContext(), "Error sharing note with group.", Toast.LENGTH_SHORT).show()
-                }
-        } else {
-            Toast.makeText(requireContext(), "Note saved as personal!", Toast.LENGTH_SHORT).show()
-        }
-
         noteRef.set(noteData)
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "Note saved successfully!", Toast.LENGTH_SHORT).show()
                 scheduleNotification(noteRef.id, noteTitle = title)
                 navigateToNoteView()
+                if (selectedGroupId != "Personal") {
+                    shareNoteWithGroup(noteRef, noteData, selectedGroupId, userID)
+                } else {
+                    Toast.makeText(requireContext(), "Note saved as personal!", Toast.LENGTH_SHORT).show()
+                }
             }
             .addOnFailureListener { exception ->
                 Log.e("NoteCreatorFragment", "Error saving note: ${exception.message}")
                 Toast.makeText(requireContext(), "Error saving note: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
     }
+
+    private fun shareNoteWithGroup(noteRef: DocumentReference, noteData: HashMap<String, Any?>, groupId: String, userId: String) {
+        firestore.collection("groups").document(groupId).get()
+            .addOnSuccessListener { document ->
+                val members = document.get("members") as? List<HashMap<String, String>> ?: emptyList()
+
+                for (member in members) {
+                    val memberUserId = member["userId"]
+                    if (memberUserId != null && memberUserId != userId) {
+                        val memberNoteRef = firestore.collection("users").document(memberUserId).collection("notes").document(noteRef.id)
+                        memberNoteRef.set(noteData)
+                            .addOnSuccessListener {
+                                Log.d("NoteCreatorFragment", "Note shared with user: $memberUserId")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("NoteCreatorFragment", "Failed to share note with user: $memberUserId", e)
+                            }
+                    }
+                }
+                Toast.makeText(requireContext(), "Note shared with group members!", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Log.e("NoteCreatorFragment", "Failed to fetch group members: ${e.message}", e)
+                Toast.makeText(requireContext(), "Error sharing note with group.", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+
 
 
     private fun scheduleNotification(noteId: String, noteTitle: String) {
