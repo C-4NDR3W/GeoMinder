@@ -142,7 +142,6 @@ class GroupViewFragment : Fragment() {
         sharedPref?.edit()?.apply {
             putString(notesKey, noteContent)
             apply()
-
             activity?.runOnUiThread {
                 Toast.makeText(context, "Note saved successfully", Toast.LENGTH_SHORT).show()
             }

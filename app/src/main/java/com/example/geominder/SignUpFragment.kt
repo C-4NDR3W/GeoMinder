@@ -108,6 +108,32 @@ class SignUpFragment : Fragment() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
+
+                    val user = auth.currentUser
+                    val isNewUser = task.result?.additionalUserInfo?.isNewUser == true
+
+                    val userObject = hashMapOf(
+                        "uid" to user?.uid,
+                        "email" to user?.email,
+                    )
+
+                    if (isNewUser) {
+
+                        user?.uid?.let { uid ->
+                            db.collection("users").document(uid)
+                                .set(userObject)
+                                .addOnSuccessListener {
+                                    Log.d("Firestore", "User added successfully")
+                                    Toast.makeText(requireContext(), "Welcome, new user!", Toast.LENGTH_SHORT).show()
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.e("Firestore", "Error adding user: ${e.message}")
+                                    Toast.makeText(requireContext(), "Error adding user to database", Toast.LENGTH_SHORT).show()
+                                }
+                        }
+
+                    }
+
                     Toast.makeText(requireContext(), "Google sign-in successful", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(requireContext(), "Google Authentication Failed", Toast.LENGTH_SHORT).show()

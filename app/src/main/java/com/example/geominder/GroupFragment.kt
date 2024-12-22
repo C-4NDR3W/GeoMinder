@@ -34,7 +34,6 @@ class GroupFragment : Fragment() {
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(context)
-
         addGroupButton = view.findViewById(R.id.addGroupButton)
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
@@ -42,10 +41,7 @@ class GroupFragment : Fragment() {
         groupAdapter = GroupAdapter(groups) { group ->
             val gson = Gson()
             val members = gson.toJson(group.members)
-
             Log.d("GroupFragment", "group id: ${group.id}")
-
-
 
         }
 
@@ -72,6 +68,7 @@ class GroupFragment : Fragment() {
         ))
             .get()
             .addOnSuccessListener { documents ->
+
                 groups.clear()
                 for (document in documents) {
                     val groupName = document.getString("name") ?: "Unknown"

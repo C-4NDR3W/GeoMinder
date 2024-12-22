@@ -71,7 +71,6 @@ class GroupEditorFragment : Fragment() {
 
         val members = arguments?.getString("groupName")
 
-
         //jika fragment dipakai untuk mengedit group
         if (arguments?.getString("members") != null)
         {
@@ -89,6 +88,8 @@ class GroupEditorFragment : Fragment() {
             groupDescField.setText(groupDesc)
 
         }
+
+
 
         userListField = view.findViewById(R.id.userPreviewList)
         val userListsAdapter = object : ArrayAdapter<String>(
@@ -187,10 +188,8 @@ class GroupEditorFragment : Fragment() {
     {
         if (groupNameField.text.isEmpty() || addedUsers.size < 2)
         {
-
             return false
         }
-
 
         return true
     }
@@ -219,8 +218,11 @@ class GroupEditorFragment : Fragment() {
                         editGroup(addedUsers, groupId, auth.currentUser!!.uid, name, desc)
                         return@launch
                     }
-
-                    createGroup(addedUsers, auth.currentUser!!.uid, name, desc)
+                    Log.d("GroupEditorFragment", "admin email: ${auth.currentUser!!.email}")
+                    auth.currentUser!!.email?.let { it1 ->
+                        createGroup(addedUsers,
+                            it1, name, desc)
+                    }
                     Toast.makeText(context, "Group created successfully!", Toast.LENGTH_SHORT).show()
                 } catch (e: Exception) {
                     Log.e("GroupError", "Failed to create group", e)
@@ -275,12 +277,10 @@ class GroupEditorFragment : Fragment() {
         }
 
         return userIds
-
     }
 
     suspend fun editGroup(users: List<String>, groupId:String, adminId:String, groupName: String, groupDesc : String)
     {
-
         if (!validateGroupContent())
         {
             Toast.makeText(requireContext(), "Group must have at least two members and name cannot be empty!", Toast.LENGTH_SHORT).show()
@@ -300,7 +300,6 @@ class GroupEditorFragment : Fragment() {
             "desc" to groupDesc,
             "members" to userObjects
         )
-
 
         db.collection("groups").document(groupId).update(groupData)
             .addOnSuccessListener {
@@ -311,33 +310,40 @@ class GroupEditorFragment : Fragment() {
                 Toast.makeText(requireContext(), "Failed to update group", Toast.LENGTH_SHORT).show()
             }
 
-
     }
 
-    suspend fun createGroup(users: List<String>, adminId:String, groupName: String, groupDesc : String) {
-
+    suspend fun createGroup(users: MutableList<String>, adminEmail:String, groupName: String, groupDesc : String) {
+        Toast.makeText( requireContext(),"admin email: $adminEmail", Toast.LENGTH_SHORT).show()
         if (!validateGroupContent())
         {
             Toast.makeText(requireContext(), "Group must have at least two members and name cannot be empty!", Toast.LENGTH_SHORT).show()
             return
         }
 
+        users.add(adminEmail)
+        val userIdArray : MutableList<String> = obtainUserIds(users)
+//        auth.currentUser?.email?.let { users.add() };
 
-        val userObjects = obtainUserIds(users).mapIndexed { index, userId ->
+        val userObjects = userIdArray.mapIndexed { index, userId ->
             hashMapOf(
                 "email" to users[index],
                 "userId" to userId
             )
         }
-
         val groupData = hashMapOf(
             "name" to groupName,
-            "admin" to adminId,
+            "admin" to auth.currentUser!!.uid,
             "desc" to groupDesc,
             "members" to userObjects
         )
 
+        users.forEach( {
+            Log.d("GroupEditorFragment", "userEmail: $it")
+        })
+
         db.collection("groups").add(groupData)
+        Toast.makeText(requireContext(), "Group named ${groupData.get("name") } created successfully", Toast.LENGTH_SHORT).show()
+
     }
 
 

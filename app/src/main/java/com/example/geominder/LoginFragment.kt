@@ -21,6 +21,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginFragment : Fragment()
 {
@@ -29,9 +30,11 @@ class LoginFragment : Fragment()
     private lateinit var googleSignInClient: GoogleSignInClient
 
     private lateinit var googleSignInBtn : SignInButton
+    private lateinit var db: FirebaseFirestore
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance()
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -101,6 +104,7 @@ class LoginFragment : Fragment()
             try {
                 val account = task.getResult(ApiException::class.java)
                 firebaseAuthWithGoogle(account)
+
                 val intent = Intent(requireContext(), MainActivity::class.java)
                 startActivity(intent)
                 requireActivity().finish()
@@ -116,6 +120,31 @@ class LoginFragment : Fragment()
         auth.signInWithCredential(credential)
             .addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
+                    val user = auth.currentUser
+                    val isNewUser = task.result?.additionalUserInfo?.isNewUser == true
+
+                    val userObject = hashMapOf(
+                        "uid" to user?.uid,
+                        "email" to user?.email,
+                    )
+
+                    if (isNewUser) {
+
+                        user?.uid?.let { uid ->
+                            db.collection("users").document(uid)
+                                .set(userObject)
+                                .addOnSuccessListener {
+                                    Log.d("Firestore", "User added successfully")
+                                    Toast.makeText(requireContext(), "Welcome, new user!", Toast.LENGTH_SHORT).show()
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.e("Firestore", "Error adding user: ${e.message}")
+                                    Toast.makeText(requireContext(), "Error adding user to database", Toast.LENGTH_SHORT).show()
+                                }
+                        }
+
+                    }
+
                     Toast.makeText(requireContext(), "Google sign-in successful", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(requireContext(), "Google Authentication Failed", Toast.LENGTH_SHORT).show()
