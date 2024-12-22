@@ -7,6 +7,7 @@ data class Note(
     val place: String = "",
     val date: String = "",
     var time: String = "",
+    val groupId: String = "",
+    var groupName: String = "",
     var isPinned: Boolean = false,
-    val groupId: String = ""
 )

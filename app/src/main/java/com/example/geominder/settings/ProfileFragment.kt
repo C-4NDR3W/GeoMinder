@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -66,6 +67,7 @@ class ProfileFragment : Fragment() {
         }
 
         editProfilePictureButton.setOnClickListener {
+            Toast.makeText(requireContext(), "Edit Profile Picture Clicked", Toast.LENGTH_SHORT).show()
             if (checkCameraPermission() && checkGalleryPermission()) {
                 handleEditProfilePicture()
             } else {
@@ -100,6 +102,8 @@ class ProfileFragment : Fragment() {
 
         if (user != null) {
             val userId = user.uid
+            val userEmail = user.email
+            emailTextView?.text = userEmail
 
             val db = FirebaseFirestore.getInstance()
             db.collection("users").document(userId).get().addOnSuccessListener { document ->

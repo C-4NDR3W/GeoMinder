@@ -4,19 +4,36 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class GroupAdapter(private val groups: List<Group>, private val onItemClick: (Group) -> Unit) : RecyclerView.Adapter<GroupAdapter.GroupViewHolder>() {
+class GroupAdapter(private val groups: List<Group>,
+                   private val onGroupClicked: (Group) -> Unit,
+                   private val onDeleteClick: (Group) -> Unit
+): RecyclerView.Adapter<GroupAdapter.GroupViewHolder>() {
 
     class GroupViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val groupName: TextView = view.findViewById(R.id.textViewGroupName)
+        val groupName: TextView = view.findViewById(R.id.GroupName)
+        val groupDesc: TextView = view.findViewById(R.id.GroupDesc)
         val groupMembers: TextView = view.findViewById(R.id.textViewGroupMembers)
+        val deleteButton: ImageButton = view.findViewById(R.id.deleteButton)
 
-        fun bind(group: Group, clickListener: (Group) -> Unit) {
-            itemView.setOnClickListener { clickListener(group) }
+        fun bind(group: Group,
+                 clickListener: (Group) -> Unit,
+                 deleteClickListener: (Group) -> Unit
+        ) {
             groupName.text = group.name
-            groupMembers.text = group.members.joinToString(separator = ", ") { it.email }
+            groupDesc.text = group.desc
+
+            val memberList = group.members.take(3).joinToString(separator = "\n") { it.email }
+            groupMembers.text = memberList
+
+            // Handle item click
+            itemView.setOnClickListener { clickListener(group) }
+
+            // Handle delete button click
+            deleteButton.setOnClickListener { deleteClickListener(group) }
         }
     }
 
@@ -27,7 +44,7 @@ class GroupAdapter(private val groups: List<Group>, private val onItemClick: (Gr
 
     override fun onBindViewHolder(holder: GroupViewHolder, position: Int) {
         val group = groups[position]
-        holder.bind(group, onItemClick)
+        holder.bind(group, onGroupClicked, onDeleteClick)
     }
 
     override fun getItemCount(): Int = groups.size

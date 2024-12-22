@@ -152,11 +152,25 @@ class NoteCreatorFragment : Fragment() {
         val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
             selectedDate = "$dayOfMonth/${month + 1}/$year"
             val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-                //timePickerButton.text = "$selectedDate $selectedTime"
+                selectedTime = String.format("%02d:%02d", hourOfDay, minute)
+                timePickerButton.text = "$selectedDate, $selectedTime"
+                timePickerButton.setTextColor(resources.getColor(android.R.color.black))
             }
-            TimePickerDialog(requireContext(), timeSetListener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
+            TimePickerDialog(
+                requireContext(),
+                timeSetListener,
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE),
+                true
+            ).show()
         }
-        DatePickerDialog(requireContext(), dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
+        DatePickerDialog(
+            requireContext(),
+            dateSetListener,
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).show()
     }
 
     private fun saveNote() {
@@ -164,23 +178,19 @@ class NoteCreatorFragment : Fragment() {
         val content = contentEditText.text.toString().trim()
         val place = placeEditText.text.toString().trim()
 
-        // Check if any required fields are empty
-        if (title.isEmpty() || content.isEmpty() || place.isEmpty() || selectedDate.isNullOrEmpty() || selectedTime.isNullOrEmpty()) {
+        if (title.isEmpty() || content.isEmpty() || place.isEmpty() || selectedDate == null || selectedTime == null) {
             Toast.makeText(requireContext(), "Please fill in all fields.", Toast.LENGTH_SHORT).show()
             return
         }
 
         val userID = auth.currentUser?.uid ?: return
-        val noteRef: DocumentReference = if (noteId.isNotEmpty()) {
-            firestore.collection("users").document(userID).collection("notes").document(noteId)
-        } else {
-            firestore.collection("users").document(userID).collection("notes").document()
-        }
+
+        val noteRef: DocumentReference = firestore.collection("users").document(userID).collection("notes").document(noteId.ifEmpty { firestore.collection("users").document(userID).collection("notes").document().id })
 
         val selectedGroupPosition = groupSpinner.selectedItemPosition
-        val selectedGroupId = if (selectedGroupPosition > 0) groupIdList[selectedGroupPosition] else ""
+        val selectedGroupId = if (selectedGroupPosition > 0) groupIdList[selectedGroupPosition] else "Personal"
 
-        val noteData = hashMapOf(
+        val noteData: HashMap<String, Any?> = hashMapOf(
             "id" to noteRef.id,
             "title" to title,
             "content" to content,
@@ -195,17 +205,48 @@ class NoteCreatorFragment : Fragment() {
         noteRef.set(noteData)
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "Note saved successfully!", Toast.LENGTH_SHORT).show()
-                scheduleNotification(
-                    noteRef.id,
-                    noteTitle = title
-                )
+                scheduleNotification(noteRef.id, noteTitle = title)
                 navigateToNoteView()
+                if (selectedGroupId != "Personal") {
+                    shareNoteWithGroup(noteRef, noteData, selectedGroupId, userID)
+                } else {
+                    Toast.makeText(requireContext(), "Note saved as personal!", Toast.LENGTH_SHORT).show()
+                }
             }
             .addOnFailureListener { exception ->
                 Log.e("NoteCreatorFragment", "Error saving note: ${exception.message}")
                 Toast.makeText(requireContext(), "Error saving note: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
     }
+
+    private fun shareNoteWithGroup(noteRef: DocumentReference, noteData: HashMap<String, Any?>, groupId: String, userId: String) {
+        firestore.collection("groups").document(groupId).get()
+            .addOnSuccessListener { document ->
+                val members = document.get("members") as? List<HashMap<String, String>> ?: emptyList()
+
+                for (member in members) {
+                    val memberUserId = member["userId"]
+                    if (memberUserId != null && memberUserId != userId) {
+                        val memberNoteRef = firestore.collection("users").document(memberUserId).collection("notes").document(noteRef.id)
+                        memberNoteRef.set(noteData)
+                            .addOnSuccessListener {
+                                Log.d("NoteCreatorFragment", "Note shared with user: $memberUserId")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("NoteCreatorFragment", "Failed to share note with user: $memberUserId", e)
+                            }
+                    }
+                }
+                Toast.makeText(requireContext(), "Note shared with group members!", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Log.e("NoteCreatorFragment", "Failed to fetch group members: ${e.message}", e)
+                Toast.makeText(requireContext(), "Error sharing note with group.", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+
+
 
     private fun scheduleNotification(noteId: String, noteTitle: String) {
         val noteRef = firestore.collection("users").document(auth.currentUser?.uid ?: return).collection("notes").document(noteId)

@@ -9,7 +9,9 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.os.Build
 import android.util.Log
+import androidx.preference.PreferenceManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -31,6 +33,18 @@ class ReminderWorker(
 
 
     private fun triggerNotification(noteTitle: String) {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        val enableVibration = sharedPreferences.getBoolean("enableVibration", true)
+        val vibrationMode = sharedPreferences.getString("vibrationMode", "default") ?: "default"
+        val vibrationLengthKey = sharedPreferences.getString("vibrationLength", "long") ?: "long"
+
+        val vibrationLength = when (vibrationLengthKey) {
+            "short" -> 500L
+            "medium" -> 1000L
+            "long" -> 2000L
+            else -> 2000L
+        }
+
         val notificationManager = NotificationManagerCompat.from(applicationContext)
         val channelId = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             createNotificationChannel("reminder_channel_id")
@@ -65,12 +79,21 @@ class ReminderWorker(
         notificationManager.notify(1, notification)
 
         // Get system Vibrator service and vibrate the phone
-        val vibrator = applicationContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        if (android.os.Build.VERSION.SDK_INT >= 26) {
-            vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE))
-        } else {
-            @Suppress("DEPRECATION")
-            vibrator.vibrate(1000)
+        if (enableVibration) {
+            val vibrator = applicationContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val vibrationEffect = when (vibrationMode) {
+                    "tick" -> VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK)
+                    "heavy_click" -> VibrationEffect.createPredefined(VibrationEffect.EFFECT_HEAVY_CLICK)
+                    "click" -> VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK)
+                    else -> VibrationEffect.createOneShot(vibrationLength, VibrationEffect.DEFAULT_AMPLITUDE)
+                }
+                vibrator.vibrate(vibrationEffect)
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(vibrationLength, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                vibrator.vibrate(vibrationLength)
+            }
         }
     }
 

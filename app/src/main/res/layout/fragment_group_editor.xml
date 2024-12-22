@@ -14,9 +14,9 @@
         android:padding="30dp">
 
         <EditText
+            android:id="@+id/groupNameField"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/groupNameField"
             android:hint="Enter group name"
             android:layout_marginTop="20dp"
             android:textSize="32sp"
@@ -29,9 +29,9 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <EditText
+            android:id="@+id/groupDescField"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/groupDescField"
             android:hint="Enter group description"
             android:layout_marginTop="20dp"
             android:padding="10dp"

@@ -29,9 +29,9 @@
         android:min="1"
         android:max="20" />
     <SwitchPreferenceCompat
-        android:key="show_scale_bar"
-        android:title="Show Scale Bar"
-        android:summary="Display a scale bar on the map"
+        android:key="show_zoom_controls"
+        android:title="Show Zoom Controls"
+        android:summary="Display Zoom Controls on the map"
         android:defaultValue="true" />
 
 

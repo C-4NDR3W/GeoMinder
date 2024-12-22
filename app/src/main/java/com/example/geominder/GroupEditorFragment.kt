@@ -4,97 +4,63 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.ListView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.RecyclerView
-import com.google.common.reflect.TypeToken
+import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.getField
-import com.google.gson.Gson
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-
 
 class GroupEditorFragment : Fragment() {
-    private lateinit var db: FirebaseFirestore
+    private lateinit var groupId: String
+    private lateinit var groupName: String
+    private lateinit var groupDescription: String
+
+    private lateinit var groupNameEditText: EditText
+    private lateinit var groupDescriptionEditText: EditText
+    private lateinit var saveButton: Button
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var auth: FirebaseAuth
+
     private lateinit var suggestionField: AutoCompleteTextView
     private lateinit var userListField: ListView
-    private lateinit var actionButton : Button
-    private lateinit var groupNameField : EditText
-    private lateinit var groupDescField : EditText
-
-
-    private var isEditing = false
-
-    private var addedUsers = mutableListOf<String>()
+    private var addedUsers = mutableListOf<User>()
     private var suggestions = mutableListOf<String>()
-
-    private lateinit var adapter: ArrayAdapter<String>
-    private lateinit var auth: FirebaseAuth
-    private lateinit var userListsAdapter : ArrayAdapter<String>
+    private lateinit var userListsAdapter: ArrayAdapter<User>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        db = FirebaseFirestore.getInstance()
+        firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
-
     }
 
-
-    
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         val view = inflater.inflate(R.layout.fragment_group_editor, container, false)
-        context?.let {
-            adapter = ArrayAdapter(it, android.R.layout.simple_dropdown_item_1line, suggestions)
-//            userListsAdapter = ArrayAdapter(it, android.R.layout.simple_dropdown_item_1line, addedUsers)
-        }
 
-        actionButton = view.findViewById(R.id.groupActionButton)
-        groupNameField = view.findViewById(R.id.groupNameField)
-        groupDescField = view.findViewById(R.id.groupDescField)
+        groupNameEditText = view.findViewById(R.id.groupNameField)
+        groupDescriptionEditText = view.findViewById(R.id.groupDescField)
+        saveButton = view.findViewById(R.id.groupActionButton)
 
-        val members = arguments?.getString("groupName")
+        val bundle = requireArguments()
+        groupId = bundle.getString("groupId", "")
+        groupName = bundle.getString("groupName", "")
+        groupDescription = bundle.getString("groupDescription", "")
 
-        //jika fragment dipakai untuk mengedit group
-        if (arguments?.getString("members") != null)
-        {
-
-            Log.d("edit", "CURRENTLY EDITING")
-            isEditing = true
-            val groupName = arguments?.getString("groupName")
-            val groupDesc = arguments?.getString("groupDesc")
-            val membersJson = arguments?.getString("members")
-
-            addedUsers = populateMembersWithEmails(membersJson)
-            actionButton.text = "Edit Group"
-
-            groupNameField.setText(groupName)
-            groupDescField.setText(groupDesc)
-
-        }
-
-
+        groupNameEditText.setText(groupName)
+        groupDescriptionEditText.setText(groupDescription)
 
         userListField = view.findViewById(R.id.userPreviewList)
-        val userListsAdapter = object : ArrayAdapter<String>(
+
+        // Create an adapter for displaying added users with the new layout
+        userListsAdapter = object : ArrayAdapter<User>(
             requireContext(),
-            R.layout.simple_user_dropdown_item,
+            R.layout.simple_user_dropdown_item,  // This is the layout you provided
             addedUsers
         ) {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -102,249 +68,196 @@ class GroupEditorFragment : Fragment() {
                 val view = convertView ?: LayoutInflater.from(context)
                     .inflate(R.layout.simple_user_dropdown_item, parent, false)
 
-
                 val upperText = view.findViewById<TextView>(R.id.upperText)
+                val lowerText = view.findViewById<TextView>(R.id.lowerText)
                 val deleteButton = view.findViewById<ImageView>(R.id.deleteButton)
 
                 val user = getItem(position)
-                upperText.text = user  
+                upperText.text = user?.email
+                lowerText.text = ""
 
+                // Set up the delete button to remove the user from the addedUsers list
                 deleteButton.setOnClickListener {
                     Toast.makeText(context, "$user deleted", Toast.LENGTH_SHORT).show()
                     addedUsers.remove(user)
-                    notifyDataSetChanged()
-
+                    notifyDataSetChanged()  // Notify the adapter that the data has changed
                 }
-
                 return view
             }
         }
 
+        // Set the adapter for the ListView
         userListField.adapter = userListsAdapter
 
+        if (groupId.isNotEmpty()) {
+            loadGroupDataFromFirebase(groupId)
+        } else {
+            val currentUserEmail = auth.currentUser?.email
+            if (!currentUserEmail.isNullOrEmpty() && addedUsers.none { it.email == currentUserEmail }) {
+                val currentUserId = auth.currentUser?.uid ?: return view
+                val currentUser = User(userId = currentUserId, email = currentUserEmail)
+                addedUsers.add(0, currentUser)  // Add the logged-in user at the top
+                userListsAdapter.notifyDataSetChanged()  // Refresh the ListView
+            }
+        }
+
+        // Set up the suggestion field for user search (auto-complete)
         suggestionField = view.findViewById(R.id.userSuggestions)
-        suggestionField.setAdapter(adapter)
         suggestionField.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                // gk bisa di delete
+            override fun afterTextChanged(s: Editable?) {
+                val query = s.toString().trim()
+                if (query.isNotEmpty()) {
+                    searchUsers(query)
+                }
             }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                generateUserSuggestions(s.toString())
-                adapter.notifyDataSetChanged()
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-                // gk bisa di delete
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        setActionButtonListener(isEditing)
-        suggestionField.setOnItemClickListener { parent, view, position, id ->
-            val selectedUser = parent.getItemAtPosition(position) as String
+        suggestionField.setOnItemClickListener { _, _, position, _ ->
+            val selectedUserEmail = suggestionField.adapter.getItem(position) as String
 
-            if (selectedUser in addedUsers) {
-                Toast.makeText(context, "$selectedUser is already added!", Toast.LENGTH_SHORT).show()
-                return@setOnItemClickListener
-            }
+            // Query Firestore to get the userId associated with the selected email
+            firestore.collection("users")
+                .whereEqualTo("email", selectedUserEmail)
+                .get()
+                .addOnSuccessListener { result ->
+                    if (result.isEmpty) {
+                        Toast.makeText(requireContext(), "User not found.", Toast.LENGTH_SHORT).show()
+                        return@addOnSuccessListener
+                    }
 
-            Log.d("User", "Selected user: $selectedUser")
-            addedUsers.add(selectedUser)
-            userListsAdapter.notifyDataSetChanged()
-            suggestionField.text.clear()
-            suggestions.remove(selectedUser)
-            adapter.notifyDataSetChanged()
+                    // Retrieve the userId from the Firestore result
+                    val document = result.documents.first()
+                    val userId = document.id  // The userId is the document ID in Firestore
+
+                    // Create a User object with the userId and email
+                    val newUser = User(userId = userId, email = selectedUserEmail)
+
+                    // Add the user to the addedUsers list if it is not already present
+                    if (!addedUsers.contains(newUser)) {
+                        addedUsers.add(newUser)
+                        userListsAdapter.notifyDataSetChanged()  // Refresh the ListView
+                    }
+
+                    // Clear the text field after selection
+                    suggestionField.text.clear()
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(requireContext(), "Error fetching user: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
+
+        saveButton.setOnClickListener {
+            saveGroup()  // Call the function to save the group
         }
 
         return view
     }
 
-
-    fun populateMembersWithEmails(membersJson : String?) : MutableList<String>
-    {
-
-        if (membersJson == null)
-        {
-            return mutableListOf<String>()
-        }
-
-        val gson = Gson()
-        val listType = object : TypeToken<MutableList<User>>() {}.type
-        val members = gson.fromJson<MutableList<User>>(membersJson, listType)
-        val newList = mutableListOf<String>()
-
-        for (member : User in members)
-        {
-            newList.add(member.email)
-        }
-
-        return newList
-
-
-    }
-
-
-    fun validateGroupContent() : Boolean
-    {
-        if (groupNameField.text.isEmpty() || addedUsers.size < 2)
-        {
-            return false
-        }
-
-        return true
-    }
-
-//    fun deleteUserSuggestion(view : View)
-//    {
-//        view.setOnClickListener()
-//    }
-
-    fun setActionButtonListener(isEditing: Boolean) {
-        actionButton.setOnClickListener {
-            val name = groupNameField.text.toString()
-            val desc = groupDescField.text.toString()
-
-            val groupId = arguments?.getString("groupId")
-            Log.d("GroupEditorFragment", "groupId: $groupId")
-            viewLifecycleOwner.lifecycleScope.launch {
-                try {
-                    if (auth.currentUser == null)
-                    {
-                        Toast.makeText(context, "Failed to create group because idk", Toast.LENGTH_SHORT).show()
-                        return@launch
-                    }
-                    if (isEditing && groupId != null) {
-
-                        editGroup(addedUsers, groupId, auth.currentUser!!.uid, name, desc)
-                        return@launch
-                    }
-                    Log.d("GroupEditorFragment", "admin email: ${auth.currentUser!!.email}")
-                    auth.currentUser!!.email?.let { it1 ->
-                        createGroup(addedUsers,
-                            it1, name, desc)
-                    }
-                    Toast.makeText(context, "Group created successfully!", Toast.LENGTH_SHORT).show()
-                } catch (e: Exception) {
-                    Log.e("GroupError", "Failed to create group", e)
-                    Toast.makeText(context, "Error creating group: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
-
-    fun generateUserSuggestions(query: String) {
-        db.collection("users")
-            .whereGreaterThanOrEqualTo("email", query)
-            .whereLessThan("email", query + "\uf8ff")
+    private fun loadGroupDataFromFirebase(groupId: String) {
+        firestore.collection("groups")
+            .document(groupId)
             .get()
-            .addOnSuccessListener { documents ->
-                val newSuggestions = mutableListOf<String>()
-                for (document in documents) {
-                    val email = document.getString("email")
-                    Log.d("User", "Matching email: $email")
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val name = document.getString("name") ?: ""
+                    val description = document.getString("description") ?: ""
 
-                    if (email == null || email in addedUsers || email in suggestions) {
-                        continue
+                    groupNameEditText.setText(name)
+                    groupDescriptionEditText.setText(description)
+
+                    // Load members from Firestore and add them to addedUsers
+                    val members = document.get("members") as? List<Map<String, Any>> ?: emptyList()
+
+                    // Clear existing users in addedUsers to prevent duplicates
+                    addedUsers.clear()
+
+                    // Loop through the members and add each to addedUsers list
+                    members.forEach { member ->
+                        val userId = member["userId"] as? String
+                        val email = member["email"] as? String
+
+                        if (userId != null && email != null) {
+                            val user = User(userId = userId, email = email)
+                            addedUsers.add(user)
+                        }
                     }
-                    newSuggestions.add(email)
+                    userListsAdapter.notifyDataSetChanged()  // Refresh the ListView
                 }
-
-                suggestions.addAll(newSuggestions)
-                adapter.clear()
-                adapter.addAll(suggestions)
-                adapter.notifyDataSetChanged()
-
-            }
-            .addOnFailureListener { e ->
-                Log.w("Error", "Error fetching documents", e)
-            }
-    }
-//
-
-    suspend fun obtainUserIds(users: List<String>) : MutableList<String>
-    {
-        val userIds = mutableListOf<String>()
-        for (user : String in users) {
-            val snapshot = db.collection("users")
-                .whereEqualTo("email", user)
-                .get()
-                .await()
-
-            if (!snapshot.isEmpty) {
-                val documentId = snapshot.documents[0].id
-                userIds.add(documentId)
-            }
-        }
-
-        return userIds
-    }
-
-    suspend fun editGroup(users: List<String>, groupId:String, adminId:String, groupName: String, groupDesc : String)
-    {
-        if (!validateGroupContent())
-        {
-            Toast.makeText(requireContext(), "Group must have at least two members and name cannot be empty!", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val userObjects = obtainUserIds(users).mapIndexed { index, userId ->
-            hashMapOf(
-                "email" to users[index],
-                "userId" to userId
-            )
-        }
-
-        val groupData = hashMapOf(
-            "name" to groupName,
-            "admin" to adminId,
-            "desc" to groupDesc,
-            "members" to userObjects
-        )
-
-        db.collection("groups").document(groupId).update(groupData)
-            .addOnSuccessListener {
-                Toast.makeText(requireContext(), "Group updated successfully", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener { exception ->
-                Log.e("Firestore", "Error updating group", exception)
-                Toast.makeText(requireContext(), "Failed to update group", Toast.LENGTH_SHORT).show()
+                Log.e("GroupEditorFragment", "Error loading group: ${exception.message}")
+                Toast.makeText(requireContext(), "Error loading group: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
-
     }
 
-    suspend fun createGroup(users: MutableList<String>, adminEmail:String, groupName: String, groupDesc : String) {
-        Toast.makeText( requireContext(),"admin email: $adminEmail", Toast.LENGTH_SHORT).show()
-        if (!validateGroupContent())
-        {
-            Toast.makeText(requireContext(), "Group must have at least two members and name cannot be empty!", Toast.LENGTH_SHORT).show()
+    private fun searchUsers(query: String) {
+        firestore.collection("users")
+            .orderBy("email")
+            .startAt(query)
+            .endAt(query + "\uf8ff")
+            .get()
+            .addOnSuccessListener { result ->
+                suggestions.clear()  // Clear previous search results
+                if (result.isEmpty) {
+                    Log.d("UserSuggestions", "No users found.")
+                }
+                // Add emails from the result to the suggestions
+                for (document in result) {
+                    val email = document.getString("email") ?: ""
+                    suggestions.add(email)
+                }
+                // Update the adapter with new suggestions
+                val suggestionAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, suggestions)
+                suggestionField.setAdapter(suggestionAdapter)
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(requireContext(), "Error fetching users: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun saveGroup() {
+        val name = groupNameEditText.text.toString().trim()
+        val description = groupDescriptionEditText.text.toString().trim()
+
+        if (name.isEmpty()) {
+            Toast.makeText(requireContext(), "Please fill in all fields.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        users.add(adminEmail)
-        val userIdArray : MutableList<String> = obtainUserIds(users)
-//        auth.currentUser?.email?.let { users.add() };
+        val userID = auth.currentUser?.uid ?: return
 
-        val userObjects = userIdArray.mapIndexed { index, userId ->
-            hashMapOf(
-                "email" to users[index],
-                "userId" to userId
-            )
+        // Check if the groupId is empty. If it's empty, create a new group.
+        val groupRef = if (groupId.isEmpty()) {
+            // Create a new document with an auto-generated ID
+            firestore.collection("groups").document()
+        } else {
+            // Use the provided groupId to reference an existing group
+            firestore.collection("groups").document(groupId)
         }
+
         val groupData = hashMapOf(
-            "name" to groupName,
-            "admin" to auth.currentUser!!.uid,
-            "desc" to groupDesc,
-            "members" to userObjects
+            "name" to name,
+            "description" to description,
+            "admin" to userID,
+            "members" to addedUsers // Save added users to the group
         )
 
-        users.forEach( {
-            Log.d("GroupEditorFragment", "userEmail: $it")
-        })
-
-        db.collection("groups").add(groupData)
-        Toast.makeText(requireContext(), "Group named ${groupData.get("name") } created successfully", Toast.LENGTH_SHORT).show()
-
+        // Save the group data
+        groupRef.set(groupData)
+            .addOnSuccessListener {
+                Toast.makeText(requireContext(), "Group successfully made!", Toast.LENGTH_SHORT).show()
+                navigateToGroupView()
+            }
+            .addOnFailureListener { exception ->
+                Log.e("GroupEditorFragment", "Error saving group: ${exception.message}")
+                Toast.makeText(requireContext(), "Error saving group: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
     }
 
-
+    private fun navigateToGroupView() {
+        findNavController().navigate(R.id.navigation_group)
+    }
 }

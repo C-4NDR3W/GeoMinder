@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
@@ -97,8 +98,6 @@ class NoteViewFragment : Fragment() {
         firestore.collection("users")
             .document(userID)
             .collection("notes")
-//            .orderBy("isPinned", Query.Direction.DESCENDING) // Order by pinned notes first
-//            .orderBy("date", Query.Direction.DESCENDING) // Order by date
             .get()
             .addOnFailureListener { e ->
                 Log.e("FirestoreError", "Error fetching notes: ${e.message}")
@@ -109,7 +108,6 @@ class NoteViewFragment : Fragment() {
 
                 for (document in documents) {
                     val note = document.toObject(Note::class.java)
-
                     val isPinned = document.getBoolean("isPinned") ?: false
                     note.isPinned = isPinned
 
@@ -167,6 +165,8 @@ class NoteViewFragment : Fragment() {
                             putString("date", note.date)
                             putString("time", note.time)
                             putString("place", note.place)
+                            putString("groupID", note.groupId)
+                            putString("groupName", note.groupName)
                         }
                         findNavController().navigate(R.id.action_noteViewFragment_to_noteCreatorFragment, bundle)
                     },
@@ -198,21 +198,56 @@ class NoteViewFragment : Fragment() {
     private fun deleteNote(note: Note) {
         val userID = auth.currentUser?.uid ?: return
 
-        firestore.collection("users")
-            .document(userID)
-            .collection("notes")
-            .document(note.id)
-            .delete()
-            .addOnSuccessListener {
-                Toast.makeText(requireContext(), "Note deleted successfully", Toast.LENGTH_SHORT).show()
-                notesList.remove(note)
-                fetchNotes()
+        val noteRef = firestore.collection("users").document(userID).collection("notes").document(note.id)
+
+        noteRef.get().addOnSuccessListener { doc ->
+            val groupId = doc.getString("groupId")
+
+            if (groupId != null && groupId != "Personal") {
+                firestore.collection("groups").document(groupId).get()
+                    .addOnSuccessListener { document ->
+                        val members = document.get("members") as? List<HashMap<String, String>> ?: emptyList()
+
+                        members.forEach { member ->
+                            val memberUserId = member["userId"]
+                            if (memberUserId != null) {
+                                firestore.collection("users").document(memberUserId).collection("notes").document(note.id).delete()
+                                    .addOnSuccessListener {
+                                        Log.d("NoteViewFragment", "Note deleted from member $memberUserId")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e("NoteViewFragment", "Failed to delete note from member $memberUserId: ${e.message}")
+                                    }
+                            }
+                        }
+
+                        deleteNoteFromCurrentUser(noteRef, note)
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("NoteViewFragment", "Failed to fetch group details: ${e.message}")
+                        deleteNoteFromCurrentUser(noteRef, note)
+                    }
+            } else {
+                deleteNoteFromCurrentUser(noteRef, note)
             }
-            .addOnFailureListener { e ->
-                Log.e("NoteViewFragment", "Failed to delete note: ${e.message}")
-                Toast.makeText(requireContext(), "Failed to delete note", Toast.LENGTH_SHORT).show()
-            }
+        }.addOnFailureListener { e ->
+            Log.e("NoteViewFragment", "Failed to get note details: ${e.message}")
+            Toast.makeText(requireContext(), "Failed to get note details", Toast.LENGTH_SHORT).show()
+        }
     }
+
+    private fun deleteNoteFromCurrentUser(noteRef: DocumentReference, note: Note) {
+        noteRef.delete().addOnSuccessListener {
+            Toast.makeText(requireContext(), "Note deleted successfully", Toast.LENGTH_SHORT).show()
+            notesList.remove(note)
+            fetchNotes()
+        }.addOnFailureListener { e ->
+            Log.e("NoteViewFragment", "Failed to delete note: ${e.message}")
+            Toast.makeText(requireContext(), "Failed to delete note", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
 
     private fun pinNote(note: Note) {
         val userID = auth.currentUser?.uid ?: return

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.example.geominder.R
@@ -33,14 +34,21 @@ class EmailEditDialogueFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val newEmailEditText = view.findViewById<EditText>(R.id.currentEmail)
+        val oldEmail = view.findViewById<TextView>(R.id.oldEmail)
+        val newEmailEditText = view.findViewById<EditText>(R.id.newEmail)
         val passwordEditText = view.findViewById<EditText>(R.id.emailConfirmPassword)
         val changeEmailButton = view.findViewById<Button>(R.id.changeEmailButton)
+
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            oldEmail.text = user.email
+        }
 
         changeEmailButton.setOnClickListener {
             val newEmail = newEmailEditText.text.toString()
             val password = passwordEditText.text.toString()
             val user = FirebaseAuth.getInstance().currentUser
+
 
             if (validateInputs(newEmail, password)) {
                 reauthenticateUser(password) { isAuthenticated ->
