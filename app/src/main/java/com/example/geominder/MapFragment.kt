@@ -1,23 +1,26 @@
 package com.example.geominder
 
+import PlaceAdapter
 import com.google.android.libraries.places.api.Places
 //import com.google.android.libraries.places.api.model.Place
 //i.google.anmport comdroid.libraries.places.api.model.AutocompletePrediction
 //import com.google.android.libraries.places.api.model.FindAutocompletePredictionsRequest
 //import com.google.android.libraries.places.api.net.PlacesClient
 import android.Manifest
+import kotlin.math.*
+
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
+import android.widget.EditText
 import android.widget.Toast
-import android.widget.ToggleButton
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -26,18 +29,20 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.geominder.models.Prediction
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 
 private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
@@ -46,8 +51,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var toggleButton: SwitchCompat
     private lateinit var mapView: MapView
+    private lateinit var autocompleteFragment: AutocompleteSupportFragment
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var searchBar : EditText
+    private lateinit var predictionsList: RecyclerView
     private var googleMap: GoogleMap? = null
+
+    private var results : MutableList<Prediction> = mutableListOf<Prediction>()
+    private lateinit var placeSuggestionAdapter: PlaceAdapter
+
+    // Set the adapter for the ListView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,13 +68,31 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_map, container, false)
+        if (!Places.isInitialized()) {
+            Places.initialize(requireContext(), "AIzaSyBFXvpxCuHeq_1A8_iJxZazxyjvwCrjOaw")
+        }
+        mapView = view.findViewById(R.id.google_map)
+//        mapView.visibility = View.GONE
+        predictionsList = view.findViewById(R.id.placeSuggestionList)
+        predictionsList.bringToFront()
 
+        //make view hidden first
+        predictionsList.visibility = View.GONE
+        placeSuggestionAdapter = PlaceAdapter(results)
+        predictionsList.adapter = placeSuggestionAdapter
+
+        val layoutManager = LinearLayoutManager(requireContext())
+        layoutManager.isSmoothScrollbarEnabled = true
+        predictionsList.layoutManager = layoutManager
+
+        searchBar = view.findViewById(R.id.searchEditText)
         toggleButton = view.findViewById(R.id.toggleButton)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         mapView = view.findViewById(R.id.google_map)
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
+        setEditTextListener(searchBar)
 
         return view
     }
@@ -91,6 +122,64 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
     }
 
+
+    private fun setEditTextListener(editText: EditText)
+    {
+
+        val placesClient = Places.createClient(requireContext())
+        editText.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // No action needed before the text changes
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                //
+                results.clear()
+                val newText = s.toString()
+                val autocompleteRequest = FindAutocompletePredictionsRequest.builder()
+                    .setQuery(newText)
+                    .build()
+
+                placesClient.findAutocompletePredictions(autocompleteRequest)
+                    .addOnSuccessListener {
+                        predictionsList.visibility = View.VISIBLE
+                        predictionsList.bringToFront()
+                        val numberOfPredictions = min(it.autocompletePredictions.size-1, 8)
+                        //take top 8 predictions
+                        for (prediction in it.autocompletePredictions.slice(0..numberOfPredictions)) {
+                            Log.d("MapFragment", "Nama tempat: ${prediction}, alamat: ")
+                            val pred = Prediction(prediction.placeId,
+                                prediction.getPrimaryText(null).toString(),
+                                prediction.getSecondaryText(null).toString(),
+                                0.0,
+                                0.0)
+                            results.add(pred)
+
+                            Log.d("Pred", "Nama tempat: ${pred.name}, alamat: ${pred.address}")
+                        }
+                        placeSuggestionAdapter.notifyDataSetChanged()
+
+
+                    }
+
+
+
+            }
+
+            override  fun afterTextChanged(s: Editable?) {
+                // No action needed after the text changes
+            }
+        })
+
+        editText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                predictionsList.visibility = View.VISIBLE
+            } else {
+                predictionsList.visibility = View.GONE
+            }
+        }
+
+    }
 
     private fun hasLocationPermission() =
         ContextCompat.checkSelfPermission(requireContext(), ACCESS_FINE_LOCATION) ==
@@ -152,6 +241,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     .show()
             }
     }
+
 
 
     private fun redirectToNote() {
