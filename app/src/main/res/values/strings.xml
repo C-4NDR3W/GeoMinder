@@ -1,24 +1,64 @@
 <resources>
     <string name="app_name">GeoMinder</string>
-    <string name="welcome_string">Welcome to GeoMinder!</string>
+
+    <!--    Login & SignUp -->
     <string name="login_button">Log In</string>
     <string name="signup_button">Sign Up</string>
     <string name="account_reminder">Don\'t Have an Account? Sign Up Now</string>
     <string name="email_hint">E-mail</string>
     <string name="password_hint">Password</string>
     <string name="notifications_title">Notifications</string>
+    <string name="welcome_string">Welcome to GeoMinder!</string>
+    <string name="login_separator">OR</string>
+
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+
+    <string name="signup_reminder1">Already have an account? </string>
+    <string name="signup_reminder2"> Sign up</string>
+    <string name="login_reminder1">Have an account? </string>
+    <string name="login_reminder2"> Sign in</string>
+
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome!"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="default_web_client_id">
+353671617878-i2nao1n5011nl5pddf5mafq1k34i2ig1.apps.googleusercontent.com</string>
 
     <string name="start_text">Add your first task reminder</string>
 
-    <!--    note hints-->
+    <!--    note View -->
+    <string name="search_hint">Search</string>
+
+    <!--    note hints -->
     <string name="title_hint">Title</string>
     <string name="time_hint">Add a Date and Time</string>
     <string name="location_hint">Add a Location</string>
     <string name="group_note_hint">Add a Group</string>
     <string name="description_hint">Add a Description</string>
+
+    <!--    note creator -->
+    <string name="date_time_icon">Date and Time</string>
+    <string name="place_icon">Place</string>
+    <string name="group_icon">Groups</string>
     <!--    -->
 
-    <!--  profile stuff, basically  -->
+    <!--    Groups View -->
+    <string name="group_title">Groups</string>
+    <string name="add_button">Add Button</string>
+
+    <!--  Groups Editor -->
+    <string name="group_name">Group name</string>
+    <string name="group_desc">Group description</string>
+    <string name="search_user">search for users....</string>
+    <string name="user_title">Users</string>
+    <string name="create_group_button">Create Group</string>
+
+
+    <!--    profile stuff, basically  -->
     <string name="profile_name">-</string>
     <string name="placeholder_email">-</string>
     <string name="placeholder_password">*</string>
@@ -47,25 +87,6 @@
     <string name="help_settings">Help</string>
     <string name="appearance_settings">Appearance</string>
     <string name="notification_settings">Notification</string>
-
-
-    <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-
-    <string name="signup_reminder1">Already have an account? </string>
-    <string name="signup_reminder2"> Sign up</string>
-    <string name="login_reminder1">Have an account? </string>
-    <string name="login_reminder2"> Sign in</string>
-
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome!"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
-    <string name="default_web_client_id">
-353671617878-i2nao1n5011nl5pddf5mafq1k34i2ig1.apps.googleusercontent.com</string>
 
     <!--    -->
     <string name="title_home">Home</string>

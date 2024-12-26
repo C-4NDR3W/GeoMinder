@@ -99,7 +99,8 @@
             android:text="@string/signup_reminder2"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
-            android:clickable="true"/>
+            android:clickable="true"
+            android:focusable="true"/>
 
     </LinearLayout>
 
@@ -118,9 +119,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="OR"
-            android:textFontWeight="700"
-            android:textSize="20dp"
+            android:text="@string/login_separator"
+            android:textStyle="bold"
+            android:textSize="20sp"
             android:id="@+id/login_seperator_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
