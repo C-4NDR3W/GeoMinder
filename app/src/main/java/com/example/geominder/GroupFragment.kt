@@ -13,6 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
@@ -53,6 +54,7 @@ class GroupFragment : Fragment() {
 
         fetchGroups()
     }
+
 
     private fun fetchGroups() {
         val userId = auth.currentUser?.uid // Get the current logged-in user's ID

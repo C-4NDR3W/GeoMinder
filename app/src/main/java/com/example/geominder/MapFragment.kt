@@ -10,6 +10,7 @@ import android.Manifest
 import kotlin.math.*
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.animation.ValueAnimator
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Editable
@@ -19,7 +20,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,6 +36,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.Visibility
+import com.bumptech.glide.Glide
+import com.example.geominder.models.PlaceRef
 import com.example.geominder.models.Prediction
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
@@ -46,6 +54,7 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import org.w3c.dom.Text
 
 private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
@@ -58,6 +67,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var searchBar : EditText
     private lateinit var predictionsList: RecyclerView
     private var googleMap: GoogleMap? = null
+
+
+    //Item untuk layout place view
+    private lateinit var placeViewLayout : LinearLayout
+    private lateinit var addToNoteButton: Button
+    private lateinit var placeViewImage: ImageView
+    private lateinit var placeAddressField : TextView
+    private lateinit var placeNameField : TextView
+    private lateinit var placeRatingField : TextView
+    private lateinit var openInGmapsButton : Button
+
+
 
     private var results : MutableList<Prediction> = mutableListOf<Prediction>()
     private lateinit var placeSuggestionAdapter: PlaceAdapter
@@ -97,9 +118,25 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mapView.getMapAsync(this)
         setEditTextListener(searchBar)
 
+        setUpPlaceView(view)
+
         return view
     }
 
+
+    private fun setUpPlaceView(view: View)
+    {
+        placeViewLayout = view.findViewById(R.id.placeViewLayout)
+        addToNoteButton = view.findViewById(R.id.addToNoteButton)
+        placeViewImage = view.findViewById(R.id.placeViewImage)
+        placeAddressField = view.findViewById(R.id.placeAddressField)
+        placeNameField = view.findViewById(R.id.placeNameField)
+        placeRatingField = view.findViewById(R.id.placeRatingField)
+
+        placeViewLayout.visibility = View.GONE
+
+
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -125,32 +162,73 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
     }
 
+    private fun zoomToCoords()
+    {
 
+    }
     private fun onItemClicked(currentPrediction : Prediction)
     {
         val id = currentPrediction.id
-
-
         val placesClient = Places.createClient(context)
         val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
         val request = FetchPlaceRequest.newInstance(id, placeFields)
         placesClient.fetchPlace(request).addOnSuccessListener { response ->
             // Ensure that the place has the required details before using them
             val place = response.place
-            val selected = Prediction(
+            val selected = PlaceRef(
                 id = place.id ?: "",
-                name = place.name ?: "",  // Ensure `name` is non-null, fallback to an empty string if null
-                address = place.address ?: "",  // Ensure `address` is non-null, fallback to an empty string if null
-                latitude = place.latLng?.latitude ?: 0.0,  // Handle nullability of latLng, default to 0.0 if null
-                longitude = place.latLng?.longitude ?: 0.0  // Handle nullability of latLng, default to 0.0 if null
+                name = place.name ?: "",
+                address = place.address ?: "",
+                rating = place.rating,
+                amountofRatings = place.userRatingsTotal ?: 0,
+                latitude = place.latLng?.latitude ?: 0.0,
+                longitude = place.latLng?.longitude ?: 0.0
             )
 
             Log.d("MapFragment", "Selected Place: $selected")
+            bindViewDetails(selected)
+
+            placeViewLayout.visibility = View.VISIBLE
+            placeViewLayout.bringToFront()
+            predictionsList.visibility = View.GONE
+            zoomToCoords()
             // Now you can use `selected` for further processing
         }
 
+//        animateViewHeight(placeViewLayout, 500)
+
     }
 
+//    fun animateViewHeight(view: View, targetHeight: Int, duration: Long = 3000) {
+//        val currentHeight = view.height
+//        val animator = ValueAnimator.ofInt(currentHeight, targetHeight)
+//
+//        animator.addUpdateListener { animation ->
+//            val newMargin = animation.animatedValue as Int
+//            val layoutParams = view.layoutParams
+//            layoutParams.marginTop = newHeight
+//            view.layoutParams = layoutParams
+//        }
+//
+//        animator.duration = duration
+//        animator.start()
+//    }
+
+    private fun bindViewDetails(selectedPlace : PlaceRef)
+    {
+
+        placeNameField.text = selectedPlace.name
+        placeAddressField.text = selectedPlace.address
+        placeRatingField.text = when(selectedPlace.rating)
+        {
+            null -> "no rating"
+            else -> "${selectedPlace.rating}/5 (${selectedPlace.amountofRatings})"
+        }
+
+
+
+
+    }
     private fun setEditTextListener(editText: EditText)
     {
 
@@ -162,6 +240,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 //
+                placeViewLayout.visibility = View.GONE
                 results.clear()
                 val newText = s.toString()
                 val autocompleteRequest = FindAutocompletePredictionsRequest.builder()
