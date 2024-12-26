@@ -8,7 +8,8 @@ import com.example.geominder.R
 import com.example.geominder.models.Prediction
 
 
-class PlaceAdapter(private val placeList: MutableList<Prediction>) : RecyclerView.Adapter<PlaceAdapter.PlaceViewHolder>() {
+class PlaceAdapter(private val placeList: MutableList<Prediction>,
+                   private val onItemClicked: (Prediction) -> Unit) : RecyclerView.Adapter<PlaceAdapter.PlaceViewHolder>() {
 
     // Define the ViewHolder class to hold references to the views for each item
     class PlaceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -30,7 +31,7 @@ class PlaceAdapter(private val placeList: MutableList<Prediction>) : RecyclerVie
 
         Log.d("PredictionView", "ukuran : ${placeList.size}")
         holder.itemView.setOnClickListener {
-            // Handle item click here
+            onItemClicked(place)
         }
     }
 

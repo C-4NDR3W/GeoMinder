@@ -42,6 +42,8 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 
@@ -78,7 +80,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         //make view hidden first
         predictionsList.visibility = View.GONE
-        placeSuggestionAdapter = PlaceAdapter(results)
+        placeSuggestionAdapter = PlaceAdapter(results, ::onItemClicked)
+
         predictionsList.adapter = placeSuggestionAdapter
 
         val layoutManager = LinearLayoutManager(requireContext())
@@ -123,6 +126,31 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
 
+    private fun onItemClicked(currentPrediction : Prediction)
+    {
+        val id = currentPrediction.id
+
+
+        val placesClient = Places.createClient(context)
+        val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
+        val request = FetchPlaceRequest.newInstance(id, placeFields)
+        placesClient.fetchPlace(request).addOnSuccessListener { response ->
+            // Ensure that the place has the required details before using them
+            val place = response.place
+            val selected = Prediction(
+                id = place.id ?: "",
+                name = place.name ?: "",  // Ensure `name` is non-null, fallback to an empty string if null
+                address = place.address ?: "",  // Ensure `address` is non-null, fallback to an empty string if null
+                latitude = place.latLng?.latitude ?: 0.0,  // Handle nullability of latLng, default to 0.0 if null
+                longitude = place.latLng?.longitude ?: 0.0  // Handle nullability of latLng, default to 0.0 if null
+            )
+
+            Log.d("MapFragment", "Selected Place: $selected")
+            // Now you can use `selected` for further processing
+        }
+
+    }
+
     private fun setEditTextListener(editText: EditText)
     {
 
@@ -154,15 +182,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                 0.0,
                                 0.0)
                             results.add(pred)
-
                             Log.d("Pred", "Nama tempat: ${pred.name}, alamat: ${pred.address}")
                         }
                         placeSuggestionAdapter.notifyDataSetChanged()
 
-
                     }
-
-
 
             }
 
