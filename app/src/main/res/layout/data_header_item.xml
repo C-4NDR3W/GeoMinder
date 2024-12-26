@@ -9,8 +9,7 @@
         android:id="@+id/dateHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Date Header"
-        android:textSize="16dp"
+        android:textSize="16sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"
         android:padding="4dp" />

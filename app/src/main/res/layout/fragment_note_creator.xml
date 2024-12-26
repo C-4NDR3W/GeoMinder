@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -21,6 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/arrow_back"
+            android:contentDescription="@string/back"
             android:layout_gravity="start"
             android:layout_marginStart="16dp"
             android:background="@android:color/transparent"/>
@@ -30,6 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/save"
+            android:contentDescription="@string/save"
             android:layout_gravity="end"
             android:layout_marginEnd="16dp"
             android:background="@android:color/transparent"/>
@@ -47,6 +48,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/title_hint"
             android:inputType="text"
+            android:autofillHints="title"
             android:layout_marginBottom="8dp"
             android:textSize="32sp"
             android:textColorHint="#A9A9A9"
@@ -66,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/clock_creator"
-                android:contentDescription="Date and Time Icon"
+                android:contentDescription="@string/date_time_icon"
                 android:layout_marginEnd="8dp"/>
 
             <TextView
@@ -94,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/location_creator"
-                android:contentDescription="Place Icon"
+                android:contentDescription="@string/place_icon"
                 android:layout_marginEnd="8dp"/>
 
             <EditText
@@ -121,7 +123,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/baseline_groups_24"
-                android:contentDescription="Place Icon"
+                android:contentDescription="@string/group_icon"
                 android:layout_marginEnd="8dp"/>
 
             <Spinner
@@ -137,6 +139,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/description_hint"
+            android:autofillHints="description"
             android:inputType="textMultiLine"
             android:minLines="5"
             android:gravity="top|start"
