@@ -7,11 +7,16 @@ import com.google.android.libraries.places.api.Places
 //import com.google.android.libraries.places.api.model.FindAutocompletePredictionsRequest
 //import com.google.android.libraries.places.api.net.PlacesClient
 import android.Manifest
+import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import kotlin.math.*
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.animation.ValueAnimator
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.LocationManager
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -30,6 +35,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SwitchCompat
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
@@ -51,6 +57,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.model.RectangularBounds
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
@@ -64,23 +71,25 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var mapView: MapView
     private lateinit var autocompleteFragment: AutocompleteSupportFragment
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var searchBar : EditText
+    private lateinit var searchBar: EditText
     private lateinit var predictionsList: RecyclerView
     private var googleMap: GoogleMap? = null
 
 
     //Item untuk layout place view
-    private lateinit var placeViewLayout : LinearLayout
+    private lateinit var placeViewLayout: LinearLayout
     private lateinit var addToNoteButton: Button
     private lateinit var placeViewImage: ImageView
-    private lateinit var placeAddressField : TextView
-    private lateinit var placeNameField : TextView
-    private lateinit var placeRatingField : TextView
-    private lateinit var openInGmapsButton : Button
+    private lateinit var placeAddressField: TextView
+    private lateinit var placeNameField: TextView
+    private lateinit var placeRatingField: TextView
+    private lateinit var openInGmapsButton: Button
 
+    //biar bisa dipakai untuk location bias
+    private lateinit var locationLightBox: ConstraintLayout
+    private lateinit var currLatLng : LatLng
 
-
-    private var results : MutableList<Prediction> = mutableListOf<Prediction>()
+    private var results: MutableList<Prediction> = mutableListOf<Prediction>()
     private lateinit var placeSuggestionAdapter: PlaceAdapter
 
     // Set the adapter for the ListView
@@ -89,17 +98,39 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_map, container, false)
+
+        // Initialize Places API
         if (!Places.isInitialized()) {
-            Places.initialize(requireContext(), "AIzaSyBFXvpxCuHeq_1A8_iJxZazxyjvwCrjOaw")
+            Places.initialize(requireContext(), "YOUR_API_KEY")
         }
+
+        // Initialize the requestPermissionLauncher
+        requestPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                // Permission granted, proceed with location logic
+                if (isLocationEnabled(requireContext())) {
+                    getLastLocation()
+                } else {
+                    showLocationPrompt({ openLocationSettings() }, { getLastLocation() })
+                }
+            } else {
+                // Permission denied, show rationale or navigate away
+                showPermissionRationale {
+                    requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
+                }
+
+                redirectToNote()
+            }
+        }
+
+        // Continue with the rest of your onCreateView setup...
         mapView = view.findViewById(R.id.google_map)
-//        mapView.visibility = View.GONE
         predictionsList = view.findViewById(R.id.placeSuggestionList)
         predictionsList.bringToFront()
 
-        //make view hidden first
         predictionsList.visibility = View.GONE
         placeSuggestionAdapter = PlaceAdapter(results, ::onItemClicked)
 
@@ -113,7 +144,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         toggleButton = view.findViewById(R.id.toggleButton)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        mapView = view.findViewById(R.id.google_map)
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
         setEditTextListener(searchBar)
@@ -123,18 +153,48 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         return view
     }
 
+    fun isLocationEnabled(context: Context): Boolean {
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER
+        )
+    }
 
-    private fun setUpPlaceView(view: View)
-    {
+    private fun openLocationSettings() {
+        val intent = Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+        startActivity(intent)
+    }
+
+    private fun showLocationPrompt(positiveAction: () -> Unit, enableLocationAction: () -> Unit) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Location Access Required")
+            .setMessage(
+                "This app requires location access to function properly. Please ensure location permissions are granted and location services are turned on." +
+                        "Dismissing this dialogue will result in the user being ejected from the fragment."
+
+            )
+            .setPositiveButton("Enable Location") { _, _ ->
+                openLocationSettings()
+            }
+            .setNegativeButton(android.R.string.cancel) { dialog, _ ->
+                redirectToNote()
+                dialog.dismiss()
+            }
+            .create()
+            .show()
+    }
+
+
+    private fun setUpPlaceView(view: View) {
         placeViewLayout = view.findViewById(R.id.placeViewLayout)
         addToNoteButton = view.findViewById(R.id.addToNoteButton)
         placeViewImage = view.findViewById(R.id.placeViewImage)
         placeAddressField = view.findViewById(R.id.placeAddressField)
         placeNameField = view.findViewById(R.id.placeNameField)
         placeRatingField = view.findViewById(R.id.placeRatingField)
+        openInGmapsButton = view.findViewById(R.id.openInMapsButton)
 
         placeViewLayout.visibility = View.GONE
-
 
     }
 
@@ -150,27 +210,29 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
         }
 
-        requestPermissionLauncher =
-            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-                if (isGranted) {
-                    getLastLocation()
-                } else {
-                    showPermissionRationale {
-                        requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
-                    }
-                }
-            }
-    }
-
-    private fun zoomToCoords()
-    {
 
     }
-    private fun onItemClicked(currentPrediction : Prediction)
-    {
+
+
+
+    private fun zoomToCoords(currentLatLng: LatLng) {
+        googleMap?.apply {
+            moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+            addMarker(MarkerOptions().position(currentLatLng).title("Your selected location"))
+        }
+    }
+
+    private fun onItemClicked(currentPrediction: Prediction) {
         val id = currentPrediction.id
-        val placesClient = Places.createClient(context)
-        val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
+        val placesClient = Places.createClient(requireContext())
+        val placeFields = listOf(
+            Place.Field.ID,
+            Place.Field.NAME,
+            Place.Field.RATING,
+            Place.Field.USER_RATINGS_TOTAL,
+            Place.Field.ADDRESS,
+            Place.Field.LAT_LNG
+        )
         val request = FetchPlaceRequest.newInstance(id, placeFields)
         placesClient.fetchPlace(request).addOnSuccessListener { response ->
             // Ensure that the place has the required details before using them
@@ -191,7 +253,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             placeViewLayout.visibility = View.VISIBLE
             placeViewLayout.bringToFront()
             predictionsList.visibility = View.GONE
-            zoomToCoords()
+
+            val selectedLatLng = place.latLng!!
+            zoomToCoords(selectedLatLng)
+
             // Now you can use `selected` for further processing
         }
 
@@ -199,67 +264,89 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     }
 
-//    fun animateViewHeight(view: View, targetHeight: Int, duration: Long = 3000) {
-//        val currentHeight = view.height
-//        val animator = ValueAnimator.ofInt(currentHeight, targetHeight)
-//
-//        animator.addUpdateListener { animation ->
-//            val newMargin = animation.animatedValue as Int
-//            val layoutParams = view.layoutParams
-//            layoutParams.marginTop = newHeight
-//            view.layoutParams = layoutParams
-//        }
-//
-//        animator.duration = duration
-//        animator.start()
-//    }
 
-    private fun bindViewDetails(selectedPlace : PlaceRef)
-    {
+    private fun bindViewDetails(selectedPlace: PlaceRef) {
 
         placeNameField.text = selectedPlace.name
         placeAddressField.text = selectedPlace.address
-        placeRatingField.text = when(selectedPlace.rating)
-        {
+        placeRatingField.text = when (selectedPlace.rating) {
             null -> "no rating"
             else -> "${selectedPlace.rating}/5 (${selectedPlace.amountofRatings})"
         }
 
+        Log.d("placeID", selectedPlace.id)
 
-
+        openInGmapsButton.setOnClickListener({
+            redirectToGmaps(selectedPlace)
+        })
 
     }
-    private fun setEditTextListener(editText: EditText)
-    {
+
+
+    private fun redirectToGmaps(selectedPlace: PlaceRef) {
+
+        val placeId = selectedPlace.id
+        val name = selectedPlace.name
+
+        val gmmIntentUri = Uri.parse("https://www.google.com/maps/search/?api=1&query=${name}&query_place_id=${placeId}")
+        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+        mapIntent.setPackage("com.google.android.apps.maps")
+        startActivity(mapIntent)
+    }
+
+
+    private fun setEditTextListener(editText: EditText) {
 
         val placesClient = Places.createClient(requireContext())
-        editText.addTextChangedListener(object: TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
                 // No action needed before the text changes
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 //
                 placeViewLayout.visibility = View.GONE
-                results.clear()
+//                results.clear()
                 val newText = s.toString()
+
+                getLastLocation()
+
+                val bounds = RectangularBounds.newInstance(
+                    LatLng(
+                        currLatLng.latitude - 0.1,
+                        currLatLng.longitude - 0.1
+                    ),
+                    LatLng(
+                        currLatLng.latitude + 0.1,
+                        currLatLng.longitude + 0.1
+                    )
+                )
                 val autocompleteRequest = FindAutocompletePredictionsRequest.builder()
                     .setQuery(newText)
+                    .setLocationBias(bounds)
                     .build()
 
                 placesClient.findAutocompletePredictions(autocompleteRequest)
                     .addOnSuccessListener {
+                        results.clear()
                         predictionsList.visibility = View.VISIBLE
                         predictionsList.bringToFront()
-                        val numberOfPredictions = min(it.autocompletePredictions.size-1, 8)
+                        val numberOfPredictions = min(it.autocompletePredictions.size - 1, 7)
                         //take top 8 predictions
                         for (prediction in it.autocompletePredictions.slice(0..numberOfPredictions)) {
                             Log.d("MapFragment", "Nama tempat: ${prediction}, alamat: ")
-                            val pred = Prediction(prediction.placeId,
+                            val pred = Prediction(
+                                prediction.placeId,
                                 prediction.getPrimaryText(null).toString(),
                                 prediction.getSecondaryText(null).toString(),
                                 0.0,
-                                0.0)
+                                0.0
+                            )
                             results.add(pred)
                             Log.d("Pred", "Nama tempat: ${pred.name}, alamat: ${pred.address}")
                         }
@@ -269,7 +356,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
             }
 
-            override  fun afterTextChanged(s: Editable?) {
+            override fun afterTextChanged(s: Editable?) {
                 // No action needed after the text changes
             }
         })
@@ -295,13 +382,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             .setPositiveButton(android.R.string.ok) { _, _ -> positiveAction() }
             .setNegativeButton(android.R.string.cancel) { dialog, _ ->
                 dialog.dismiss()
+                redirectToNote()
             }
             .create().show()
     }
 
 
-
-    private fun getLastLocation() {
+    fun getLastLocation() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 ACCESS_FINE_LOCATION
@@ -324,6 +411,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 Log.e("MapFragment", "Location: $location")
                 if (location != null) {
                     val currentLatLng = LatLng(location.latitude, location.longitude)
+
+                    currLatLng = currentLatLng
                     googleMap?.apply {
                         moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
                         addMarker(MarkerOptions().position(currentLatLng).title("You are here"))
@@ -346,7 +435,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
 
-
     private fun redirectToNote() {
         val navController = findNavController()
         val bundle = Bundle()
@@ -354,19 +442,35 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         navController.navigate(R.id.action_mapFragment_to_navigation_home, bundle)
     }
 
-    override fun onMapReady(map: GoogleMap) {
-        googleMap = map
 
-        applyMapSettings()
-//        Toast.makeText(requireContext(), "Maps Accessed", Toast.LENGTH_SHORT).show()
+    override fun onStart()
+    {
+        super.onStart()
         when {
-            hasLocationPermission() -> getLastLocation()
+            hasLocationPermission() -> {
+                if (isLocationEnabled(requireContext())) {
+                    getLastLocation()
+                } else {
+                    showLocationPrompt({ openLocationSettings() }, { getLastLocation() })
+                }
+            }
             shouldShowRequestPermissionRationale(ACCESS_FINE_LOCATION) -> {
+
                 showPermissionRationale {
                     requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
                 }
             }
+            else -> {
+
+                requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
+            }
         }
+    }
+
+
+
+    override fun onMapReady(map: GoogleMap) {
+        googleMap = map
 
         applyMapSettings()
     }
@@ -425,4 +529,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         super.onSaveInstanceState(outState)
         mapView.onSaveInstanceState(outState)
     }
+
+
 }

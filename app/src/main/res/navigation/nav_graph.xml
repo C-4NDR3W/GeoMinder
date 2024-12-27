@@ -103,6 +103,9 @@
             android:name="noteTime"
             app:argType="string"
             android:defaultValue="" />
+        <action
+            android:id="@+id/action_navigation_create_to_mapFragment"
+            app:destination="@id/mapFragment" />
     </fragment>
 
     <fragment

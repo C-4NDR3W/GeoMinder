@@ -310,6 +310,14 @@ class NoteCreatorFragment : Fragment() {
         findNavController().navigate(R.id.navigation_home)
     }
 
+    private fun navigateToMapView()
+    {
+
+        val bundle = Bundle()
+        bundle.putString("noteId", noteId)
+        findNavController().navigate(R.id.action_navigation_create_to_mapFragment, bundle)
+    }
+
     private fun navigateBack() {
         findNavController().navigateUp()
     }
