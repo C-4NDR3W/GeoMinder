@@ -2,11 +2,12 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="colorPrimary">#CBE55F</color>
-    <color name="colorSecondary">#99CC00</color>
-    <color name="hintColor">#9E9E9E</color>
+    <color name="background">#FFFDFDFD</color>
+    <color name="colorPrimary">#0BB439</color>
+    <color name="colorSecondary">#FF00441B</color>
+    <color name="hintColor">#FFD0D0D0</color>
     <color name="error">#FF0000</color>
-    <color name="colorSelectedBackground">#10FFFFFF</color>
+    <color name="colorSelectedBackground">#D4BAFB9E</color>
     <color name="materialErrorRed">#D32F2F</color>
 
 <!--    dark theme colors-->

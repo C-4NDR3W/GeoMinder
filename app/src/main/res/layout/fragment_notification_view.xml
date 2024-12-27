@@ -15,14 +15,14 @@
         android:layout_marginBottom="16dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:background="@color/colorSecondary"
+        android:background="@drawable/header_divider"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Notifications"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorPrimary"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
