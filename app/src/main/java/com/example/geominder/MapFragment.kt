@@ -104,7 +104,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         // Initialize Places API
         if (!Places.isInitialized()) {
-            Places.initialize(requireContext(), "YOUR_API_KEY")
+            Places.initialize(requireContext(), "AIzaSyBFXvpxCuHeq_1A8_iJxZazxyjvwCrjOaw")
         }
 
         // Initialize the requestPermissionLauncher
@@ -315,7 +315,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 placeViewLayout.visibility = View.GONE
 //                results.clear()
                 val newText = s.toString()
-
                 getLastLocation()
 
                 val bounds = RectangularBounds.newInstance(
@@ -355,6 +354,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         placeSuggestionAdapter.notifyDataSetChanged()
 
                     }
+                    .addOnFailureListener({
+                        error -> Log.d("MapFragment", "Error: ${error.message}")
+                    })
 
             }
 
