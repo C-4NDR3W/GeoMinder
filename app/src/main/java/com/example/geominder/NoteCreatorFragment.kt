@@ -54,6 +54,8 @@ class NoteCreatorFragment : Fragment() {
     private var selectedDate: String? = null
     private var selectedTime: String? = null
 
+    //test
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

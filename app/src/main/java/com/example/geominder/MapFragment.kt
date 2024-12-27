@@ -76,6 +76,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var googleMap: GoogleMap? = null
 
 
+    //test
+
     //Item untuk layout place view
     private lateinit var placeViewLayout: LinearLayout
     private lateinit var addToNoteButton: Button
