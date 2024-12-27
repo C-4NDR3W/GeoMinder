@@ -13,7 +13,7 @@
         android:paddingVertical="12dp"
         android:paddingHorizontal="16dp"
         android:layout_marginBottom="12dp"
-        android:background="@color/colorSecondary"
+        android:background="@color/colorPrimary"
         android:gravity="center_vertical">
 
         <EditText
@@ -30,18 +30,6 @@
             android:textColor="@android:color/black"
             android:layout_marginEnd="8dp"
             android:singleLine="true"/>
-
-        <!-- ToggleButton -->
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/toggleButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:paddingHorizontal="12dp"
-            android:thumb="@drawable/thumb"
-            app:track="@drawable/track"
-            android:theme="@style/Theme.AppCompat">
-        </androidx.appcompat.widget.SwitchCompat>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
