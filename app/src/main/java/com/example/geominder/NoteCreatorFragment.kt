@@ -38,7 +38,7 @@ class NoteCreatorFragment : Fragment() {
 
     private lateinit var titleEditText: EditText
     private lateinit var contentEditText: EditText
-    private lateinit var placeEditText: EditText
+    private lateinit var placeTextView: TextView
     private lateinit var timePickerButton: TextView
 
     private lateinit var backButton: ImageButton
@@ -54,6 +54,9 @@ class NoteCreatorFragment : Fragment() {
     private var selectedDate: String? = null
     private var selectedTime: String? = null
 
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
+
     //test
 
     override fun onCreateView(
@@ -67,7 +70,7 @@ class NoteCreatorFragment : Fragment() {
 
         titleEditText = view.findViewById(R.id.titleEditText)
         contentEditText = view.findViewById(R.id.contentEditText)
-        placeEditText = view.findViewById(R.id.placeEditText)
+        placeTextView = view.findViewById(R.id.placeTextView)
         timePickerButton = view.findViewById(R.id.timePickerButton)
         backButton = view.findViewById(R.id.backButton)
         saveButton = view.findViewById(R.id.saveButton)
@@ -87,14 +90,14 @@ class NoteCreatorFragment : Fragment() {
 
         titleEditText.setText(title)
         contentEditText.setText(content)
-        placeEditText.setText(place)
+        placeTextView.setText(place)
 
         if (noteId.isNotEmpty()) {
             loadNoteDataFromFirebase(noteId)
         } else {
             titleEditText.setText(title)
             contentEditText.setText(content)
-            placeEditText.setText(place)
+            placeTextView.setText(place)
         }
 
         groupSpinner = view.findViewById(R.id.groupSpinner)
@@ -104,6 +107,22 @@ class NoteCreatorFragment : Fragment() {
         timePickerButton.setOnClickListener { showDateTimePicker() }
         backButton.setOnClickListener { navigateBack() }
         saveButton.setOnClickListener { saveNote() }
+
+        arguments?.let { args ->
+            val placeName = args.getString("placeName", "")
+            val placeAddress = args.getString("placeAddress", "")
+            latitude = args.getDouble("latitude", 0.0)
+            longitude = args.getDouble("longitude", 0.0)
+
+            if (placeName.isNotEmpty()) {
+                placeTextView.setText("$placeName - $placeAddress")
+            }
+        }
+
+        placeTextView.setOnClickListener {
+            val navController = findNavController()
+            navController.navigate(R.id.mapFragment)
+        }
 
         return view
     }
@@ -124,7 +143,7 @@ class NoteCreatorFragment : Fragment() {
 
                     titleEditText.setText(title)
                     contentEditText.setText(content)
-                    placeEditText.setText(place)
+                    placeTextView.setText(place)
                     selectedDate = date
                     selectedTime = time
 
@@ -178,7 +197,7 @@ class NoteCreatorFragment : Fragment() {
     private fun saveNote() {
         val title = titleEditText.text.toString().trim()
         val content = contentEditText.text.toString().trim()
-        val place = placeEditText.text.toString().trim()
+        val place = placeTextView.text.toString().trim()
 
         if (title.isEmpty() || content.isEmpty() || place.isEmpty() || selectedDate == null || selectedTime == null) {
             Toast.makeText(requireContext(), "Please fill in all fields.", Toast.LENGTH_SHORT).show()
@@ -197,6 +216,8 @@ class NoteCreatorFragment : Fragment() {
             "title" to title,
             "content" to content,
             "place" to place,
+            "latitude" to latitude,
+            "longitude" to longitude,
             "date" to selectedDate,
             "time" to selectedTime,
             "status" to true,

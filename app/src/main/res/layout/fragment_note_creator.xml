@@ -99,16 +99,18 @@
                 android:contentDescription="@string/place_icon"
                 android:layout_marginEnd="8dp"/>
 
-            <EditText
-                android:id="@+id/placeEditText"
+            <TextView
+                android:id="@+id/placeTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="@string/location_hint"
-                android:inputType="text"
                 android:layout_weight="1"
                 android:textSize="16sp"
                 android:textColorHint="#A9A9A9"
-                android:background="@android:color/transparent"/>
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/location_hint"/>
         </LinearLayout>
 
         <LinearLayout
