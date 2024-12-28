@@ -33,7 +33,7 @@
                 android:id="@+id/pinButton"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/note_button_pin"
+                android:src="@drawable/baseline_push_pin_24"
                 android:layout_marginHorizontal="4dp"
                 android:background="@android:color/transparent"
                 app:tint="@color/pin_button_tint_selector" />
@@ -42,7 +42,7 @@
                 android:id="@+id/deleteButton"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/note_button_delete"
+                android:src="@drawable/baseline_delete_24"
                 android:layout_marginHorizontal="4dp"
                 android:background="@android:color/transparent"
                 app:tint="@color/hintColor" />
