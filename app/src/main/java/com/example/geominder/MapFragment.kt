@@ -91,7 +91,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     //biar bisa dipakai untuk location bias
     private lateinit var locationLightBox: ConstraintLayout
-    private lateinit var currLatLng : LatLng
+    private var currLatLng = LatLng(0.0, 0.0)
 
     private var results: MutableList<Prediction> = mutableListOf<Prediction>()
     private lateinit var placeSuggestionAdapter: PlaceAdapter
@@ -430,7 +430,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 Log.e("MapFragment", "Failed to get last location: ${e.message}")
                 Toast.makeText(requireContext(), "Failed to get location.", Toast.LENGTH_SHORT)
                     .show()
-            }
+            }q
     }
 
 
