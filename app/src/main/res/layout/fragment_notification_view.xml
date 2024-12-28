@@ -12,7 +12,6 @@
         android:paddingTop="20dp"
         android:paddingBottom="12dp"
         android:paddingHorizontal="16dp"
-        android:layout_marginBottom="16dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:background="@drawable/header_divider"
