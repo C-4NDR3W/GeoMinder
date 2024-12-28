@@ -424,7 +424,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 Log.e("MapFragment", "Failed to get last location: ${e.message}")
                 Toast.makeText(requireContext(), "Failed to get location.", Toast.LENGTH_SHORT)
                     .show()
-            }q
+            }
     }
 
 
