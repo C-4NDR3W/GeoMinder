@@ -28,8 +28,11 @@ class ReminderWorker(
     private val applicationContext = context
 
     override fun doWork(): Result {
-        val noteId = inputData.getString("noteId") ?: return Result.failure()
+        val noteTitle = inputData.getString("noteTitle") ?: "Reminder"
+        val noteId = inputData.getString("noteId") ?: "Unknown"
 
+        saveNotificationToFirestore(noteTitle, noteId) // Simpan notifikasi ke Firestore
+        triggerNotification(noteTitle)
         fetchCoordinatesAndCheckProximity(noteId)
         return Result.success()
     }
@@ -152,6 +155,27 @@ class ReminderWorker(
                 vibrator.vibrate(vibrationLength)
             }
         }
+    }
+
+    private fun saveNotificationToFirestore(noteTitle: String, noteId: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val notificationData = hashMapOf(
+            "title" to noteTitle,
+            "noteId" to noteId,
+            "dateTime" to System.currentTimeMillis()
+        )
+
+        FirebaseFirestore.getInstance()
+            .collection("users")
+            .document(userId)
+            .collection("notifications")
+            .add(notificationData)
+            .addOnSuccessListener {
+                Log.d("ReminderWorker", "Notification saved successfully")
+            }
+            .addOnFailureListener { exception ->
+                Log.e("ReminderWorker", "Error saving notification", exception)
+            }
     }
 
     private fun createNotificationChannel(channelId: String): String {
