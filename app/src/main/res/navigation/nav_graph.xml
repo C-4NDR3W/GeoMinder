@@ -24,9 +24,6 @@
             android:id="@+id/action_noteViewFragment_to_groupFragment"
             app:destination="@id/navigation_group" />
         <action
-            android:id="@+id/action_noteViewFragment_to_mapFragment"
-            app:destination="@id/mapFragment" />
-        <action
             android:id="@+id/action_navigation_home_to_navigation_settings"
             app:destination="@id/navigation_settings" />
         <argument

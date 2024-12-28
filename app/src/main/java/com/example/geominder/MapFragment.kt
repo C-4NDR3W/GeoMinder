@@ -61,6 +61,8 @@ import com.google.android.libraries.places.api.model.RectangularBounds
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.w3c.dom.Text
 
 private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
@@ -101,6 +103,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_map, container, false)
+
 
         // Initialize Places API
         if (!Places.isInitialized()) {
@@ -143,7 +146,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         predictionsList.layoutManager = layoutManager
 
         searchBar = view.findViewById(R.id.searchEditText)
-        toggleButton = view.findViewById(R.id.toggleButton)
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         mapView.onCreate(savedInstanceState)
@@ -200,20 +203,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
-        val toggleState = arguments?.getBoolean("toggleState", false) ?: false
-        toggleButton.isChecked = toggleState
-
-        toggleButton.setOnCheckedChangeListener { _, isChecked ->
-            if (!isChecked) {
-                redirectToNote()
-            }
-        }
-
-
-    }
 
 
 
@@ -447,7 +437,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun redirectToNote() {
         val navController = findNavController()
         val bundle = Bundle()
-        bundle.putBoolean("toggleState", toggleButton.isChecked)
 
         if (::placeNameField.isInitialized && placeNameField.text.isNotEmpty()) {
             bundle.putString("placeName", placeNameField.text.toString())
@@ -528,6 +517,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
+
+        val fab: FloatingActionButton = requireActivity().findViewById(R.id.fab_add)
+        val bottomNavigationView: BottomNavigationView = requireActivity().findViewById(R.id.bottom_navigation)
+        fab.visibility = View.GONE
+        bottomNavigationView.visibility = View.GONE
+
         mapView.onResume()
     }
 

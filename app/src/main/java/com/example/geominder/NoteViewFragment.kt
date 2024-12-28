@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.ToggleButton
 import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -29,7 +28,6 @@ import com.google.type.Date
 import java.util.Locale
 
 class NoteViewFragment : Fragment() {
-    private lateinit var toggleButton: SwitchCompat
     private lateinit var recyclerView: RecyclerView
     private lateinit var noteAdapter: NoteAdapter
     private lateinit var selectedDateTextView: TextView
@@ -48,7 +46,7 @@ class NoteViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        toggleButton = view.findViewById(R.id.toggleButton)
+
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
@@ -62,14 +60,7 @@ class NoteViewFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        val toggleState = arguments?.getBoolean("toggleState", false) ?: false
-        toggleButton.isChecked = toggleState
 
-        toggleButton.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                redirectToMap()
-            }
-        }
 
         noteAdapter = NoteAdapter(emptyList(),
             onNoteClicked = { note ->
@@ -298,12 +289,5 @@ class NoteViewFragment : Fragment() {
         noteAdapter.updateNotes(groupedNotes)
     }
 
-    private fun redirectToMap() {
-        val navController = findNavController()
 
-        val bundle = Bundle()
-        bundle.putBoolean("toggleState", toggleButton.isChecked)
-
-        navController.navigate(R.id.action_noteViewFragment_to_mapFragment, bundle)
-    }
 }
