@@ -104,7 +104,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         // Initialize Places API
         if (!Places.isInitialized()) {
-            Places.initialize(requireContext(), "YOUR_API_KEY")
+            Places.initialize(requireContext(), "AIzaSyBFXvpxCuHeq_1A8_iJxZazxyjvwCrjOaw")
         }
 
         // Initialize the requestPermissionLauncher
@@ -278,6 +278,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         Log.d("placeID", selectedPlace.id)
 
+
+        addToNoteButton.setOnClickListener({
+            redirectToNote()
+        })
+
         openInGmapsButton.setOnClickListener({
             redirectToGmaps(selectedPlace)
         })
@@ -315,7 +320,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 placeViewLayout.visibility = View.GONE
 //                results.clear()
                 val newText = s.toString()
-
                 getLastLocation()
 
                 val bounds = RectangularBounds.newInstance(
@@ -355,6 +359,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         placeSuggestionAdapter.notifyDataSetChanged()
 
                     }
+                    .addOnFailureListener({
+                        error -> Log.d("MapFragment", "Error: ${error.message}")
+                    })
 
             }
 
@@ -441,7 +448,19 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val navController = findNavController()
         val bundle = Bundle()
         bundle.putBoolean("toggleState", toggleButton.isChecked)
-        navController.navigate(R.id.action_mapFragment_to_navigation_home, bundle)
+
+        if (::placeNameField.isInitialized && placeNameField.text.isNotEmpty()) {
+            bundle.putString("placeName", placeNameField.text.toString())
+            bundle.putString("placeAddress", placeAddressField.text.toString())
+
+            val selectedPlace = googleMap?.cameraPosition?.target
+            selectedPlace?.let {
+                bundle.putDouble("latitude", it.latitude)
+                bundle.putDouble("longitude", it.longitude)
+            }
+        }
+
+        navController.navigate(R.id.action_mapFragment_to_noteCreatorFragment, bundle)
     }
 
 
