@@ -19,6 +19,7 @@ import com.google.android.gms.location.LocationServices
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 
 class ReminderWorker(
     context: Context,
@@ -62,15 +63,28 @@ class ReminderWorker(
     }
 
     private fun checkProximity(savedLatitude: Double, savedLongitude: Double) {
-        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(applicationContext)
+        val fusedLocationClient =
+            LocationServices.getFusedLocationProviderClient(applicationContext)
 
-        if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                applicationContext,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                applicationContext,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             return
         }
 
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
             if (location != null) {
+                val sharedPreferences =
+                    PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                val notificationRange =
+                    sharedPreferences.getString("notificationRange", "50")?.toInt() ?: 50
+
                 val currentLocation = Location("currentLocation").apply {
                     latitude = location.latitude
                     longitude = location.longitude
@@ -83,7 +97,7 @@ class ReminderWorker(
 
                 val distanceInMeters = currentLocation.distanceTo(savedLocation)
 
-                if (distanceInMeters <= 50) {
+                if (distanceInMeters <= notificationRange) {
                     triggerNotification("You are within 50 meters of your saved location!")
                 }
             } else {
@@ -93,6 +107,17 @@ class ReminderWorker(
     }
 
     private fun triggerNotification(noteTitle: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    applicationContext,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                Log.e("ReminderWorker", "Notification permission not granted")
+                return
+            }
+        }
+
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         val enableVibration = sharedPreferences.getBoolean("enableVibration", true)
         val vibrationMode = sharedPreferences.getString("vibrationMode", "default") ?: "default"
@@ -113,7 +138,8 @@ class ReminderWorker(
         }
 
         // Create Intent to open the app
-        val intent = applicationContext.packageManager.getLaunchIntentForPackage(applicationContext.packageName)
+        val intent =
+            applicationContext.packageManager.getLaunchIntentForPackage(applicationContext.packageName)
         val pendingIntent = android.app.PendingIntent.getActivity(
             applicationContext,
             0,
@@ -135,8 +161,12 @@ class ReminderWorker(
             .setAutoCancel(true) // Notification will disappear when clicked
             .build()
 
-        // Show notification
-        notificationManager.notify(1, notification)
+        // Check for notification permission and notify
+        try {
+            notificationManager.notify(1, notification)
+        } catch (e: SecurityException) {
+            Log.e("ReminderWorker", "Failed to show notification: ${e.message}")
+        }
 
         // Get system Vibrator service and vibrate the phone
         if (enableVibration) {
@@ -146,16 +176,25 @@ class ReminderWorker(
                     "tick" -> VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK)
                     "heavy_click" -> VibrationEffect.createPredefined(VibrationEffect.EFFECT_HEAVY_CLICK)
                     "click" -> VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK)
-                    else -> VibrationEffect.createOneShot(vibrationLength, VibrationEffect.DEFAULT_AMPLITUDE)
+                    else -> VibrationEffect.createOneShot(
+                        vibrationLength,
+                        VibrationEffect.DEFAULT_AMPLITUDE
+                    )
                 }
                 vibrator.vibrate(vibrationEffect)
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(VibrationEffect.createOneShot(vibrationLength, VibrationEffect.DEFAULT_AMPLITUDE))
+                vibrator.vibrate(
+                    VibrationEffect.createOneShot(
+                        vibrationLength,
+                        VibrationEffect.DEFAULT_AMPLITUDE
+                    )
+                )
             } else {
                 vibrator.vibrate(vibrationLength)
             }
         }
     }
+
 
     private fun saveNotificationToFirestore(noteTitle: String, noteId: String) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
@@ -186,7 +225,8 @@ class ReminderWorker(
             val channel = NotificationChannel(channelId, name, importance).apply {
                 description = descriptionText
             }
-            val notificationManager: NotificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager: NotificationManager =
+                applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
         return channelId

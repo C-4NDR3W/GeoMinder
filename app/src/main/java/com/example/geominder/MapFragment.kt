@@ -1,17 +1,14 @@
 package com.example.geominder
 
-import PlaceAdapter
 import com.google.android.libraries.places.api.Places
 //import com.google.android.libraries.places.api.model.Place
 //i.google.anmport comdroid.libraries.places.api.model.AutocompletePrediction
 //import com.google.android.libraries.places.api.model.FindAutocompletePredictionsRequest
 //import com.google.android.libraries.places.api.net.PlacesClient
 import android.Manifest
-import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import kotlin.math.*
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -42,8 +39,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.Visibility
-import com.bumptech.glide.Glide
 import com.example.geominder.models.PlaceRef
 import com.example.geominder.models.Prediction
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -63,7 +58,6 @@ import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRe
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import org.w3c.dom.Text
 
 private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 

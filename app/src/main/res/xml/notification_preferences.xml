@@ -12,6 +12,7 @@
             app:title="@string/notification_delay" />
 
         <DropDownPreference
+            app:defaultValue="50 Meters"
             app:title="@string/notification_strength"
             app:entries="@array/notification_strength_entries"
             app:entryValues="@array/notification_strength_values"
