@@ -111,7 +111,18 @@
         <item>short</item>
         <item>long</item>
     </string-array>
-
+    <string-array name="trigger_range_entries">
+        <item>20 Meters</item>
+        <item>50 Meters</item>
+        <item>75 Meters</item>
+        <item>100 Meters</item>
+    </string-array>
+    <string-array name="trigger_range_values">
+        <item>20meters</item>
+        <item>50meters</item>
+        <item>75meters</item>
+        <item>100meters</item>
+    </string-array>
 
 
 </resources>

@@ -17,11 +17,21 @@ class NotificationSettingFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.notification_preferences, rootKey)
 
         val notificationDelayPreference = findPreference<ListPreference>("notificationDelay")
+        val notificationTriggerRangePreference = findPreference<ListPreference>("notificationTriggerRange")
         val vibrationModePreference = findPreference<ListPreference>("vibrationMode")
         val vibrationLengthPreference = findPreference<ListPreference>("vibrationLength")
         val notificationStrengthPreference = findPreference<ListPreference>("notificationStrength")
 
         notificationDelayPreference?.apply {
+            summary = entry
+            setOnPreferenceChangeListener { _, newValue ->
+                val index = findIndexOfValue(newValue.toString())
+                summary = if (index >= 0) entries[index] else newValue.toString()
+                true
+            }
+        }
+
+        notificationTriggerRangePreference?.apply {
             summary = entry
             setOnPreferenceChangeListener { _, newValue ->
                 val index = findIndexOfValue(newValue.toString())

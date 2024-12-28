@@ -1,10 +1,10 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory app:title="@string/notification_header">
 
         <DropDownPreference
-            app:defaultValue="10 minutes"
+            app:defaultValue="10minutes"
             app:entries="@array/notification_delay_entries"
             app:entryValues="@array/notification_delay_values"
             app:key="notificationDelay"
@@ -12,7 +12,15 @@
             app:title="@string/notification_delay" />
 
         <DropDownPreference
-            app:defaultValue="50 Meters"
+            app:defaultValue="50meters"
+            app:entries="@array/trigger_range_entries"
+            app:entryValues="@array/trigger_range_values"
+            app:key="notificationTriggerRange"
+            app:summary="Sets the Reminder Notification Range"
+            app:title="Notification Trigger Range" />
+
+        <DropDownPreference
+            app:defaultValue="default"
             app:title="@string/notification_strength"
             app:entries="@array/notification_strength_entries"
             app:entryValues="@array/notification_strength_values"
