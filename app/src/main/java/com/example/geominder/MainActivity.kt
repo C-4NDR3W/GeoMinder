@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
@@ -31,7 +32,6 @@ class MainActivity : AppCompatActivity() {
     private final var requestPermissionCode = 200
     private final var requestBackgroundPermissionCode = 201
 
-
     fun authCheck() {
         val auth = FirebaseAuth.getInstance()
         if (auth.currentUser == null) {
@@ -43,7 +43,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val isDarkTheme = sharedPreferences.getBoolean("isDarkMode", false)
 
