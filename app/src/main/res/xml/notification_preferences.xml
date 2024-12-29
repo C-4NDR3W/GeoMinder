@@ -1,9 +1,11 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="@string/notification_header">
+    <PreferenceCategory app:title="@string/notification_header"
+        android:icon="@null">
 
         <DropDownPreference
+            android:icon="@null"
             app:defaultValue="10minutes"
             app:entries="@array/notification_delay_entries"
             app:entryValues="@array/notification_delay_values"
@@ -12,6 +14,7 @@
             app:title="@string/notification_delay" />
 
         <DropDownPreference
+            android:icon="@null"
             app:defaultValue="50meters"
             app:entries="@array/trigger_range_entries"
             app:entryValues="@array/trigger_range_values"
@@ -20,6 +23,7 @@
             app:title="Notification Trigger Range" />
 
         <DropDownPreference
+            android:icon="@null"
             app:defaultValue="default"
             app:title="@string/notification_strength"
             app:entries="@array/notification_strength_entries"
@@ -27,12 +31,14 @@
             app:key="notificationStrength"/>
 
         <SwitchPreferenceCompat
+            android:icon="@null"
             app:title="@string/enable_vibration"
             app:key="enableVibration"
             app:defaultValue="true"
             />
 
         <DropDownPreference
+            android:icon="@null"
             app:key="vibrationMode"
             app:title="@string/vibration_mode"
             app:entries="@array/vibration_mode_entries"
@@ -42,6 +48,7 @@
             />
 
         <DropDownPreference
+            android:icon="@null"
             app:key="vibrationLength"
             app:title="@string/vibration_length"
             app:entries="@array/vibration_length_entries"

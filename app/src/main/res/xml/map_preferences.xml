@@ -2,6 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ListPreference
+        android:icon="@null"
         android:defaultValue="normal"
         android:entries="@array/map_type_entries"
         android:entryValues="@array/map_type_values"
@@ -10,18 +11,21 @@
         android:title="Map Type" />
 
     <SwitchPreferenceCompat
+        android:icon="@null"
         android:defaultValue="false"
         android:key="traffic_layer"
         android:summary="Display traffic data on the map"
         android:title="Show Traffic Layer" />
 
     <SwitchPreferenceCompat
+        android:icon="@null"
         android:defaultValue="false"
         android:key="terrain_layer"
         android:summary="Display terrain details on the map"
         android:title="Show Terrain Layer" />
 
     <SeekBarPreference
+        android:icon="@null"
         android:key="default_zoom"
         android:title="Default Zoom Level"
         android:summary="Set the initial zoom level for the map"
@@ -29,6 +33,7 @@
         android:min="1"
         android:max="20" />
     <SwitchPreferenceCompat
+        android:icon="@null"
         android:key="show_zoom_controls"
         android:title="Show Zoom Controls"
         android:summary="Display Zoom Controls on the map"

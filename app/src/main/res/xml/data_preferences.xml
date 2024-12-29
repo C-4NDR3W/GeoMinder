@@ -1,7 +1,10 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory app:title="Data Privacy and Security">
+    <PreferenceCategory app:title="Data Privacy and Security"
+        android:icon="@null">
         <Preference
+            android:icon="@null"
             app:key="data_export"
             app:title="Export Data"
             app:summary="Export all notes in a downloadable format" />
