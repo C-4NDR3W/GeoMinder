@@ -24,20 +24,20 @@
             android:inputType="text"
             android:autofillHints="search"
             android:drawableStart="@drawable/baseline_search_24"
+            android:drawableTint="@color/colorPrimary"
             android:background="@drawable/rounded_edittext"
             android:drawablePadding="4dp"
             android:paddingHorizontal="12dp"
             android:textColor="@android:color/black"
-            android:textSize="24sp"
-            android:layout_marginEnd="8dp"
-            android:singleLine="true"/>
+            android:textSize="20sp"
+            android:singleLine="true" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp" />
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="8dp" />
 
 </LinearLayout>

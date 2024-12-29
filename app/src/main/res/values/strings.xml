@@ -53,7 +53,7 @@
     <!--  Groups Editor -->
     <string name="group_name">Group name</string>
     <string name="group_desc">Group description</string>
-    <string name="search_user">search for users....</string>
+    <string name="search_user">Search for users....</string>
     <string name="user_title">Users</string>
     <string name="create_group_button">Create Group</string>
 

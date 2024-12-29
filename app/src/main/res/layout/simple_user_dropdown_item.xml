@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp">
+    android:paddingVertical="16dp">
 
     <!-- LinearLayout for Texts -->
     <LinearLayout
@@ -27,18 +27,8 @@
 
             android:text="TEST"
             android:textSize="16sp"
-            android:textStyle="bold"
             android:textColor="@android:color/black"/>
 
-        <!-- Lower Slim Text -->
-        <TextView
-            android:id="@+id/lowerText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TEST"
-            android:textSize="14sp"
-            android:textStyle="normal"
-            android:textColor="@android:color/darker_gray"/>
     </LinearLayout>
 
     <!-- Trash Can Button -->

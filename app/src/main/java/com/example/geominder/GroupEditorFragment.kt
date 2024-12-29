@@ -69,16 +69,14 @@ class GroupEditorFragment : Fragment() {
                     .inflate(R.layout.simple_user_dropdown_item, parent, false)
 
                 val upperText = view.findViewById<TextView>(R.id.upperText)
-                val lowerText = view.findViewById<TextView>(R.id.lowerText)
                 val deleteButton = view.findViewById<ImageView>(R.id.deleteButton)
 
                 val user = getItem(position)
                 upperText.text = user?.email
-                lowerText.text = ""
 
                 // Set up the delete button to remove the user from the addedUsers list
                 deleteButton.setOnClickListener {
-                    Toast.makeText(context, "$user deleted", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "${user?.email} removed", Toast.LENGTH_SHORT).show()
                     addedUsers.remove(user)
                     notifyDataSetChanged()  // Notify the adapter that the data has changed
                 }

@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,9 +21,6 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.firestore
-import com.google.type.Date
 import java.util.Locale
 
 class NoteViewFragment : Fragment() {
@@ -59,8 +55,6 @@ class NoteViewFragment : Fragment() {
             }
             override fun afterTextChanged(s: Editable?) {}
         })
-
-
 
         noteAdapter = NoteAdapter(emptyList(),
             onNoteClicked = { note ->
@@ -238,8 +232,6 @@ class NoteViewFragment : Fragment() {
         }
     }
 
-
-
     private fun pinNote(note: Note) {
         val userID = auth.currentUser?.uid ?: return
 
@@ -288,6 +280,4 @@ class NoteViewFragment : Fragment() {
         val groupedNotes = groupNotes(filteredNotes)
         noteAdapter.updateNotes(groupedNotes)
     }
-
-
 }
