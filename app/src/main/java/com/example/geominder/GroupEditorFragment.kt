@@ -21,7 +21,8 @@ class GroupEditorFragment : Fragment() {
 
     private lateinit var groupNameEditText: EditText
     private lateinit var groupDescriptionEditText: EditText
-    private lateinit var saveButton: Button
+    private lateinit var saveButton: ImageButton
+    private lateinit var backButton: ImageButton
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
 
@@ -46,6 +47,9 @@ class GroupEditorFragment : Fragment() {
         groupNameEditText = view.findViewById(R.id.groupNameField)
         groupDescriptionEditText = view.findViewById(R.id.groupDescField)
         saveButton = view.findViewById(R.id.groupActionButton)
+        backButton = view.findViewById(R.id.backButton)
+
+        backButton.setOnClickListener { navigateBack() }
 
         val bundle = requireArguments()
         groupId = bundle.getString("groupId", "")
@@ -75,10 +79,14 @@ class GroupEditorFragment : Fragment() {
                 upperText.text = user?.email
 
                 // Set up the delete button to remove the user from the addedUsers list
-                deleteButton.setOnClickListener {
-                    Toast.makeText(context, "${user?.email} removed", Toast.LENGTH_SHORT).show()
-                    addedUsers.remove(user)
-                    notifyDataSetChanged()  // Notify the adapter that the data has changed
+                if (user?.userId == FirebaseAuth.getInstance().currentUser?.uid) {
+                    deleteButton.visibility = View.GONE
+                } else {
+                    deleteButton.visibility = View.VISIBLE
+                    deleteButton.setOnClickListener {
+                        remove(user)
+                        notifyDataSetChanged()
+                    }
                 }
                 return view
             }
@@ -257,5 +265,9 @@ class GroupEditorFragment : Fragment() {
 
     private fun navigateToGroupView() {
         findNavController().navigate(R.id.navigation_group)
+    }
+
+    private fun navigateBack() {
+        findNavController().navigateUp()
     }
 }
