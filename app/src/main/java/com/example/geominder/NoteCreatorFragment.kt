@@ -3,6 +3,7 @@ package com.example.geominder
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.graphics.Color
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.util.Log
@@ -103,7 +104,6 @@ class NoteCreatorFragment : Fragment() {
 
         groupSpinner = view.findViewById(R.id.groupSpinner)
         loadGroups()
-
 
         timePickerButton.setOnClickListener { showDateTimePicker() }
         backButton.setOnClickListener { navigateBack() }
@@ -269,9 +269,6 @@ class NoteCreatorFragment : Fragment() {
             }
     }
 
-
-
-
     private fun scheduleNotification(noteId: String, noteTitle: String) {
         val noteRef = firestore.collection("users").document(auth.currentUser?.uid ?: return).collection("notes").document(noteId)
         noteRef.get().addOnSuccessListener { documentSnapshot ->
@@ -323,6 +320,10 @@ class NoteCreatorFragment : Fragment() {
                 val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, groupList)
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 groupSpinner.adapter = adapter
+
+                groupSpinner.setSelection(0, false)
+                val textView = groupSpinner.selectedView as? TextView
+                textView?.setTextColor(Color.parseColor("#A9A9A9"))
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(requireContext(), "Failed to load groups: ${exception.message}", Toast.LENGTH_SHORT).show()
