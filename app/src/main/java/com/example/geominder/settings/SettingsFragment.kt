@@ -21,7 +21,6 @@ class SettingsFragment : Fragment() {
     private lateinit var mapButton: ConstraintLayout
     private lateinit var dataButton: ConstraintLayout
     private lateinit var helpButton: ConstraintLayout
-    private lateinit var appearanceButton: ConstraintLayout
     private lateinit var notificationButton: ConstraintLayout
 
 
@@ -43,7 +42,6 @@ class SettingsFragment : Fragment() {
         mapButton = view.findViewById(R.id.mapSettingButton)
         dataButton = view.findViewById(R.id.dataSettingButton)
         helpButton = view.findViewById(R.id.helpSettingButton)
-        appearanceButton = view.findViewById(R.id.appearanceSettingButton)
         notificationButton = view.findViewById(R.id.notificationSettingButton)
 
         profileButton.setOnClickListener{
@@ -64,10 +62,6 @@ class SettingsFragment : Fragment() {
 
         helpButton.setOnClickListener{
             findNavController().navigate(R.id.action_navigation_settings_to_settings_navigation_help)
-        }
-
-        appearanceButton.setOnClickListener{
-            findNavController().navigate(R.id.action_navigation_settings_to_settings_navigation_appearance)
         }
 
         notificationButton.setOnClickListener{

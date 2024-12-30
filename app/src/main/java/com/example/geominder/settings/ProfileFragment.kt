@@ -67,7 +67,6 @@ class ProfileFragment : Fragment() {
         }
 
         editProfilePictureButton.setOnClickListener {
-            Toast.makeText(requireContext(), "Edit Profile Picture Clicked", Toast.LENGTH_SHORT).show()
             if (checkCameraPermission() && checkGalleryPermission()) {
                 handleEditProfilePicture()
             } else {

@@ -6,33 +6,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".settings.SettingsFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/SettingsText"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        app:layout_constraintTop_toTopOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="20dp"
-        android:paddingBottom="12dp"
-        android:paddingHorizontal="16dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
         android:background="@drawable/header_divider"
-        app:layout_constraintTop_toTopOf="parent">
+        android:elevation="4dp"
+        app:title="Settings"
+        app:titleTextColor="@color/colorPrimary"
+        app:titleTextAppearance="@style/TextAppearance.AppCompat.Large"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Settings"
-            android:textColor="@color/colorPrimary"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profileSettingButton"
-        app:layout_constraintTop_toBottomOf="@+id/SettingsText"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -218,35 +207,5 @@
             android:text="@string/help_settings"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/appearanceSettingButton"
-        app:layout_constraintTop_toBottomOf="@+id/helpSettingButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="8dp">
-
-        <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:id="@+id/appearance_settings_icon"
-            android:background="@drawable/baseline_color_lens_24"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:backgroundTint="@color/hintColor"
-            />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/appearance_settings_icon"
-            android:layout_marginStart="16dp"
-            android:text="@string/appearance_settings"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

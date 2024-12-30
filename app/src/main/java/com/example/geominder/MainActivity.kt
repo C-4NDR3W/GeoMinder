@@ -44,11 +44,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val isDarkTheme = sharedPreferences.getBoolean("isDarkMode", false)
+        val isSystemTheme = sharedPreferences.getBoolean("isSystemTheme", false)
 
-        val mode = if (isDarkTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-        AppCompatDelegate.setDefaultNightMode(mode)
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        AppCompatDelegate.setDefaultNightMode(
+            if (isSystemTheme) AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -56,7 +57,6 @@ class MainActivity : AppCompatActivity() {
 
         authCheck()
         requestRuntimePermission()
-
 
 
         val navHostFragment =
@@ -198,14 +198,23 @@ class MainActivity : AppCompatActivity() {
                         onLocationPermissionGranted()
                     }
                 } else {
-                    Toast.makeText(this, "Foreground location permission denied", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        "Foreground location permission denied",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
+
             requestBackgroundPermissionCode -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     onLocationPermissionGranted()
                 } else {
-                    Toast.makeText(this, "Background location permission denied", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        "Background location permission denied",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
