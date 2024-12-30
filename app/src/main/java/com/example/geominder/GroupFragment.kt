@@ -41,7 +41,7 @@ class GroupFragment : Fragment() {
 
         // Set up adapter
         groupAdapter = GroupAdapter(
-            groups = emptyList(),
+            groups = groupsList,
             onGroupClicked = { group -> navigateToGroupEditor(group) },
             onDeleteClick = { group -> deleteGroup(group) }
         )
@@ -111,12 +111,14 @@ class GroupFragment : Fragment() {
     }
 
     private fun deleteGroup(group: Group) {
+        val index = groupsList.indexOf(group)
+
         firestore.collection("groups").document(group.id)
             .delete()
             .addOnSuccessListener {
                 Toast.makeText(context, "${group.name} deleted", Toast.LENGTH_SHORT).show()
-                groupsList.remove(group)
-                groupAdapter.notifyDataSetChanged()
+                groupsList.removeAt(index)
+                groupAdapter.notifyItemRemoved(index)
             }
             .addOnFailureListener { exception ->
                 Log.e("DeleteGroup", "Error deleting group: ", exception)

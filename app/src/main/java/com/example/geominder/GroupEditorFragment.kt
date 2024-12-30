@@ -233,6 +233,11 @@ class GroupEditorFragment : Fragment() {
             return
         }
 
+        if (addedUsers.size < 2) {
+            Toast.makeText(requireContext(), "Must have at least 2 members.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val userID = auth.currentUser?.uid ?: return
 
         // Check if the groupId is empty. If it's empty, create a new group.

@@ -33,7 +33,28 @@ class GroupAdapter(private val groups: List<Group>,
             itemView.setOnClickListener { clickListener(group) }
 
             // Handle delete button click
-            deleteButton.setOnClickListener { deleteClickListener(group) }
+            deleteButton.setOnClickListener { showDeleteConfirmationDialog(it, group, deleteClickListener) }
+        }
+
+        private fun showDeleteConfirmationDialog(
+            view: View,
+            group: Group,
+            deleteClickListener: (Group) -> Unit
+        ) {
+            val context = view.context
+            val builder = androidx.appcompat.app.AlertDialog.Builder(context)
+            builder.setTitle("Delete Group")
+            builder.setMessage("Are you sure you want to delete this group?")
+
+            builder.setPositiveButton("Delete") { _, _ ->
+                deleteClickListener(group)
+            }
+
+            builder.setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+
+            builder.create().show()
         }
     }
 

@@ -173,5 +173,4 @@ class NoteAdapter(private var groupedNotes: List<Pair<String, List<Note>>>,
 
         builder.create().show()
     }
-
 }
