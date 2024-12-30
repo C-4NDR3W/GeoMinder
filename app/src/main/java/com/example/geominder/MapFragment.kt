@@ -31,7 +31,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.SwitchCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -63,9 +62,7 @@ private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
 class MapFragment : Fragment(), OnMapReadyCallback {
 
-    private lateinit var toggleButton: SwitchCompat
     private lateinit var mapView: MapView
-    private lateinit var autocompleteFragment: AutocompleteSupportFragment
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var searchBar: EditText
     private lateinit var predictionsList: RecyclerView
@@ -263,13 +260,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         Log.d("placeID", selectedPlace.id)
 
 
-        addToNoteButton.setOnClickListener({
+        addToNoteButton.setOnClickListener {
             redirectToNote()
-        })
+        }
 
-        openInGmapsButton.setOnClickListener({
+        openInGmapsButton.setOnClickListener {
             redirectToGmaps(selectedPlace)
-        })
+        }
 
     }
 
@@ -343,9 +340,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         placeSuggestionAdapter.notifyDataSetChanged()
 
                     }
-                    .addOnFailureListener({
-                        error -> Log.d("MapFragment", "Error: ${error.message}")
-                    })
+                    .addOnFailureListener { error ->
+                        Log.d("MapFragment", "Error: ${error.message}")
+                    }
 
             }
 
@@ -434,7 +431,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         if (::placeNameField.isInitialized && placeNameField.text.isNotEmpty()) {
             bundle.putString("placeName", placeNameField.text.toString())
-            bundle.putString("placeAddress", placeAddressField.text.toString())
 
             val selectedPlace = googleMap?.cameraPosition?.target
             selectedPlace?.let {
@@ -465,13 +461,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 }
             }
             else -> {
-
                 requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
             }
         }
     }
-
-
 
     override fun onMapReady(map: GoogleMap) {
         googleMap = map

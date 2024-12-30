@@ -1,5 +1,6 @@
 package com.example.geominder
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.icu.util.Calendar
@@ -90,14 +91,14 @@ class NoteCreatorFragment : Fragment() {
 
         titleEditText.setText(title)
         contentEditText.setText(content)
-        placeTextView.setText(place)
+        placeTextView.text = place
 
         if (noteId.isNotEmpty()) {
             loadNoteDataFromFirebase(noteId)
         } else {
             titleEditText.setText(title)
             contentEditText.setText(content)
-            placeTextView.setText(place)
+            placeTextView.text = place
         }
 
         groupSpinner = view.findViewById(R.id.groupSpinner)
@@ -110,12 +111,11 @@ class NoteCreatorFragment : Fragment() {
 
         arguments?.let { args ->
             val placeName = args.getString("placeName", "")
-            val placeAddress = args.getString("placeAddress", "")
             latitude = args.getDouble("latitude", 0.0)
             longitude = args.getDouble("longitude", 0.0)
 
             if (placeName.isNotEmpty()) {
-                placeTextView.setText("$placeName - $placeAddress")
+                placeTextView.text = placeName
             }
         }
 
@@ -127,6 +127,7 @@ class NoteCreatorFragment : Fragment() {
         return view
     }
 
+    @SuppressLint("DefaultLocale", "SetTextI18n")
     private fun loadNoteDataFromFirebase(noteId: String) {
         val userID = auth.currentUser?.uid ?: return
 
@@ -143,7 +144,7 @@ class NoteCreatorFragment : Fragment() {
 
                     titleEditText.setText(title)
                     contentEditText.setText(content)
-                    placeTextView.setText(place)
+                    placeTextView.text = place
                     selectedDate = date
                     selectedTime = time
 
