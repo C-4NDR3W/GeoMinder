@@ -6,22 +6,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".settings.SettingsFragment">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        app:layout_constraintTop_toTopOf="parent"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/SettingsText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="20dp"
+        android:paddingBottom="12dp"
+        android:paddingHorizontal="16dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:background="@drawable/header_divider"
-        android:elevation="4dp"
-        app:title="Settings"
-        app:titleTextColor="@color/colorPrimary"
-        app:titleTextAppearance="@style/TextAppearance.AppCompat.Large"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+        app:layout_constraintTop_toTopOf="parent">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_title"
+            android:textColor="@color/colorPrimary"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profileSettingButton"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintTop_toBottomOf="@+id/SettingsText"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,10 +41,11 @@
         android:paddingVertical="8dp" >
 
         <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:id="@+id/profile_setting_icon"
             android:background="@drawable/baseline_account_box_24"
+            android:contentDescription="@string/profile_settings"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -61,15 +73,15 @@
         android:paddingVertical="8dp">
 
         <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:id="@+id/permissions_setting_icon"
             android:background="@drawable/baseline_key_24"
+            android:contentDescription="@string/permission_settings"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:backgroundTint="@color/hintColor"
-            />
+            android:backgroundTint="@color/hintColor" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -92,15 +104,15 @@
         android:paddingVertical="8dp">
 
         <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:id="@+id/notification_setting_icon"
             android:background="@drawable/baseline_notifications_24"
+            android:contentDescription="@string/notification_settings"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:backgroundTint="@color/hintColor"
-            />
+            android:backgroundTint="@color/hintColor" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -123,15 +135,15 @@
         android:paddingVertical="8dp">
 
         <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:id="@+id/map_setting_icon"
             android:background="@drawable/baseline_map_24"
+            android:contentDescription="@string/map_settings"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:backgroundTint="@color/hintColor"
-            />
+            android:backgroundTint="@color/hintColor" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -154,15 +166,15 @@
         android:paddingVertical="8dp">
 
         <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:id="@+id/data_setting_icon"
             android:background="@drawable/baseline_insert_drive_file_24"
             android:backgroundTint="@color/hintColor"
+            android:contentDescription="@string/data_settings"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            />
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -185,15 +197,15 @@
         android:paddingVertical="8dp">
 
         <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:id="@+id/help_setting_icon"
             android:background="@drawable/baseline_help_24"
+            android:contentDescription="@string/help_settings"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:backgroundTint="@color/hintColor"
-            />
+            android:backgroundTint="@color/hintColor" />
 
         <TextView
             android:layout_width="wrap_content"

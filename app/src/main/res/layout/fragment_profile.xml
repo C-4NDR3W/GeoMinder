@@ -301,13 +301,13 @@
             android:text="@string/logout_hint"
             android:id="@+id/logoutHint"
             android:textSize="16sp"
-            android:textColor="@color/materialErrorRed"
+            android:textColor="@color/error"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             />
         <ImageView
-            android:backgroundTint="@color/materialErrorRed"
+            android:backgroundTint="@color/error"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/logoutHint"

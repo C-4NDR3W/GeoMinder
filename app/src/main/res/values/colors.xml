@@ -6,8 +6,7 @@
     <color name="colorPrimary">#FF4caf50</color>
     <color name="colorSecondary">#FF00441B</color>
     <color name="hintColor">#FFa3b9a5</color>
-    <color name="error">#FF0000</color>
-    <color name="materialErrorRed">#D32F2F</color>
+    <color name="error">#D32F2F</color>
 
 <!--    dark theme colors-->
     <color name="dark_grey">#121212</color>

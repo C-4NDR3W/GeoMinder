@@ -47,14 +47,13 @@
         android:id="@+id/emailValidationWarning"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Invalid email address format (use email@provider.domain)"
-        android:textColor="@android:color/holo_red_dark"
+        android:text="@string/invalid_email"
+        android:textColor="@color/error"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/signup_emailTextLayout"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:paddingStart="64dp"
-        android:paddingEnd="64dp" />
+        android:layout_marginTop="12dp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/passwordTextLayout"
@@ -77,14 +76,13 @@
         android:id="@+id/pwdValidationWarning"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Password must be at least 8 characters long and have a special character,"
-        android:textColor="@android:color/holo_red_dark"
+        android:text="@string/invalid_password"
+        android:textColor="@color/error"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/passwordTextLayout"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:paddingStart="64dp"
-        android:paddingEnd="64dp" />
+        android:layout_marginTop="12dp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/confirmPassTextLayout"
@@ -108,14 +106,13 @@
         android:id="@+id/confirmValidationWarning"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Passwords do not match"
-        android:textColor="@android:color/holo_red_dark"
+        android:text="@string/invalid_confirm_pass"
+        android:textColor="@color/error"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/confirmPassTextLayout"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:paddingStart="64dp"
-        android:paddingEnd="64dp" />
+        android:layout_marginTop="12dp" />
 
     <Button
         android:id="@+id/signUpButton"

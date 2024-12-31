@@ -33,6 +33,32 @@
             android:singleLine="true" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/welcomeMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_gravity="center">
+        <TextView
+            android:id="@+id/welcomeMessageTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/welcome_string"
+            android:textSize="28sp"
+            android:textColor="@color/hintColor"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/startText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/start_text"
+            android:textSize="16sp"
+            android:textColor="@color/hintColor"
+            android:gravity="center"
+            android:layout_gravity="center" />
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"

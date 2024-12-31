@@ -1,7 +1,6 @@
 package com.example.geominder
 
 import android.icu.text.SimpleDateFormat
-import android.icu.util.Calendar
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,14 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.TextView
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.Firebase
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -26,11 +23,10 @@ import java.util.Locale
 class NoteViewFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var noteAdapter: NoteAdapter
-    private lateinit var selectedDateTextView: TextView
+    private lateinit var welcomeMessage: LinearLayout
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val notesList = mutableListOf<Note>()
-    private val searchBarVisible = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,9 +38,9 @@ class NoteViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        welcomeMessage = view.findViewById(R.id.welcomeMessage)
 
         val searchBar: EditText = view.findViewById(R.id.searchBar) // Assuming the EditText ID is `searchBar`
         searchBar.addTextChangedListener(object : TextWatcher {
@@ -164,6 +160,14 @@ class NoteViewFragment : Fragment() {
                         pinNote(note)
                     })
                 recyclerView.adapter = noteAdapter
+
+                if (notesList.isEmpty()) {
+                    welcomeMessage.visibility = View.VISIBLE
+                    recyclerView.visibility = View.GONE
+                } else {
+                    welcomeMessage.visibility = View.GONE
+                    recyclerView.visibility = View.VISIBLE
+                }
             }
             .addOnFailureListener { exception ->
                 Log.e("NoteViewFragment", "Error fetching notes: ${exception.message}")
