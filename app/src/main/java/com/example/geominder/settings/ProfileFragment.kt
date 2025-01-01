@@ -27,7 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.io.ByteArrayOutputStream
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : Fragment(), EditProfileNameDialogFragment.OnNameChangeListener {
 
     private val user = FirebaseAuth.getInstance().currentUser
     private val db = FirebaseFirestore.getInstance()
@@ -308,6 +308,10 @@ class ProfileFragment : Fragment() {
         const val CAMERA_REQUEST_CODE = 1002
         const val MEDIA_IMAGE_REQUEST_CODE = 1003
         const val MEDIA_IMAGE_PERMISSION_REQUEST_CODE = 1004 //cheonsa
+    }
+
+    override fun onNameChanged() {
+        getEmailPassword()
     }
 
 }

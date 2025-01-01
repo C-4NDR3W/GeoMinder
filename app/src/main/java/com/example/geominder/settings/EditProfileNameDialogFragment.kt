@@ -1,5 +1,6 @@
 package com.example.geominder.settings
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +21,26 @@ class EditProfileNameDialogFragment : DialogFragment() {
             (resources.displayMetrics.widthPixels * 0.9).toInt(),
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
+    }
+
+    interface OnNameChangeListener { //for notifying ProfileFragment
+        fun onNameChanged()
+    }
+
+    private var listener: OnNameChangeListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            listener = parentFragment as? OnNameChangeListener
+        } catch (e: ClassCastException) {
+            throw ClassCastException("$context must implement OnNameChangeListener")
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
     }
 
     override fun onCreateView(
@@ -49,6 +70,7 @@ class EditProfileNameDialogFragment : DialogFragment() {
                         .addOnSuccessListener {
                             Toast.makeText(requireContext(), "Name Updated", Toast.LENGTH_SHORT)
                                 .show()
+                            listener?.onNameChanged()
                         }
                         .addOnFailureListener {
                             Toast.makeText(
@@ -61,8 +83,9 @@ class EditProfileNameDialogFragment : DialogFragment() {
                     Toast.makeText(requireContext(), "User not authenticated.", Toast.LENGTH_SHORT)
                         .show()
                 }
-            }else{
-                Toast.makeText(requireContext(), "Name field cannot be empty.", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), "Name field cannot be empty.", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }

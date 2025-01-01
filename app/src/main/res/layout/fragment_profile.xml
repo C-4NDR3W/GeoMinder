@@ -172,24 +172,12 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@+id/noteCountHint"
             app:layout_constraintBottom_toBottomOf="@+id/noteCountHint"
-            app:layout_constraintEnd_toStartOf="@+id/noteCountContinue"
-            android:layout_marginEnd="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="32dp"
             android:id="@+id/noteCount"
             android:textColor="@color/hintColor"
             android:text=""
             android:textSize="16sp"/>
-
-        <ImageView
-            android:id="@+id/noteCountContinue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/email_hint"
-            android:src="@drawable/continue_arrow"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="32dp"
-            android:clickable="true"
-            android:focusable="true"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -218,24 +206,13 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@+id/noteActiveHint"
             app:layout_constraintBottom_toBottomOf="@+id/noteActiveHint"
-            app:layout_constraintEnd_toStartOf="@+id/noteActiveContinue"
-            android:layout_marginEnd="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="32dp"
             android:id="@+id/noteActive"
             android:textColor="@color/hintColor"
             android:text=""
             android:textSize="16sp"/>
 
-        <ImageView
-            android:id="@+id/noteActiveContinue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/email_hint"
-            android:src="@drawable/continue_arrow"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="32dp"
-            android:clickable="true"
-            android:focusable="true"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -264,24 +241,13 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@+id/groupHint"
             app:layout_constraintBottom_toBottomOf="@+id/groupHint"
-            app:layout_constraintEnd_toStartOf="@+id/groupContinue"
-            android:layout_marginEnd="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="32dp"
             android:id="@+id/groupCount"
             android:textColor="@color/hintColor"
             android:text=""
             android:textSize="16sp"/>
 
-        <ImageView
-            android:id="@+id/groupContinue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/email_hint"
-            android:src="@drawable/continue_arrow"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="32dp"
-            android:clickable="true"
-            android:focusable="true"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
