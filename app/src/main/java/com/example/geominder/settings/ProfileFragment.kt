@@ -75,15 +75,15 @@ class ProfileFragment : Fragment(), EditProfileNameDialogFragment.OnNameChangeLi
             }
         }
 
-        logOutButton.setOnClickListener{
+        logOutButton.setOnClickListener {
             val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
             builder.setMessage("Are you sure you want to log out?")
                 .setTitle("Log Out")
-                .setPositiveButton("Yes"){ _, _ ->
+                .setPositiveButton("Yes") { _, _ ->
                     FirebaseAuth.getInstance().signOut()
                     (activity as? MainActivity)?.authCheck()
                 }
-                .setNegativeButton("Cancel"){dialog, _ ->
+                .setNegativeButton("Cancel") { dialog, _ ->
                     dialog.dismiss()
                 }
             val dialog: AlertDialog = builder.create()
@@ -92,10 +92,9 @@ class ProfileFragment : Fragment(), EditProfileNameDialogFragment.OnNameChangeLi
 
     }
 
-    private fun getEmailPassword() {
+    private fun getEmailPassword() { // fetching user details such as name, email, and profile picture
         val profileNameTextView = view?.findViewById<TextView>(R.id.profileName)
         val emailTextView = view?.findViewById<TextView>(R.id.emailTextView)
-
         val profileImageView = view?.findViewById<ImageView>(R.id.profilePicture)
         val defaultProfilePicture = R.drawable.default_account_profile_foreground
 
@@ -112,6 +111,7 @@ class ProfileFragment : Fragment(), EditProfileNameDialogFragment.OnNameChangeLi
 
                     var profilePictureUrl = document.getString("profilePicture")
 
+                    // Check if the user signed in with Google and update the profile picture URL
                     for (profile in user.providerData) {
                         if (profile.providerId == "google.com") {
                             profilePictureUrl = profile.photoUrl?.toString()
@@ -125,34 +125,50 @@ class ProfileFragment : Fragment(), EditProfileNameDialogFragment.OnNameChangeLi
                 }
             }
                 .addOnFailureListener { exception ->
-                    Log.d("Accessing firestore Error", exception.toString())
+                    Log.d("Accessing Firestore Error", exception.toString())
                 }
         }
     }
 
-    private fun getNoteCountStatus() {
+    private fun getNoteCountStatus() { // fetching note count and active notes, along with groups
         if (user != null) {
             val userId = user.uid
 
             val noteCountTextView = view?.findViewById<TextView>(R.id.noteCount)
             val noteActiveTextView = view?.findViewById<TextView>(R.id.noteActive)
+            val groupCountTextView =
+                view?.findViewById<TextView>(R.id.groupCount) // Add a TextView for displaying groups
+
+            // Fetch note count
             db.collection("users").document(userId).collection("notes").get()
                 .addOnSuccessListener { querySnapshot ->
                     val noteCount = querySnapshot.size()
                     noteCountTextView?.text = noteCount.toString()
-                }.addOnFailureListener { exception ->
-                    Log.d("Accessing firestore notes Error", exception.toString())
+                }
+                .addOnFailureListener { exception ->
+                    Log.d("Accessing Firestore Notes Error", exception.toString())
                 }
 
-
+            // Fetch active notes count
             db.collection("users").document(userId).collection("notes")
-                .whereEqualTo("status", "true").get().addOnSuccessListener { querySnapshot ->
+                .whereEqualTo("status", "true").get()
+                .addOnSuccessListener { querySnapshot ->
                     val noteActive = querySnapshot.size()
                     noteActiveTextView?.text = noteActive.toString()
-                }.addOnFailureListener { exception ->
-                    Log.d("Accessing firestore notes Error", exception.toString())
+                }
+                .addOnFailureListener { exception ->
+                    Log.d("Accessing Firestore Notes Error", exception.toString())
                 }
 
+            /// Fetch group count
+            db.collection("users").document(userId).collection("groups").get()
+                .addOnSuccessListener { querySnapshot ->
+                    val groupCount = querySnapshot.size()
+                    groupCountTextView?.text = groupCount.toString()
+                }
+                .addOnFailureListener { exception ->
+                    Log.d("Accessing Firestore Groups Error", exception.toString())
+                }
         }
     }
 
