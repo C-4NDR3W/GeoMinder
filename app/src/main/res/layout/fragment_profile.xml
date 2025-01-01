@@ -16,8 +16,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profilePicture"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:contentDescription="@string/profile_name"
         android:src="@drawable/default_account_profile_foreground"
         app:layout_constraintTop_toBottomOf="@+id/semiCircleBottomGuideline"
@@ -34,10 +34,9 @@
         android:padding="8dp"
         android:background="@drawable/circle_bg"
         android:src="@drawable/edit_vector_asset"
+        app:tint="@color/white"
         app:layout_constraintBottom_toBottomOf="@+id/profilePicture"
         app:layout_constraintEnd_toEndOf="@+id/profilePicture"/>
-
-
 
     <TextView
         android:id="@+id/profileName"
@@ -71,13 +70,12 @@
         app:layout_constraintTop_toBottomOf="@+id/profileName"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="20dp"
+        android:paddingHorizontal="28dp"
         android:id="@+id/emailLayout">
 
         <TextView
-            android:layout_marginStart="32dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
             android:text="@string/email_hint"
             android:id="@+id/emailProfile"
             android:textSize="16sp"
@@ -91,10 +89,9 @@
             app:layout_constraintTop_toTopOf="@+id/emailProfile"
             app:layout_constraintBottom_toBottomOf="@+id/emailProfile"
             app:layout_constraintEnd_toStartOf="@+id/emailEditButton"
-            android:layout_marginStart="20dp"
             android:id="@+id/emailTextView"
             android:textColor="@color/hintColor"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="8dp"
             android:text="@string/placeholder_email"
             android:textSize="16sp"/>
 
@@ -106,7 +103,6 @@
             android:src="@drawable/edit_vector_asset"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="32dp"
             android:clickable="true"
             android:focusable="true"/>
 
@@ -118,13 +114,12 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/emailLayout"
         app:layout_constraintStart_toStartOf="parent"
+        android:paddingHorizontal="28dp"
         android:layout_marginTop="20dp">
 
         <TextView
-            android:layout_marginStart="32dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
             android:text="@string/password_hint"
             android:id="@+id/passwordProfile"
             android:textSize="16sp"
@@ -141,7 +136,6 @@
             android:src="@drawable/edit_vector_asset"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="32dp"
             android:clickable="true"
             android:focusable="true"/>
 
@@ -153,13 +147,12 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/passwordLayout"
         app:layout_constraintStart_toStartOf="parent"
+        android:paddingHorizontal="28dp"
         android:layout_marginTop="20dp">
 
         <TextView
-            android:layout_marginStart="32dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
             android:text="@string/note_count"
             android:id="@+id/noteCountHint"
             android:textSize="16sp"
@@ -173,7 +166,6 @@
             app:layout_constraintTop_toTopOf="@+id/noteCountHint"
             app:layout_constraintBottom_toBottomOf="@+id/noteCountHint"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="32dp"
             android:id="@+id/noteCount"
             android:textColor="@color/hintColor"
             android:text=""
@@ -187,13 +179,12 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/noteCountLayout"
         app:layout_constraintStart_toStartOf="parent"
+        android:paddingHorizontal="28dp"
         android:layout_marginTop="20dp">
 
         <TextView
-            android:layout_marginStart="32dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
             android:text="@string/note_active"
             android:id="@+id/noteActiveHint"
             android:textSize="16sp"
@@ -207,7 +198,6 @@
             app:layout_constraintTop_toTopOf="@+id/noteActiveHint"
             app:layout_constraintBottom_toBottomOf="@+id/noteActiveHint"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="32dp"
             android:id="@+id/noteActive"
             android:textColor="@color/hintColor"
             android:text=""
@@ -222,13 +212,12 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/noteActiveLayout"
         app:layout_constraintStart_toStartOf="parent"
+        android:paddingHorizontal="28dp"
         android:layout_marginTop="20dp">
 
         <TextView
-            android:layout_marginStart="32dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
             android:text="@string/group_hint"
             android:id="@+id/groupHint"
             android:textSize="16sp"
@@ -242,7 +231,6 @@
             app:layout_constraintTop_toTopOf="@+id/groupHint"
             app:layout_constraintBottom_toBottomOf="@+id/groupHint"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="32dp"
             android:id="@+id/groupCount"
             android:textColor="@color/hintColor"
             android:text=""
@@ -257,10 +245,10 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/groupLayout"
         app:layout_constraintStart_toStartOf="parent"
+        android:paddingHorizontal="28dp"
         android:layout_marginTop="20dp">
 
         <TextView
-            android:layout_marginStart="32dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
