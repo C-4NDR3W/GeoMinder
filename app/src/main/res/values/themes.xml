@@ -7,12 +7,9 @@
         <item name="android:statusBarColor">@color/background</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:icon">@drawable/logo</item>
-        <!--        was causing all preference to have icons-->
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="colorControlActivated">@color/colorPrimary</item>
+        <!--  was causing all preference to have icons-->
         <item name="android:logo">@drawable/logo</item>
-    </style>
-
-    <style name="CustomSwitchStyle" parent="Widget.AppCompat.CompoundButton.Switch">
-        <item name="android:thumb">@drawable/thumb</item>
-        <item name="android:track">@drawable/track</item>
     </style>
 </resources>
