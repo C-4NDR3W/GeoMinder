@@ -119,11 +119,6 @@ class NoteCreatorFragment : Fragment() {
             }
         }
 
-        placeTextView.setOnClickListener {
-            val navController = findNavController()
-            navController.navigate(R.id.mapFragment)
-        }
-
         return view
     }
 

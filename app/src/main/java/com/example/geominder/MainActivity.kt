@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
 
         findViewById<FloatingActionButton>(R.id.fab_add).setOnClickListener {
-            navController.navigate(R.id.navigation_create)
+            navController.navigate(R.id.mapFragment)
         }
 
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->

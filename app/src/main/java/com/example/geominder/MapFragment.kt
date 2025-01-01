@@ -519,6 +519,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onDestroy() {
         super.onDestroy()
+        val fab: FloatingActionButton = requireActivity().findViewById(R.id.fab_add)
+        val bottomNavigationView: BottomNavigationView = requireActivity().findViewById(R.id.bottom_navigation)
+        fab.visibility = View.VISIBLE
+        bottomNavigationView.visibility = View.VISIBLE
         mapView.onDestroy()
     }
 
